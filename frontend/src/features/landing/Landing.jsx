@@ -304,17 +304,52 @@ export default function Landing() {
           zIndex: 40,
         }}
       >
-        {/* Brand Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => scrollToSection('hero')}>
-          <div className="logo-badge">+</div>
-          <div>
-            <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '-0.3px', display: 'block', color: '#FFF' }}>
-              MedConnect
-            </span>
-            <span style={{ fontSize: '10px', color: 'var(--lime-accent)', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              Pakistan Healthcare
-            </span>
+        {/* Brand Logo & Left Admin Access */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => scrollToSection('hero')}>
+            <div className="logo-badge">+</div>
+            <div>
+              <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '-0.3px', display: 'block', color: '#FFF' }}>
+                MedConnect
+              </span>
+              <span style={{ fontSize: '10px', color: 'var(--lime-accent)', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                Pakistan Healthcare
+              </span>
+            </div>
           </div>
+
+          {/* Admin Control Link on Left Side of Header */}
+          <button
+            type="button"
+            onClick={() => navigate('/admin')}
+            style={{
+              color: 'var(--lime-accent)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(197, 225, 165, 0.35)',
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-pill)',
+              fontSize: '12px',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              fontFamily: 'var(--font-sans)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(197, 225, 165, 0.2)';
+              e.currentTarget.style.borderColor = 'var(--lime-accent)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.borderColor = 'rgba(197, 225, 165, 0.35)';
+            }}
+            title="Admin Management Console (/admin)"
+          >
+            <ShieldCheck size={14} color="var(--lime-accent)" />
+            <span>/admin</span>
+          </button>
         </div>
 
         {/* Center Nav Links: Keep user on landing page with smooth scroll & info anchors */}
@@ -380,56 +415,8 @@ export default function Landing() {
           </button>
         </nav>
 
-        {/* Right CTA Group (Prominent Admin & Auth Buttons) */}
+        {/* Right CTA Group: Strictly Sign In and Create Account */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* City Selector Pill */}
-          <button
-            type="button"
-            className="city-pill-btn"
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#FFF', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '7px 12px', fontSize: '12.5px' }}
-            onClick={() => setIsCityModalOpen(true)}
-          >
-            <MapPin size={13} color="var(--lime-accent)" />
-            <span>{selectedCity.name}</span>
-            <span style={{ fontSize: '9px', opacity: 0.7 }}>▼</span>
-          </button>
-
-          {/* PROMINENT ADMIN CONSOLE ACCESS BUTTON (Clear & Immediately Available) */}
-          <button
-            type="button"
-            onClick={() => {
-              setLoginRoleTab('admin');
-              setIsLoginModalOpen(true);
-            }}
-            style={{
-              color: '#FFFFFF',
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
-              padding: '7px 14px',
-              borderRadius: 'var(--radius-pill)',
-              fontSize: '12px',
-              fontWeight: '700',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
-              e.currentTarget.style.borderColor = 'var(--lime-accent)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-            }}
-            title="Hospital Operations & Regulatory Staff Console"
-          >
-            <ShieldCheck size={14} color="var(--lime-accent)" />
-            <span>Admin Portal</span>
-          </button>
-
-          {/* User State: If logged in, show Quick Portal link. If guest, show Sign In & Register */}
           {currentUser ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button
@@ -492,188 +479,283 @@ export default function Landing() {
           SECTION 1: HERO CARD (FULL-BLEED SCREEN FIT FROM LEFT TO RIGHT)
          ========================================================================= */}
       <section id="hero" className="canva-hero-fullbleed">
-        <div className="hero-inner-container">
-          {/* Geometric 8-Point Starburst Watermark from Canva */}
-          <svg
-            className="canva-starburst"
-            viewBox="0 0 200 200"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M100 0V200M0 100H200M29.29 29.29L170.71 170.71M29.29 170.71L170.71 29.29"
-              stroke="white"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
-          </svg>
+        <div className="hero-inner-container" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0', alignItems: 'center' }}>
+          {/* LEFT CONTENT */}
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            {/* Geometric 8-Point Starburst Watermark from Canva */}
+            <svg
+              className="canva-starburst"
+              viewBox="0 0 200 200"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 0V200M0 100H200M29.29 29.29L170.71 170.71M29.29 170.71L170.71 29.29"
+                stroke="white"
+                strokeWidth="12"
+                strokeLinecap="round"
+              />
+            </svg>
 
-          {/* Live Online Doctor Status Badge */}
-          <div className="hero-pill-badge">
-            <span className="live-pulse-dot" style={{ backgroundColor: 'var(--lime-accent)' }}></span>
-            <span>48 PMDC DOCTORS AVAILABLE ONLINE TODAY IN {selectedCity.name.toUpperCase()}</span>
+            {/* Live Online Doctor Status Badge */}
+            <div className="hero-pill-badge">
+              <span className="live-pulse-dot" style={{ backgroundColor: 'var(--lime-accent)' }}></span>
+              <span>48 PMDC DOCTORS AVAILABLE ONLINE TODAY IN {selectedCity.name.toUpperCase()}</span>
+            </div>
+
+            <h1 className="hero-title">
+              Pakistan's Most Trusted Digital Healthcare Network.
+            </h1>
+
+            <p className="hero-sub">
+              Book priority in-clinic consultations at premier hospital networks or connect with PMDC-verified specialists via encrypted video in 15 minutes.
+            </p>
+
+            {/* Dual-Pill Interactive Search Bar */}
+            <div style={{ maxWidth: '760px', width: '100%', position: 'relative', marginBottom: '24px' }}>
+              <div className="oladoc-dual-search">
+                {/* City Selector Trigger */}
+                <div className="search-city-trigger" onClick={() => setIsCityModalOpen(true)}>
+                  <MapPin size={18} />
+                  <div className="search-city-text">
+                    <span className="search-city-label">LOCATION</span>
+                    <span className="search-city-val">{selectedCity.name} ▾</span>
+                  </div>
+                </div>
+
+                {/* Main Search Input */}
+                <div className="search-input-wrap">
+                  <Search size={18} />
+                  <input
+                    type="text"
+                    className="search-main-input"
+                    placeholder="Search doctor name, specialty, or hospital..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => {
+                      if (searchQuery.length < 2) setSearchQuery('');
+                    }}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      style={{ color: 'var(--text-muted)', padding: '4px' }}
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Action Button: Scrolls to doctors section */}
+                <button
+                  type="button"
+                  className="btn-search-action"
+                  onClick={() => scrollToSection('doctors')}
+                >
+                  <span>Find Care</span>
+                  <ArrowRight size={15} />
+                </button>
+              </div>
+
+              {/* Autocomplete Dropdown Suggestions */}
+              {searchSuggestions.length > 0 && (
+                <div className="search-suggestions-dropdown">
+                  <div className="suggestion-group-title">Matching Healthcare Results</div>
+                  {searchSuggestions.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="suggestion-item"
+                      onClick={() => {
+                        if (item.filter) setSelectedSpecialtyFilter(item.filter);
+                        setSearchQuery(item.label);
+                        scrollToSection(item.targetId);
+                      }}
+                    >
+                      <div className="suggestion-item-left">
+                        <div className="suggestion-icon">
+                          {item.type === 'Doctor' ? <Stethoscope size={15} /> : item.type === 'Specialty' ? <Sparkles size={15} /> : <Building2 size={15} />}
+                        </div>
+                        <div>
+                          <div className="suggestion-name">{item.label}</div>
+                          <div className="suggestion-sub">{item.sub}</div>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
+                        View in {item.type}s →
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Search Chips */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '44px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-white-muted)' }}>Popular:</span>
+              {['Cardiologist', 'Dermatologist', 'Gynecologist', 'Pediatrician', 'General Physician'].map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => {
+                    setSelectedSpecialtyFilter(chip);
+                    scrollToSection('doctors');
+                  }}
+                  style={{
+                    fontSize: '11.5px',
+                    fontWeight: '600',
+                    color: '#FFFFFF',
+                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    padding: '4px 12px',
+                    borderRadius: 'var(--radius-pill)',
+                    transition: 'all 0.15s',
+                    fontFamily: 'var(--font-sans)',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)')}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
+            {/* Metrics & Trust Badges Strip */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '24px',
+                paddingTop: '28px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+              }}
+            >
+              {[
+                { value: '500+', label: 'PMDC-Verified Doctors' },
+                { value: '150,000+', label: 'Successful Consultations' },
+                { value: '18+', label: 'Hospital Partners' },
+                { value: '4.9 ★', label: 'Patient Satisfaction' },
+              ].map(({ value, label }) => (
+                <div key={label}>
+                  <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--lime-accent)', fontFamily: 'var(--font-sans)' }}>
+                    {value}
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-white-muted)', marginTop: '2px' }}>
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <h1 className="hero-title">
-            Pakistan's Most Trusted Digital Healthcare Network.
-          </h1>
-
-          <p className="hero-sub">
-            Book priority in-clinic consultations at premier hospital networks or connect with PMDC-verified specialists via encrypted video in 15 minutes.
-          </p>
-
-          {/* Dual-Pill Interactive Search Bar */}
-          <div style={{ maxWidth: '860px', width: '100%', position: 'relative', marginBottom: '24px' }}>
-            <div className="oladoc-dual-search">
-              {/* City Selector Trigger */}
-              <div className="search-city-trigger" onClick={() => setIsCityModalOpen(true)}>
-                <MapPin size={18} />
-                <div className="search-city-text">
-                  <span className="search-city-label">LOCATION</span>
-                  <span className="search-city-val">{selectedCity.name} ▾</span>
+          {/* RIGHT SIDE: Visual Showcase Card & Liability Guarantee */}
+          <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '14px', paddingLeft: '40px', flexShrink: 0 }}>
+            {/* Physician Showcase Card matching Sesame style */}
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              borderRadius: '20px',
+              padding: '20px 22px',
+              width: '260px',
+              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.22)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <div style={{
+                  width: '56px', height: '56px', borderRadius: '50%',
+                  overflow: 'hidden', flexShrink: 0,
+                  border: '2.5px solid var(--lime-accent)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                }}>
+                  <img
+                    src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=200&q=80"
+                    alt="Dr. Amina Shah"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+                <div>
+                  <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#fff' }}>Dr. Amina Shah</div>
+                  <div style={{ fontSize: '11px', color: 'var(--lime-accent)', fontWeight: '600' }}>Family Medicine Consultant</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>★★★★★ 4.9 (310 reviews)</div>
                 </div>
               </div>
-
-              {/* Main Search Input */}
-              <div className="search-input-wrap">
-                <Search size={18} />
-                <input
-                  type="text"
-                  className="search-main-input"
-                  placeholder="Search by doctor name (e.g. Dr. Maya), specialty, or hospital..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => {
-                    if (searchQuery.length < 2) setSearchQuery('');
+              <div style={{
+                fontSize: '11.5px',
+                color: 'rgba(255,255,255,0.85)',
+                fontStyle: 'italic',
+                marginBottom: '12px',
+                lineHeight: '1.45',
+                backgroundColor: 'rgba(0,0,0,0.15)',
+                padding: '8px 10px',
+                borderRadius: '8px',
+              }}>
+                "Very thorough and empathetic doctor. Explained my routine test results in detail."
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>Next Available</div>
+                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--lime-accent)' }}>Today at 3:00 PM</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('doctors')}
+                  style={{
+                    backgroundColor: 'var(--lime-accent)',
+                    color: 'var(--forest-800)',
+                    padding: '7px 14px',
+                    borderRadius: '8px',
+                    fontSize: '11.5px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-sans)',
+                    border: 'none',
+                    transition: 'all 0.15s',
                   }}
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    style={{ color: 'var(--text-muted)', padding: '4px' }}
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-
-              {/* Action Button: Scrolls to doctors section */}
-              <button
-                type="button"
-                className="btn-search-action"
-                onClick={() => scrollToSection('doctors')}
-              >
-                <span>Find Care</span>
-                <ArrowRight size={15} />
-              </button>
-            </div>
-
-            {/* Autocomplete Dropdown Suggestions */}
-            {searchSuggestions.length > 0 && (
-              <div className="search-suggestions-dropdown">
-                <div className="suggestion-group-title">Matching Healthcare Results</div>
-                {searchSuggestions.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="suggestion-item"
-                    onClick={() => {
-                      if (item.filter) setSelectedSpecialtyFilter(item.filter);
-                      setSearchQuery(item.label);
-                      scrollToSection(item.targetId);
-                    }}
-                  >
-                    <div className="suggestion-item-left">
-                      <div className="suggestion-icon">
-                        {item.type === 'Doctor' ? <Stethoscope size={15} /> : item.type === 'Specialty' ? <Sparkles size={15} /> : <Building2 size={15} />}
-                      </div>
-                      <div>
-                        <div className="suggestion-name">{item.label}</div>
-                        <div className="suggestion-sub">{item.sub}</div>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
-                      View in {item.type}s →
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Quick Search Chips */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-white-muted)' }}>Popular:</span>
-            {['Cardiologist', 'Dermatologist', 'Gynecologist', 'Pediatrician', 'General Physician'].map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => {
-                  setSelectedSpecialtyFilter(chip);
-                  scrollToSection('doctors');
-                }}
-                style={{
-                  fontSize: '11.5px',
-                  fontWeight: '600',
-                  color: '#FFFFFF',
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  padding: '4px 12px',
-                  borderRadius: 'var(--radius-pill)',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)')}
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-
-          {/* Metrics & Trust Badges Strip */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '24px',
-              marginTop: '44px',
-              paddingTop: '28px',
-              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-            }}
-          >
-            <div>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: '700', color: 'var(--lime-accent)' }}>
-                500+
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-white-muted)', marginTop: '2px' }}>
-                PMDC-Verified Doctors
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--lime-accent-hover)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--lime-accent)')}
+                >
+                  Book visit
+                </button>
               </div>
             </div>
 
-            <div>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: '700', color: 'var(--lime-accent)' }}>
-                150,000+
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-white-muted)', marginTop: '2px' }}>
-                Successful Consultations
+            {/* Medical Liability & Credential Verification Badge */}
+            <div style={{
+              backgroundColor: 'rgba(197, 225, 165, 0.16)',
+              border: '1px solid rgba(197, 225, 165, 0.45)',
+              borderRadius: '14px',
+              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              width: '260px',
+              backdropFilter: 'blur(8px)',
+            }}>
+              <ShieldCheck size={22} color="var(--lime-accent)" style={{ flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '800', color: '#fff' }}>PMDC Verified & Protected</div>
+                <div style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.3' }}>
+                  Complete medical liability compliance & audited practitioner credentials.
+                </div>
               </div>
             </div>
 
-            <div>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: '700', color: 'var(--lime-accent)' }}>
-                18+
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-white-muted)', marginTop: '2px' }}>
-                Tertiary Hospital Partners
-              </div>
-            </div>
-
-            <div>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: '700', color: 'var(--lime-accent)' }}>
-                4.9 ★
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-white-muted)', marginTop: '2px' }}>
-                Patient Satisfaction Score
+            {/* Instant Telehealth Video Consult Pill */}
+            <div style={{
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '14px',
+              padding: '10px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              width: '260px',
+              backdropFilter: 'blur(8px)',
+            }}>
+              <Video size={18} color="var(--lime-accent)" style={{ flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#fff' }}>HD Video Consult in 15 Min</div>
+                <div style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.65)' }}>Encrypted · E-Prescription via SMS</div>
               </div>
             </div>
           </div>
@@ -829,8 +911,7 @@ export default function Landing() {
                     {sp.description}
                   </p>
 
-                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
-                    <span>Fee from Rs. 1,500</span>
+                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', width: '100%', fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
                     <span>Filter Doctors ↓</span>
                   </div>
                 </div>
@@ -910,82 +991,185 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Doctors Grid matching Image 2 Layout (2-Column Grid) */}
-          <div className="img2-cards-grid">
+          {/* Doctors Grid — Sesame-style matching provided reference */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
             {filteredDoctors.map((doc, idx) => (
               <div
                 key={doc.id}
-                className="img2-doc-card scroll-seq-card"
+                className="sesame-doc-card scroll-seq-card"
                 data-card-seq={idx}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-subtle)',
+                  padding: '20px 22px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0',
+                  boxShadow: 'var(--shadow-sm)',
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                  cursor: 'default',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
-                {/* Left Avatar Column */}
-                <div className="img2-avatar-wrap">
-                  {doc.photoUrl ? (
-                    <img
-                      src={doc.photoUrl}
-                      alt={doc.name}
-                      className="img2-avatar-img"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const fallback = e.currentTarget.parentElement.querySelector('.img2-avatar-fallback');
-                        if (fallback) fallback.style.display = 'grid';
-                      }}
-                    />
-                  ) : null}
-                  <div
-                    className="img2-avatar-fallback"
-                    style={{
-                      display: doc.photoUrl ? 'none' : 'grid',
-                      backgroundColor: doc.photoColor || 'var(--forest-800)',
-                    }}
-                  >
-                    {doc.initials || doc.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                {/* Top Row: Photo + Name/Specialty/Rating */}
+                <div style={{ display: 'flex', gap: '14px', marginBottom: '10px' }}>
+                  {/* Doctor Photo */}
+                  <div style={{ width: '72px', height: '72px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-subtle)', backgroundColor: doc.photoColor || 'var(--forest-800)', display: 'grid', placeItems: 'center' }}>
+                    {doc.photoUrl ? (
+                      <img
+                        src={doc.photoUrl}
+                        alt={doc.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement.innerHTML = `<span style="color:#fff;font-size:20px;font-weight:700;">${doc.initials || doc.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}</span>`;
+                        }}
+                      />
+                    ) : (
+                      <span style={{ color: '#fff', fontSize: '20px', fontWeight: '700' }}>
+                        {doc.initials || doc.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                      </span>
+                    )}
                   </div>
-                </div>
 
-                {/* Right Content Column */}
-                <div className="img2-content-wrap">
-                  {/* Top Row: Doctor Name & Star Rating Badge */}
-                  <div className="img2-top-row">
-                    <h3 className="img2-doc-name">{doc.name}</h3>
-                    <div className="img2-rating-pill">
-                      <span style={{ color: '#F59E0B' }}>★</span>
-                      <span>{doc.rating || '4.9'}</span>
+                  {/* Name + Specialty + Stars */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 2px 0', color: 'var(--text-main)', fontFamily: 'var(--font-sans)' }}>
+                      {doc.name}
+                    </h3>
+                    <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      {doc.specialty}
+                    </div>
+                    {/* Star Rating Row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
+                        {'★'.repeat(Math.round(doc.rating || 5))}
+                      </span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-body)' }}>
+                        {doc.rating || '4.9'}
+                      </span>
+                      <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                        ({doc.reviewsCount || '100+'})
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  {/* Specialty and Clinic */}
-                  <div className="img2-specialty-clinic">
-                    {doc.specialty} · {doc.clinicName || doc.practices?.[0]?.hospital || 'Central Clinic'}
+                {/* Availability Badges: Completely consistent across all cards */}
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#D1FAE5', color: '#065F46', padding: '3px 9px', borderRadius: '6px' }}>
+                    {doc.onlineNow ? 'Available today' : 'Accepting new patients'}
+                  </span>
+                  <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '3px 9px', borderRadius: '6px' }}>
+                    {doc.satisfaction || '98%'} recommend
+                  </span>
+                </div>
+
+                {/* Patient Review Quote */}
+                <div style={{
+                  fontSize: '12.5px',
+                  color: 'var(--text-body)',
+                  fontStyle: 'italic',
+                  backgroundColor: 'var(--canvas-bg)',
+                  padding: '10px 13px',
+                  borderRadius: '10px',
+                  marginBottom: '12px',
+                  lineHeight: '1.5',
+                  borderLeft: '3px solid var(--lime-accent)',
+                }}>
+                  "{doc.reviews?.[0]?.comment || doc.shortBio || 'Outstanding care and very professional. Highly recommended.'}"
+                </div>
+
+                {/* Next Available */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <div>
+                    <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '2px' }}>
+                      Next available
+                    </div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                      {doc.nextSlot || 'Today at 3:00 PM'}
+                    </div>
                   </div>
-
-                  {/* Experience and Short Bio snippet */}
-                  <div className="img2-exp-summary">
-                    {doc.experience} experience · {doc.shortBio || doc.bio || 'Thoughtful primary care with a focus on prevention.'}
-                  </div>
-
-                  {/* Action Buttons: View profile & Book visit */}
-                  <div className="img2-actions-row">
-                    <button
-                      type="button"
-                      className="img2-btn-view-profile"
-                      onClick={() => {
-                        setSelectedDoctorModal(doc);
-                        setDoctorModalTab('overview');
-                      }}
-                    >
-                      View profile
-                    </button>
-
-                    <button
-                      type="button"
-                      className="img2-btn-book-visit"
-                      onClick={() => handleBookingClick(doc)}
-                    >
-                      Book visit
-                    </button>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    {['10:30 AM', '11:00 AM', '2:00 PM'].map((slot) => (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => handleBookingClick(doc)}
+                        style={{
+                          fontSize: '10.5px', fontWeight: '700',
+                          color: 'var(--forest-800)',
+                          border: '1.5px solid var(--border-strong)',
+                          borderRadius: '8px',
+                          padding: '4px 8px',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          fontFamily: 'var(--font-sans)',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--canvas-bg)'; e.currentTarget.style.borderColor = 'var(--forest-700)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+                      >
+                        {slot}
+                      </button>
+                    ))}
                   </div>
                 </div>
+
+                {/* Action Buttons */}
+                <button
+                  type="button"
+                  onClick={() => handleBookingClick(doc)}
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'var(--forest-800)',
+                    color: '#FFFFFF',
+                    padding: '11px',
+                    borderRadius: '10px',
+                    fontSize: '13.5px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s',
+                    marginBottom: '8px',
+                    fontFamily: 'var(--font-sans)',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
+                >
+                  Book visit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedDoctorModal(doc);
+                    setDoctorModalTab('overview');
+                  }}
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'transparent',
+                    color: 'var(--forest-800)',
+                    padding: '9px',
+                    borderRadius: '10px',
+                    fontSize: '12.5px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    border: '1.5px solid var(--border-strong)',
+                    transition: 'all 0.15s',
+                    fontFamily: 'var(--font-sans)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--canvas-bg)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  View profile
+                </button>
               </div>
             ))}
           </div>
@@ -1003,99 +1187,179 @@ export default function Landing() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-            {branchesList.map((hosp) => (
-              <div
-                key={hosp.id}
-                className="scroll-seq-card"
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '20px',
-                  border: '1px solid var(--border-subtle)',
-                  padding: '24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  boxShadow: 'var(--shadow-sm)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '12px',
-                      backgroundColor: 'rgba(197, 225, 165, 0.4)',
-                      color: 'var(--forest-800)',
-                      display: 'grid',
-                      placeItems: 'center',
-                    }}
-                  >
-                    <Building2 size={22} />
+          {/* Hospital Cards Grid — 2-Column Sesame-Style Matching Reference */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+            {branchesList.map((hosp, idx) => {
+              const hospitalImages = [
+                'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=300&q=80',
+                'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=300&q=80',
+                'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=300&q=80',
+                'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=300&q=80',
+                'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=300&q=80',
+                'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=300&q=80',
+              ];
+              const imgUrl = hospitalImages[idx % hospitalImages.length];
+
+              return (
+                <div
+                  key={hosp.id}
+                  className="scroll-seq-card"
+                  data-card-seq={idx}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: '1px solid var(--border-subtle)',
+                    padding: '20px 22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {/* Top Row: Photo + Name/City/Rating */}
+                  <div style={{ display: 'flex', gap: '14px', marginBottom: '10px' }}>
+                    <div style={{ width: '72px', height: '72px', borderRadius: '14px', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-subtle)' }}>
+                      <img
+                        src={imgUrl}
+                        alt={hosp.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 2px 0', color: 'var(--text-main)', fontFamily: 'var(--font-sans)' }}>
+                        {hosp.name}
+                      </h3>
+                      <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                        Tertiary Care Hospital & Research Center · {hosp.city}
+                      </div>
+                      {/* Star Rating Row */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
+                          ★★★★★
+                        </span>
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-body)' }}>
+                          4.9
+                        </span>
+                        <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                          (650+ verified patient reviews)
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <span
-                    style={{
-                      fontSize: '11px',
-                      fontWeight: '800',
-                      color: 'var(--forest-700)',
-                      backgroundColor: 'var(--canvas-bg)',
-                      padding: '4px 10px',
-                      borderRadius: 'var(--radius-pill)',
-                    }}
-                  >
-                    {hosp.city}
-                  </span>
-                </div>
 
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
-                  {hosp.name}
-                </h3>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 14px 0', lineHeight: '1.4' }}>
-                  {hosp.address}
-                </p>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
-                  {hosp.departments?.slice(0, 3).map((dep, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        fontSize: '10.5px',
-                        fontWeight: '700',
-                        color: 'var(--text-body)',
-                        backgroundColor: 'var(--canvas-bg)',
-                        padding: '3px 8px',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      {dep}
+                  {/* Availability Badges: Completely consistent across all hospital cards */}
+                  <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#D1FAE5', color: '#065F46', padding: '3px 9px', borderRadius: '6px' }}>
+                      24/7 Emergency Active
                     </span>
-                  ))}
-                  {hosp.beds && (
-                    <span style={{ fontSize: '10.5px', fontWeight: '700', color: 'var(--forest-700)' }}>
-                      · {hosp.beds}
+                    <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '3px 9px', borderRadius: '6px' }}>
+                      PMC Accredited Network
                     </span>
-                  )}
-                </div>
+                  </div>
 
-                <div style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <a
-                    href={`tel:${hosp.emergencyHelpline || hosp.phone}`}
-                    style={{ fontSize: '11.5px', color: '#DC2626', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
-                  >
-                    <Phone size={13} />
-                    <span>ER: {hosp.emergencyHelpline || hosp.phone}</span>
-                  </a>
+                  {/* Highlights / Departments Snippet */}
+                  <div style={{
+                    fontSize: '12.5px',
+                    color: 'var(--text-body)',
+                    fontStyle: 'italic',
+                    backgroundColor: 'var(--canvas-bg)',
+                    padding: '10px 13px',
+                    borderRadius: '10px',
+                    marginBottom: '12px',
+                    lineHeight: '1.5',
+                    borderLeft: '3px solid var(--lime-accent)',
+                  }}>
+                    "{hosp.departments?.slice(0, 4).join(', ')} · Equipped with modern ICU/CCU, 24/7 diagnostics and priority MedConnect check-in."
+                  </div>
 
+                  {/* Facility Details / Key Specs */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <div>
+                      <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '2px' }}>
+                        Capacity & Emergency
+                      </div>
+                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                        {hosp.beds || '400+ Beds'} · {hosp.activeDoctors || '35+'} Specialists
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {['Emergency', 'Cardiology', 'OPD Clinic'].map((dep) => (
+                        <span
+                          key={dep}
+                          style={{
+                            fontSize: '10.5px', fontWeight: '700',
+                            color: 'var(--forest-800)',
+                            border: '1.5px solid var(--border-strong)',
+                            borderRadius: '8px',
+                            padding: '4px 8px',
+                            backgroundColor: '#fff',
+                            fontFamily: 'var(--font-sans)',
+                          }}
+                        >
+                          {dep}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
                   <button
                     type="button"
-                    style={{ fontSize: '12px', fontWeight: '700', color: 'var(--forest-800)', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    onClick={() => setSelectedHospitalModal(hosp)}
+                    onClick={() => {
+                      scrollToSection('doctors');
+                      showToast(`Showing specialists affiliated with ${hosp.name}`, 'info');
+                    }}
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'var(--forest-800)',
+                      color: '#FFFFFF',
+                      padding: '11px',
+                      borderRadius: '10px',
+                      fontSize: '13.5px',
+                      fontWeight: '800',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s',
+                      marginBottom: '8px',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
                   >
-                    <span>Facility Info</span>
-                    <ArrowRight size={13} />
+                    Book OPD Visit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedHospitalModal(hosp)}
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'transparent',
+                      color: 'var(--forest-800)',
+                      padding: '9px',
+                      borderRadius: '10px',
+                      fontSize: '12.5px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      border: '1.5px solid var(--border-strong)',
+                      transition: 'all 0.15s',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--canvas-bg)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  >
+                    View Hospital Info
                   </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -2242,7 +2506,7 @@ export default function Landing() {
                   cursor: 'pointer',
                 }}
               >
-                Hospital OPD & Fees
+                Hospital OPD & Timings
               </button>
 
               <button
@@ -2341,8 +2605,8 @@ export default function Landing() {
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Fee</span>
-                          <b style={{ color: 'var(--forest-800)', fontSize: '16px' }}>Rs. {p.fee?.toLocaleString()}</b>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Consultation Status</span>
+                          <span style={{ color: 'var(--forest-800)', fontSize: '13px', fontWeight: '800' }}>Slots Open</span>
                         </div>
                       </div>
                     ))}
