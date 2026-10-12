@@ -5,13 +5,14 @@ import { X, RotateCcw, Check, User, Phone, Mail, MapPin } from 'lucide-react';
 export default function EditDemoDataModal() {
   const { isDemoDataModalOpen, setIsDemoDataModalOpen, patientUser, setPatientUser, resetDemoData } = useDemo();
   
+  const patient = patientUser || {};
   const [formData, setFormData] = useState({
-    name: patientUser.name,
-    phone: patientUser.phone,
-    email: patientUser.email,
-    city: patientUser.city,
-    age: patientUser.age,
-    bloodGroup: patientUser.bloodGroup,
+    name: patient.name || 'Alex Khan',
+    phone: patient.phone || '+92 300 1234567',
+    email: patient.email || 'alex.khan@medconnect.pk',
+    city: patient.city || 'Lahore',
+    age: patient.age || 29,
+    bloodGroup: patient.bloodGroup || 'B+',
   });
 
   if (!isDemoDataModalOpen) return null;

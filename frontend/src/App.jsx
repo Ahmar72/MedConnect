@@ -19,51 +19,204 @@ import {
 import {
   AdminDashboard,
   AdminDoctorsPage,
+  AdminPatientsPage,
   AdminBranchesPage,
   AdminQueuePage,
   AdminReportsPage,
 } from './features/admin/pages';
 
+import ProtectedRoute from './shared/components/ProtectedRoute';
+
 export default function App() {
   return (
     <DemoProvider>
       <Routes>
-        {/* Exact Canva Interactive Demo Entry */}
+        {/* Landing Page (Public Discovery & Information Center) */}
         <Route path="/" element={<Landing />} />
 
-        {/* Auth Previews matching Canva Sidebar */}
+        {/* Authentication (Entry via Login, Verified Signup, Password Reset) */}
         <Route path="/login" element={<Auth type="login" />} />
         <Route path="/signup" element={<Auth type="signup" />} />
         <Route path="/mfa" element={<MFA />} />
         <Route path="/reset" element={<Auth type="reset" />} />
 
-        {/* Patient Role (Full Oladoc Healthcare Flow) */}
-        <Route path="/patient" element={<PatientHome />} />
+        {/* Public Doctor Discovery */}
         <Route path="/doctors" element={<DoctorListingPage />} />
         <Route path="/doctors/:id" element={<DoctorProfilePage />} />
-        <Route path="/book" element={<BookingFlowPage />} />
-        <Route path="/video" element={<TelehealthWaitingRoom />} />
-        <Route path="/video/:id" element={<TelehealthWaitingRoom />} />
-        <Route path="/appointments" element={<PatientDashboard />} />
-        <Route path="/appointments/:id" element={<PatientDashboard />} />
-        <Route path="/notifications" element={<PatientDashboard />} />
-        <Route path="/settings" element={<PatientDashboard />} />
 
-        {/* Doctor Role (Interconnected Clinician Workspace) */}
-        <Route path="/doctor" element={<DoctorDashboard />} />
-        <Route path="/doctor/consultation/:id" element={<DoctorConsultationRoom />} />
-        <Route path="/doctor/schedule" element={<DoctorSchedulePage />} />
-        <Route path="/doctor/patients" element={<DoctorPatientsPage />} />
-        <Route path="/doctor/earnings" element={<DoctorEarningsPage />} />
+        {/* Patient Role (Strictly Protected: Only Verified Patients) */}
+        <Route
+          path="/patient"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/book"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <BookingFlowPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/video"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <TelehealthWaitingRoom />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/video/:id"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <TelehealthWaitingRoom />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appointments"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appointments/:id"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Admin Role (Interconnected Operations & Facilities Console) */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/doctors" element={<AdminDoctorsPage />} />
-        <Route path="/admin/branches" element={<AdminBranchesPage />} />
-        <Route path="/admin/queue" element={<AdminQueuePage />} />
-        <Route path="/admin/booking" element={<AdminQueuePage />} />
-        <Route path="/admin/reports" element={<AdminReportsPage />} />
-        <Route path="/admin/:section" element={<AdminDashboard />} />
+        {/* Doctor Role (Strictly Protected: Only Verified Clinicians) */}
+        <Route
+          path="/doctor"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/consultation/:id"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorConsultationRoom />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/schedule"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorSchedulePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/patients"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorPatientsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/earnings"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorEarningsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Role (Strictly Protected: Only Operations & Hospital Administrators) */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/doctors"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDoctorsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/patients"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminPatientsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/branches"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminBranchesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/queue"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminQueuePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/booking"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminQueuePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/:section"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

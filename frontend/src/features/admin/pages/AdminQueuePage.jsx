@@ -17,7 +17,7 @@ import {
 
 export default function AdminQueuePage() {
   const navigate = useNavigate();
-  const { appointments, cancelAppointment, showToast } = useDemo();
+  const { appointments, confirmAppointmentByDoctor, cancelAppointment, showToast } = useDemo();
 
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('All');
@@ -159,13 +159,28 @@ export default function AdminQueuePage() {
                   </span>
                 </td>
                 <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                  <button
-                    type="button"
-                    style={{ fontSize: '11.5px', color: '#DC2626', fontWeight: '700', padding: '4px 8px' }}
-                    onClick={() => cancelAppointment(apt.id)}
-                  >
-                    Cancel Booking
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    {apt.status === 'Pending Doctor Confirmation' && (
+                      <button
+                        type="button"
+                        className="btn-lime-pill"
+                        style={{ padding: '4px 10px', fontSize: '11.5px' }}
+                        onClick={() => {
+                          confirmAppointmentByDoctor(apt.id);
+                          showToast(`Slot #${apt.id} confirmed by Admin override.`, 'success');
+                        }}
+                      >
+                        Confirm Slot
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      style={{ fontSize: '11.5px', color: '#DC2626', fontWeight: '700', padding: '4px 8px' }}
+                      onClick={() => cancelAppointment(apt.id)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
