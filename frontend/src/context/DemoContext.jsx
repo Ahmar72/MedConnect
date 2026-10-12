@@ -149,6 +149,89 @@ export function DemoProvider({ children }) {
 
   const [toast, setToast] = useState(null);
 
+  const [doctorQueue, setDoctorQueue] = useState([
+    {
+      id: 'apt-101',
+      patientName: 'Alex Khan',
+      mrn: 'MC-89241',
+      age: 29,
+      gender: 'Male',
+      type: 'Video Consultation',
+      time: '4:30 PM',
+      reason: 'Seasonal Allergic Rhinitis & Routine Review',
+      status: 'Waiting', // 'Waiting' | 'In Consultation' | 'Completed'
+      fee: 1500,
+      paymentStatus: 'Paid via JazzCash',
+      phone: '+92 300 1234567',
+      history: 'Mild asthma in childhood, no known drug allergies.',
+    },
+    {
+      id: 'apt-104',
+      patientName: 'Madiha Tariq',
+      mrn: 'MC-77190',
+      age: 32,
+      gender: 'Female',
+      type: 'Video Consultation',
+      time: '5:00 PM',
+      reason: 'Post-viral fatigue & Vitamin D follow-up',
+      status: 'Scheduled',
+      fee: 1500,
+      paymentStatus: 'Paid via EasyPaisa',
+      phone: '+92 321 4455667',
+      history: 'PCOS history, on Metformin 500mg BD.',
+    },
+    {
+      id: 'apt-105',
+      patientName: 'Zainab Bibi',
+      mrn: 'MC-65239',
+      age: 45,
+      gender: 'Female',
+      type: 'In-Clinic (Downtown)',
+      time: '5:30 PM',
+      reason: 'Blood pressure spike (145/95 mmHg) check-up',
+      status: 'Checked-in at Desk',
+      fee: 2000,
+      paymentStatus: 'Pay at Clinic',
+      phone: '+92 333 8899112',
+      history: 'Essential hypertension for 4 years.',
+    },
+    {
+      id: 'apt-106',
+      patientName: 'Noman Bashir',
+      mrn: 'MC-44912',
+      age: 38,
+      gender: 'Male',
+      type: 'In-Clinic (Downtown)',
+      time: '6:15 PM',
+      reason: 'Chronic Acid Reflux & Bloating review',
+      status: 'Scheduled',
+      fee: 2000,
+      paymentStatus: 'Pay at Clinic',
+      phone: '+92 301 7788990',
+      history: 'GERD, endoscopy done in 2024.',
+    },
+  ]);
+
+  const issuePrescription = (newRx) => {
+    const rxItem = {
+      id: `rx-${Date.now().toString().slice(-3)}`,
+      doctorName: 'Dr. Maya Patel',
+      specialty: 'General Physician',
+      date: 'Today, Oct 12, 2026',
+      ...newRx,
+    };
+    setPrescriptions((prev) => [rxItem, ...prev]);
+    showToast(`Prescription #${rxItem.id} issued and sent to patient portal!`, 'success');
+    return rxItem;
+  };
+
+  const updateQueueStatus = (aptId, newStatus) => {
+    setDoctorQueue((prev) =>
+      prev.map((item) => (item.id === aptId ? { ...item, status: newStatus } : item))
+    );
+    showToast(`Patient status updated to '${newStatus}'.`, 'info');
+  };
+
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => {
@@ -221,6 +304,10 @@ export function DemoProvider({ children }) {
         setPatientUser,
         toast,
         showToast,
+        doctorQueue,
+        setDoctorQueue,
+        issuePrescription,
+        updateQueueStatus,
         bookAppointment,
         cancelAppointment,
         rescheduleAppointment,

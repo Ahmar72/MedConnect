@@ -9,7 +9,13 @@ import DoctorProfilePage from './features/patient/pages/DoctorProfilePage';
 import BookingFlowPage from './features/patient/pages/BookingFlowPage';
 import TelehealthWaitingRoom from './features/patient/pages/TelehealthWaitingRoom';
 import PatientDashboard from './features/patient/pages/PatientDashboard';
-import { DoctorDashboard, DoctorWorkspace } from './features/doctor/pages';
+import {
+  DoctorDashboard,
+  DoctorConsultationRoom,
+  DoctorSchedulePage,
+  DoctorPatientsPage,
+  DoctorEarningsPage,
+} from './features/doctor/pages';
 import { AdminDashboard, AdminTable } from './features/admin/pages';
 
 export default function App() {
@@ -37,9 +43,12 @@ export default function App() {
         <Route path="/notifications" element={<PatientDashboard />} />
         <Route path="/settings" element={<PatientDashboard />} />
 
-        {/* Doctor Role (Interconnected Quick Switch) */}
+        {/* Doctor Role (Interconnected Clinician Workspace) */}
         <Route path="/doctor" element={<DoctorDashboard />} />
-        <Route path="/doctor/:section" element={<DoctorWorkspace />} />
+        <Route path="/doctor/consultation/:id" element={<DoctorConsultationRoom />} />
+        <Route path="/doctor/schedule" element={<DoctorSchedulePage />} />
+        <Route path="/doctor/patients" element={<DoctorPatientsPage />} />
+        <Route path="/doctor/earnings" element={<DoctorEarningsPage />} />
 
         {/* Admin Role (Interconnected Quick Switch) */}
         <Route path="/admin" element={<AdminDashboard />} />
