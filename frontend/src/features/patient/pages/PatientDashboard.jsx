@@ -20,6 +20,13 @@ import {
   ShieldCheck,
   User,
   Plus,
+  Edit3,
+  Save,
+  Phone,
+  Mail,
+  MapPin,
+  Heart,
+  ShieldAlert,
 } from 'lucide-react';
 
 export default function PatientDashboard() {
@@ -27,6 +34,7 @@ export default function PatientDashboard() {
   const navigate = useNavigate();
   const {
     patientUser,
+    editPatientProfile,
     appointments,
     prescriptions,
     labReports,
@@ -44,6 +52,30 @@ export default function PatientDashboard() {
   const [newTime, setNewTime] = useState('5:30 PM');
   const [cancelAptId, setCancelAptId] = useState(null);
   const [viewRx, setViewRx] = useState(null);
+
+  // Profile Editor State
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    name: patientUser?.name || 'Alex Khan',
+    phone: patientUser?.phone || '+92 300 1234567',
+    email: patientUser?.email || 'alex.khan@medconnect.pk',
+    city: patientUser?.city || 'Lahore',
+    address: patientUser?.address || 'House 42, Street 7, Cavalry Ground, Lahore',
+    bloodGroup: patientUser?.bloodGroup || 'O+',
+    age: patientUser?.age || 32,
+    gender: patientUser?.gender || 'Male',
+    allergies: patientUser?.allergies || 'Penicillin, Dust mites',
+    conditions: patientUser?.conditions || 'Mild Hypertension (Under control)',
+    emergencyContactName: patientUser?.emergencyContactName || 'Fatima Khan',
+    emergencyContactPhone: patientUser?.emergencyContactPhone || '+92 300 9876543',
+  });
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    editPatientProfile(patientUser.id, profileForm);
+    setIsEditingProfile(false);
+    showToast('Your health profile has been successfully updated.', 'success');
+  };
 
   const upcomingAppointments = appointments.filter((a) => a.status === 'Confirmed' || a.status === 'Rescheduled');
   const pastAppointments = appointments.filter((a) => a.status === 'Completed' || a.status === 'Cancelled');
@@ -83,15 +115,27 @@ export default function PatientDashboard() {
             </div>
           </div>
 
-          <button
-            type="button"
-            className="btn-lime-pill"
-            onClick={() => navigate('/doctors')}
-            style={{ padding: '12px 22px', fontSize: '13.5px' }}
-          >
-            <Plus size={16} />
-            <span>Book New Appointment</span>
-          </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="btn-white-capsule"
+              onClick={() => handleSetTab('profile')}
+              style={{ padding: '11px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <User size={15} />
+              <span>My Profile</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn-lime-pill"
+              onClick={() => navigate('/doctors')}
+              style={{ padding: '12px 22px', fontSize: '13.5px' }}
+            >
+              <Plus size={16} />
+              <span>Book New Appointment</span>
+            </button>
+          </div>
         </div>
 
         {/* Dashboard Tabs Bar */}
@@ -130,6 +174,15 @@ export default function PatientDashboard() {
           >
             <TestTube2 size={16} />
             <span>Lab Reports ({labReports.length})</span>
+          </button>
+
+          <button
+            type="button"
+            className={`tab-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => handleSetTab('profile')}
+          >
+            <User size={16} />
+            <span>My Profile</span>
           </button>
         </div>
 
@@ -172,8 +225,21 @@ export default function PatientDashboard() {
 
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                        <span className="badge-pmdc" style={{ fontSize: '10px' }}>
-                          {apt.status}
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            padding: '2px 8px',
+                            borderRadius: 'var(--radius-pill)',
+                            backgroundColor: apt.status.includes('Pending')
+                              ? 'var(--badge-amber-bg)'
+                              : 'var(--badge-green-bg)',
+                            color: apt.status.includes('Pending')
+                              ? 'var(--badge-amber-text)'
+                              : 'var(--badge-green-text)',
+                          }}
+                        >
+                          {apt.status.includes('Pending') ? '⏳ Awaiting Doctor Confirmation' : `✓ ${apt.status}`}
                         </span>
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                           ID: #{apt.id}
@@ -409,6 +475,355 @@ export default function PatientDashboard() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* TAB 5: MY HEALTH PROFILE (VIEW & EDITABLE PROFILE) */}
+        {activeTab === 'profile' && (
+          <div className="my-profile-container">
+            {/* Header Profile Summary Card matching Image 2 style */}
+            <div className="my-profile-header-card">
+              <div className="my-profile-user-info">
+                <div className="my-profile-avatar-large">
+                  {patientUser?.name?.slice(0, 2).toUpperCase() || 'AK'}
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <h2 style={{ fontSize: '22px', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>
+                      {patientUser?.name}
+                    </h2>
+                    <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#DCFCE7', color: '#166534', padding: '3px 10px', borderRadius: '9999px' }}>
+                      MRN: {patientUser?.mrn || 'MC-90241'}
+                    </span>
+                    <span style={{ fontSize: '11.5px', fontWeight: '700', backgroundColor: '#FEE2E2', color: '#991B1B', padding: '3px 9px', borderRadius: '9999px' }}>
+                      Blood: {patientUser?.bloodGroup || 'O+'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                    {patientUser?.city} · {patientUser?.phone} · {patientUser?.email || 'patient@medconnect.pk'}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className={isEditingProfile ? 'btn-white-capsule' : 'btn-lime-pill'}
+                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                style={{ padding: '10px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Edit3 size={15} />
+                <span>{isEditingProfile ? 'Close Editor' : 'Edit Profile'}</span>
+              </button>
+            </div>
+
+            {/* Profile Content View / Edit Mode */}
+            {isEditingProfile ? (
+              <form
+                onSubmit={handleSaveProfile}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '20px',
+                  border: '1px solid var(--border-subtle)',
+                  padding: '32px',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--forest-800)' }}>
+                      Edit Patient Health Profile
+                    </h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                      Update your contact details, clinical indicators, and emergency notifications.
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--forest-700)', backgroundColor: 'var(--canvas-bg)', padding: '4px 10px', borderRadius: '6px' }}>
+                    Auto-saved to MedConnect Record
+                  </span>
+                </div>
+
+                <div className="profile-form-grid" style={{ marginBottom: '24px' }}>
+                  <div className="profile-input-group">
+                    <label>Full Patient Name</label>
+                    <input
+                      type="text"
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Mobile Number (SMS Updates)</label>
+                    <input
+                      type="text"
+                      value={profileForm.phone}
+                      onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Email Address</label>
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Residential City</label>
+                    <select
+                      value={profileForm.city}
+                      onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })}
+                    >
+                      <option value="Lahore">Lahore</option>
+                      <option value="Karachi">Karachi</option>
+                      <option value="Islamabad">Islamabad</option>
+                      <option value="Rawalpindi">Rawalpindi</option>
+                      <option value="Faisalabad">Faisalabad</option>
+                      <option value="Multan">Multan</option>
+                      <option value="Peshawar">Peshawar</option>
+                      <option value="Quetta">Quetta</option>
+                    </select>
+                  </div>
+
+                  <div className="profile-input-group" style={{ gridColumn: 'span 2' }}>
+                    <label>Home Street Address</label>
+                    <input
+                      type="text"
+                      value={profileForm.address}
+                      onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Blood Group</label>
+                    <select
+                      value={profileForm.bloodGroup}
+                      onChange={(e) => setProfileForm({ ...profileForm, bloodGroup: e.target.value })}
+                    >
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                    </select>
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Age & Gender</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <input
+                        type="number"
+                        placeholder="Age"
+                        value={profileForm.age}
+                        onChange={(e) => setProfileForm({ ...profileForm, age: Number(e.target.value) })}
+                      />
+                      <select
+                        value={profileForm.gender}
+                        onChange={(e) => setProfileForm({ ...profileForm, gender: e.target.value })}
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Known Allergies</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Penicillin, Peanuts, Sulfa"
+                      value={profileForm.allergies}
+                      onChange={(e) => setProfileForm({ ...profileForm, allergies: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Chronic Medical Conditions</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Hypertension, Type 2 Diabetes"
+                      value={profileForm.conditions}
+                      onChange={(e) => setProfileForm({ ...profileForm, conditions: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Emergency Contact Person</label>
+                    <input
+                      type="text"
+                      placeholder="Name (e.g. Spouse / Parent)"
+                      value={profileForm.emergencyContactName}
+                      onChange={(e) => setProfileForm({ ...profileForm, emergencyContactName: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Emergency Contact Phone</label>
+                    <input
+                      type="text"
+                      value={profileForm.emergencyContactPhone}
+                      onChange={(e) => setProfileForm({ ...profileForm, emergencyContactPhone: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '20px' }}>
+                  <button
+                    type="button"
+                    className="btn-white-capsule"
+                    onClick={() => setIsEditingProfile(false)}
+                    style={{ padding: '10px 20px', fontSize: '13px' }}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="btn-lime-pill"
+                    style={{ padding: '10px 24px', fontSize: '13.5px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <Save size={16} />
+                    <span>Save Profile Changes</span>
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                {/* Card 1: Contact Details */}
+                <div
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border-subtle)',
+                    padding: '28px',
+                    boxShadow: 'var(--shadow-sm)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'rgba(197, 225, 165, 0.35)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center' }}>
+                      <Phone size={20} />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>
+                        Contact Details
+                      </h3>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Verified Telephony</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px' }}>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Primary Phone</span>
+                      <b>{patientUser?.phone || '+92 300 1234567'}</b>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Email Address</span>
+                      <b>{patientUser?.email || 'alex.khan@medconnect.pk'}</b>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Residential City</span>
+                      <b>{patientUser?.city || 'Lahore'}</b>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Home Address</span>
+                      <p style={{ margin: '2px 0 0 0', color: 'var(--text-body)' }}>{patientUser?.address || 'House 42, Street 7, Cavalry Ground, Lahore'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Medical Baseline */}
+                <div
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border-subtle)',
+                    padding: '28px',
+                    boxShadow: 'var(--shadow-sm)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#FEE2E2', color: '#991B1B', display: 'grid', placeItems: 'center' }}>
+                      <Heart size={20} />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>
+                        Clinical Baseline
+                      </h3>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Medical Profile</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Blood Group</span>
+                        <b style={{ color: '#991B1B', fontSize: '15px' }}>{patientUser?.bloodGroup || 'O+'}</b>
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Age / Gender</span>
+                        <b>{patientUser?.age || 32} yrs · {patientUser?.gender || 'Male'}</b>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Known Allergies</span>
+                      <span style={{ color: '#DC2626', fontWeight: '700' }}>{patientUser?.allergies || 'Penicillin, Dust mites'}</span>
+                    </div>
+
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Chronic Conditions</span>
+                      <b>{patientUser?.conditions || 'Mild Hypertension (Under control)'}</b>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 3: Emergency Contacts */}
+                <div
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border-subtle)',
+                    padding: '28px',
+                    boxShadow: 'var(--shadow-sm)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#FEF3C7', color: '#B45309', display: 'grid', placeItems: 'center' }}>
+                      <ShieldAlert size={20} />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>
+                        Emergency Notification
+                      </h3>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Next of Kin</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px' }}>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Contact Person</span>
+                      <b>{patientUser?.emergencyContactName || 'Fatima Khan (Spouse)'}</b>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block' }}>Emergency Phone</span>
+                      <b style={{ color: 'var(--forest-800)' }}>{patientUser?.emergencyContactPhone || '+92 300 9876543'}</b>
+                    </div>
+                    <div style={{ backgroundColor: 'var(--canvas-bg)', padding: '12px', borderRadius: '12px', fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                      🔒 Medical data is encrypted and securely shared only with doctors confirming your consultations.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

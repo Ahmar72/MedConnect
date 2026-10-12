@@ -44,7 +44,8 @@ export default function DoctorListingPage() {
   const filteredDoctors = useMemo(() => {
     if (previewState === 'empty') return [];
 
-    let list = [...doctorsList];
+    // Only show approved/verified doctors to patients
+    let list = doctorsList.filter((doc) => doc.status === 'verified' || doc.verified === true);
 
     // Search query filter
     if (searchQuery.trim()) {

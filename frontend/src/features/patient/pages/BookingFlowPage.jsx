@@ -644,11 +644,11 @@ export default function BookingFlowPage() {
             </div>
 
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '0 0 10px 0', color: 'var(--text-main)' }}>
-              Appointment Confirmed!
+              Appointment Slot Requested!
             </h2>
 
             <p style={{ fontSize: '14.5px', color: 'var(--text-muted)', maxWidth: '520px', margin: '0 auto 24px auto', lineHeight: '1.6' }}>
-              Your appointment with <b>{doctor.name}</b> has been booked for <b>{confirmedBooking.date} at {confirmedBooking.time}</b>. An SMS and WhatsApp receipt has been dispatched to <b>{confirmedBooking.patientPhone}</b>.
+              Your appointment request with <b>{doctor.name}</b> for <b>{confirmedBooking.date} at {confirmedBooking.time}</b> has been queued. A notification has been sent to the doctor to confirm the consultation.
             </p>
 
             {/* Quick Summary Pill */}
@@ -677,7 +677,9 @@ export default function BookingFlowPage() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Status:</span>
-                <span style={{ color: '#2E7D32', fontWeight: '700' }}>✓ Confirmed & Queued</span>
+                <span style={{ color: '#B45309', fontWeight: '700' }}>
+                  ⏳ Awaiting Doctor Confirmation
+                </span>
               </div>
             </div>
 
