@@ -37,6 +37,7 @@ import {
   HelpCircle,
   ExternalLink,
   ChevronRight,
+  ChevronLeft,
   UserCheck,
   BadgeAlert,
   KeyRound,
@@ -65,6 +66,12 @@ export default function Landing() {
   const [consultationTypeFilter, setConsultationTypeFilter] = useState('all'); // 'all' | 'clinic' | 'video'
   const [howItWorksTab, setHowItWorksTab] = useState('patient'); // 'patient' | 'doctor'
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
+
+  // Sesame Carousel & Filter State
+  const [doctorCarouselIdx, setDoctorCarouselIdx] = useState(0);
+  const [hospitalCarouselIdx, setHospitalCarouselIdx] = useState(0);
+  const [withinTwoHoursFilter, setWithinTwoHoursFilter] = useState(false);
+  const [emergencyOnlyFilter, setEmergencyOnlyFilter] = useState(false);
 
   // In-page Inspection Modals (Keep user on landing page for complete info!)
   const [selectedDoctorModal, setSelectedDoctorModal] = useState(null);
@@ -121,10 +128,38 @@ export default function Landing() {
         consultationTypeFilter === 'all' ||
         (consultationTypeFilter === 'video' && doc.videoFee) ||
         (consultationTypeFilter === 'clinic' && doc.inClinicFee);
+      const matchesWithinTwoHours = !withinTwoHoursFilter || doc.onlineNow;
 
-      return matchesSpecialty && matchesSearch && matchesType;
+      return matchesSpecialty && matchesSearch && matchesType && matchesWithinTwoHours;
     });
-  }, [activeDoctors, selectedSpecialtyFilter, searchQuery, consultationTypeFilter]);
+  }, [activeDoctors, selectedSpecialtyFilter, searchQuery, consultationTypeFilter, withinTwoHoursFilter]);
+
+  // Filtered Hospitals Showcase
+  const filteredHospitals = useMemo(() => {
+    return branchesList.filter((hosp) => {
+      if (emergencyOnlyFilter) {
+        return hosp.timings?.toLowerCase().includes('24/7') || hosp.departments?.includes('Emergency');
+      }
+      return true;
+    });
+  }, [branchesList, emergencyOnlyFilter]);
+
+  // Carousel Navigation Helpers (3 visible cards on desktop)
+  const maxDocIndex = Math.max(0, filteredDoctors.length - 3);
+  const nextDoctorSlide = () => {
+    setDoctorCarouselIdx((prev) => (prev >= maxDocIndex ? 0 : prev + 1));
+  };
+  const prevDoctorSlide = () => {
+    setDoctorCarouselIdx((prev) => (prev <= 0 ? maxDocIndex : prev - 1));
+  };
+
+  const maxHospIndex = Math.max(0, filteredHospitals.length - 3);
+  const nextHospitalSlide = () => {
+    setHospitalCarouselIdx((prev) => (prev >= maxHospIndex ? 0 : prev + 1));
+  };
+  const prevHospitalSlide = () => {
+    setHospitalCarouselIdx((prev) => (prev <= 0 ? maxHospIndex : prev - 1));
+  };
 
   // Search Autocomplete Suggestions
   const searchSuggestions = useMemo(() => {
@@ -150,12 +185,11 @@ export default function Landing() {
     }
   };
 
-  // Scroll Reveal & Focal Spotlight Sequence Observer
+  // Vertical Sequence Scroll Entrance Observer
   useEffect(() => {
     const cards = document.querySelectorAll('.scroll-seq-card');
     if (!cards.length) return;
 
-    // 1. Entrance animation observer: reveals cards in sequence with stagger
     const entranceObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -168,46 +202,14 @@ export default function Landing() {
     );
 
     cards.forEach((card, index) => {
-      card.style.transitionDelay = `${(index % 4) * 75}ms`;
+      card.style.transitionDelay = `${(index % 4) * 80}ms`;
       entranceObserver.observe(card);
     });
 
-    // 2. Focal sequence observer: as user scrolls down, focus on one card at a time in sequence
-    const handleScrollFocal = () => {
-      const windowHeight = window.innerHeight;
-      const focalZoneY = windowHeight * 0.45;
-      let closestCard = null;
-      let minDistance = Infinity;
-
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        if (rect.bottom > 80 && rect.top < windowHeight - 80) {
-          const cardCenterY = rect.top + rect.height / 2;
-          const dist = Math.abs(cardCenterY - focalZoneY);
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestCard = card;
-          }
-        }
-      });
-
-      cards.forEach((card) => {
-        if (card === closestCard) {
-          card.classList.add('is-card-focal');
-        } else {
-          card.classList.remove('is-card-focal');
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScrollFocal, { passive: true });
-    handleScrollFocal();
-
     return () => {
       entranceObserver.disconnect();
-      window.removeEventListener('scroll', handleScrollFocal);
     };
-  }, [filteredDoctors]);
+  }, [filteredDoctors, filteredHospitals]);
 
   // Handle Booking Click with Auth Check
   const handleBookingClick = (doctor) => {
@@ -648,114 +650,87 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* RIGHT SIDE: Visual Showcase Card & Liability Guarantee */}
-          <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '14px', paddingLeft: '40px', flexShrink: 0 }}>
-            {/* Physician Showcase Card matching Sesame style */}
+          {/* RIGHT SIDE: Real Doctor Medical Portrait Picture & Liability Trust Overlay */}
+          <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.22)',
-              borderRadius: '20px',
-              padding: '20px 22px',
-              width: '260px',
-              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.22)',
+              position: 'relative',
+              width: '380px',
+              height: '420px',
+              borderRadius: '28px',
+              overflow: 'hidden',
+              boxShadow: '0 24px 50px rgba(0,0,0,0.35)',
+              border: '3px solid rgba(255, 255, 255, 0.25)',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <div style={{
-                  width: '56px', height: '56px', borderRadius: '50%',
-                  overflow: 'hidden', flexShrink: 0,
-                  border: '2.5px solid var(--lime-accent)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=200&q=80"
-                    alt="Dr. Amina Shah"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-                <div>
-                  <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#fff' }}>Dr. Amina Shah</div>
-                  <div style={{ fontSize: '11px', color: 'var(--lime-accent)', fontWeight: '600' }}>Family Medicine Consultant</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>★★★★★ 4.9 (310 reviews)</div>
-                </div>
-              </div>
+              {/* Doctor Real Image */}
+              <img
+                src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80"
+                alt="PMDC Certified Medical Specialist"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'top center',
+                  display: 'block',
+                }}
+              />
+
+              {/* Overlaid Live Status Pill at Top Right */}
               <div style={{
-                fontSize: '11.5px',
-                color: 'rgba(255,255,255,0.85)',
-                fontStyle: 'italic',
-                marginBottom: '12px',
-                lineHeight: '1.45',
-                backgroundColor: 'rgba(0,0,0,0.15)',
-                padding: '8px 10px',
-                borderRadius: '8px',
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                backgroundColor: 'rgba(14, 56, 44, 0.88)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(197, 225, 165, 0.6)',
+                borderRadius: 'var(--radius-pill)',
+                padding: '6px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#FFFFFF',
+                fontSize: '11px',
+                fontWeight: '700',
               }}>
-                "Very thorough and empathetic doctor. Explained my routine test results in detail."
+                <span className="live-pulse-dot" style={{ backgroundColor: 'var(--lime-accent)' }}></span>
+                <span>Online Available Today</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>Next Available</div>
-                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--lime-accent)' }}>Today at 3:00 PM</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => scrollToSection('doctors')}
-                  style={{
-                    backgroundColor: 'var(--lime-accent)',
-                    color: 'var(--forest-800)',
-                    padding: '7px 14px',
-                    borderRadius: '8px',
-                    fontSize: '11.5px',
+
+              {/* Overlaid Doctor Credentials & Medical Liability Card at Bottom */}
+              <div style={{
+                position: 'absolute',
+                bottom: '16px',
+                left: '16px',
+                right: '16px',
+                backgroundColor: 'rgba(14, 56, 44, 0.92)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.22)',
+                borderRadius: '18px',
+                padding: '14px 18px',
+                color: '#FFFFFF',
+                boxShadow: '0 10px 28px rgba(0,0,0,0.35)',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                  <div>
+                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>Dr. Haris Malik, FCPS</div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--lime-accent)', fontWeight: '600' }}>Consultant Family Physician · 12 yrs exp</div>
+                  </div>
+                  <div style={{
+                    backgroundColor: 'rgba(197, 225, 165, 0.22)',
+                    color: 'var(--lime-accent)',
+                    fontSize: '11px',
                     fontWeight: '800',
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-sans)',
-                    border: 'none',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--lime-accent-hover)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--lime-accent)')}
-                >
-                  Book visit
-                </button>
-              </div>
-            </div>
-
-            {/* Medical Liability & Credential Verification Badge */}
-            <div style={{
-              backgroundColor: 'rgba(197, 225, 165, 0.16)',
-              border: '1px solid rgba(197, 225, 165, 0.45)',
-              borderRadius: '14px',
-              padding: '12px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              width: '260px',
-              backdropFilter: 'blur(8px)',
-            }}>
-              <ShieldCheck size={22} color="var(--lime-accent)" style={{ flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: '800', color: '#fff' }}>PMDC Verified & Protected</div>
-                <div style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.3' }}>
-                  Complete medical liability compliance & audited practitioner credentials.
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                  }}>
+                    ★ 4.9
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Instant Telehealth Video Consult Pill */}
-            <div style={{
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '14px',
-              padding: '10px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              width: '260px',
-              backdropFilter: 'blur(8px)',
-            }}>
-              <Video size={18} color="var(--lime-accent)" style={{ flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: '#fff' }}>HD Video Consult in 15 Min</div>
-                <div style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.65)' }}>Encrypted · E-Prescription via SMS</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontSize: '10.5px', color: 'rgba(255,255,255,0.85)' }}>
+                  <ShieldCheck size={14} color="var(--lime-accent)" />
+                  <span>PMDC Reg #39482-P · 100% Medical Liability Covered</span>
+                </div>
               </div>
             </div>
           </div>
@@ -923,443 +898,706 @@ export default function Landing() {
         {/* =========================================================================
             SECTION 4: FEATURED DOCTORS SHOWCASE (EXACT IMAGE 2 CANVA COMPLIANT)
            ========================================================================= */}
-        <section id="doctors" style={{ marginBottom: '56px' }}>
-          <div className="section-header-row" style={{ marginBottom: '24px' }}>
-            <div className="section-heading-wrap">
-              <span className="section-eyebrow">✦ PMDC-VERIFIED SPECIALISTS</span>
-              <h2 className="section-main-heading">Featured Medical Specialists</h2>
-              <p className="section-subheading">
-                Showing {filteredDoctors.length} verified specialists available for in-clinic visits and online consultations
-              </p>
-            </div>
+        <section id="doctors" style={{ marginBottom: '64px' }}>
+          {/* Sesame Section Header with Title, Within 2 Hours Toggle, and See All Link */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '800', color: '#111827', margin: 0, fontFamily: 'var(--font-sans)' }}>
+                Telehealth visit
+              </h2>
 
-            {/* Type Filter Pills */}
-            <div style={{ display: 'flex', gap: '8px' }}>
+              {/* Within 2 Hours Toggle Pill (Sesame Reference) */}
               <button
                 type="button"
-                onClick={() => setConsultationTypeFilter('all')}
+                onClick={() => setWithinTwoHoursFilter(!withinTwoHoursFilter)}
                 style={{
-                  padding: '7px 16px',
-                  borderRadius: 'var(--radius-pill)',
-                  fontSize: '12.5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: withinTwoHoursFilter ? '#5B21B6' : '#FFFFFF',
+                  color: withinTwoHoursFilter ? '#FFFFFF' : '#374151',
+                  border: '1.5px solid',
+                  borderColor: withinTwoHoursFilter ? '#5B21B6' : '#D1D5DB',
+                  padding: '6px 14px',
+                  borderRadius: '9999px',
+                  fontSize: '13px',
                   fontWeight: '700',
-                  border: `1.5px solid ${consultationTypeFilter === 'all' ? 'var(--forest-800)' : 'var(--border-subtle)'}`,
-                  backgroundColor: consultationTypeFilter === 'all' ? 'var(--forest-800)' : '#FFFFFF',
-                  color: consultationTypeFilter === 'all' ? '#FFFFFF' : 'var(--text-main)',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'var(--font-sans)',
                 }}
               >
-                All Consultations
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setConsultationTypeFilter('clinic')}
-                style={{
-                  padding: '7px 16px',
-                  borderRadius: 'var(--radius-pill)',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  border: `1.5px solid ${consultationTypeFilter === 'clinic' ? 'var(--forest-800)' : 'var(--border-subtle)'}`,
-                  backgroundColor: consultationTypeFilter === 'clinic' ? 'var(--forest-800)' : '#FFFFFF',
-                  color: consultationTypeFilter === 'clinic' ? '#FFFFFF' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                🏥 In-Clinic Only
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setConsultationTypeFilter('video')}
-                style={{
-                  padding: '7px 16px',
-                  borderRadius: 'var(--radius-pill)',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  border: `1.5px solid ${consultationTypeFilter === 'video' ? 'var(--forest-800)' : 'var(--border-subtle)'}`,
-                  backgroundColor: consultationTypeFilter === 'video' ? 'var(--forest-800)' : '#FFFFFF',
-                  color: consultationTypeFilter === 'video' ? '#FFFFFF' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                🎥 Video Consult Available
+                <span
+                  style={{
+                    width: '32px',
+                    height: '18px',
+                    borderRadius: '9999px',
+                    backgroundColor: withinTwoHoursFilter ? '#9333EA' : '#D1D5DB',
+                    position: 'relative',
+                    display: 'inline-block',
+                    transition: 'background 0.2s ease',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '2px',
+                      left: withinTwoHoursFilter ? '16px' : '2px',
+                      width: '14px',
+                      height: '14px',
+                      borderRadius: '50%',
+                      backgroundColor: '#FFFFFF',
+                      transition: 'left 0.2s ease',
+                    }}
+                  />
+                </span>
+                <span>Within 2 hours</span>
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedSpecialtyFilter('All');
+                setConsultationTypeFilter('all');
+                setWithinTwoHoursFilter(false);
+              }}
+              style={{
+                fontSize: '14px',
+                fontWeight: '700',
+                color: '#5B21B6',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-sans)',
+              }}
+            >
+              See all
+            </button>
           </div>
 
-          {/* Doctors Grid — Sesame-style matching provided reference */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-            {filteredDoctors.map((doc, idx) => (
-              <div
-                key={doc.id}
-                className="sesame-doc-card scroll-seq-card"
-                data-card-seq={idx}
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: '1px solid var(--border-subtle)',
-                  padding: '20px 22px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0',
-                  boxShadow: 'var(--shadow-sm)',
-                  transition: 'box-shadow 0.2s, transform 0.2s',
-                  cursor: 'default',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                {/* Top Row: Photo + Name/Specialty/Rating */}
-                <div style={{ display: 'flex', gap: '14px', marginBottom: '10px' }}>
-                  {/* Doctor Photo */}
-                  <div style={{ width: '72px', height: '72px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-subtle)', backgroundColor: doc.photoColor || 'var(--forest-800)', display: 'grid', placeItems: 'center' }}>
-                    {doc.photoUrl ? (
-                      <img
-                        src={doc.photoUrl}
-                        alt={doc.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement.innerHTML = `<span style="color:#fff;font-size:20px;font-weight:700;">${doc.initials || doc.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}</span>`;
+          {/* Sesame Carousel Window */}
+          <div className="sesame-carousel-wrap">
+            <div
+              className="sesame-carousel-track"
+              style={{
+                transform: `translateX(-${doctorCarouselIdx * 350}px)`,
+              }}
+            >
+              {filteredDoctors.map((doc, idx) => (
+                <div
+                  key={doc.id}
+                  className="sesame-carousel-card scroll-seq-card"
+                  data-card-seq={idx}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: '1px solid #E5E7EB',
+                    padding: '22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                  }}
+                >
+                  {/* Top Row: Circular Photo + Name + Specialty + Stars */}
+                  <div style={{ display: 'flex', gap: '14px', marginBottom: '12px', alignItems: 'flex-start' }}>
+                    <div
+                      style={{
+                        width: '76px',
+                        height: '76px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                        border: '2px solid #E5E7EB',
+                        backgroundColor: doc.photoColor || 'var(--forest-800)',
+                        display: 'grid',
+                        placeItems: 'center',
+                      }}
+                    >
+                      {doc.photoUrl ? (
+                        <img
+                          src={doc.photoUrl}
+                          alt={doc.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement.innerHTML = `<span style="color:#fff;font-size:22px;font-weight:700;">${doc.initials || doc.name.slice(0, 2)}</span>`;
+                          }}
+                        />
+                      ) : (
+                        <span style={{ color: '#fff', fontSize: '22px', fontWeight: '700' }}>
+                          {doc.initials || doc.name.slice(0, 2)}
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h3
+                        style={{
+                          fontSize: '17px',
+                          fontWeight: '800',
+                          margin: '0 0 2px 0',
+                          color: '#111827',
+                          lineHeight: '1.25',
+                          fontFamily: 'var(--font-sans)',
                         }}
-                      />
-                    ) : (
-                      <span style={{ color: '#fff', fontSize: '20px', fontWeight: '700' }}>
-                        {doc.initials || doc.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Name + Specialty + Stars */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 2px 0', color: 'var(--text-main)', fontFamily: 'var(--font-sans)' }}>
-                      {doc.name}
-                    </h3>
-                    <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                      {doc.specialty}
-                    </div>
-                    {/* Star Rating Row */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
-                        {'★'.repeat(Math.round(doc.rating || 5))}
-                      </span>
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-body)' }}>
-                        {doc.rating || '4.9'}
-                      </span>
-                      <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                        ({doc.reviewsCount || '100+'})
-                      </span>
+                      >
+                        {doc.name}
+                      </h3>
+                      <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>
+                        {doc.specialty}
+                      </div>
+                      {/* Stars + Rating + Reviews */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
+                          ★★★★★
+                        </span>
+                        <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#111827' }}>
+                          {doc.rating || '4.8'}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#6B7280' }}>
+                          ({doc.reviewsCount || '2010'})
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Availability Badges: Completely consistent across all cards */}
-                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#D1FAE5', color: '#065F46', padding: '3px 9px', borderRadius: '6px' }}>
-                    {doc.onlineNow ? 'Available today' : 'Accepting new patients'}
-                  </span>
-                  <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '3px 9px', borderRadius: '6px' }}>
-                    {doc.satisfaction || '98%'} recommend
-                  </span>
-                </div>
-
-                {/* Patient Review Quote */}
-                <div style={{
-                  fontSize: '12.5px',
-                  color: 'var(--text-body)',
-                  fontStyle: 'italic',
-                  backgroundColor: 'var(--canvas-bg)',
-                  padding: '10px 13px',
-                  borderRadius: '10px',
-                  marginBottom: '12px',
-                  lineHeight: '1.5',
-                  borderLeft: '3px solid var(--lime-accent)',
-                }}>
-                  "{doc.reviews?.[0]?.comment || doc.shortBio || 'Outstanding care and very professional. Highly recommended.'}"
-                </div>
-
-                {/* Next Available */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <div>
-                    <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '2px' }}>
-                      Next available
-                    </div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                      {doc.nextSlot || 'Today at 3:00 PM'}
-                    </div>
+                  {/* Badges: Green Available today + Pink Loyal patients (Sesame Image 4) */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        backgroundColor: '#D1FAE5',
+                        color: '#065F46',
+                        padding: '3px 9px',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      Available today
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        backgroundColor: '#FCE7F3',
+                        color: '#9D174D',
+                        padding: '3px 9px',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      Loyal patients
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    {['10:30 AM', '11:00 AM', '2:00 PM'].map((slot) => (
+
+                  {/* Gray Review Box (Sesame Image 4) */}
+                  <div
+                    style={{
+                      backgroundColor: '#F8FAFC',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      fontSize: '12px',
+                      color: '#374151',
+                      lineHeight: '1.45',
+                      marginBottom: '14px',
+                      minHeight: '52px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    "{doc.reviews?.[0]?.comment || 'He was very friendly and helpful, and obviously was researched. He paid attention to my symptoms.'}"
+                  </div>
+
+                  {/* Next Available Row */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div>
+                      <div style={{ fontSize: '11px', color: '#6B7280', fontWeight: '600' }}>Next available</div>
+                      <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#111827' }}>
+                        {doc.nextSlot ? doc.nextSlot : 'Monday, Oct 12'}
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        color: '#065F46',
+                        backgroundColor: '#ECFDF5',
+                        border: '1px solid #A7F3D0',
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      PMDC Verified
+                    </span>
+                  </div>
+
+                  {/* 6 Slot Pills in 2 rows of 3 (Sesame Image 4) */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '14px' }}>
+                    {['7:15 pm', '8:30 pm', '8:45 pm', '9:30 pm', '9:45 pm', 'More'].map((slot, sIdx) => (
                       <button
                         key={slot}
                         type="button"
                         onClick={() => handleBookingClick(doc)}
                         style={{
-                          fontSize: '10.5px', fontWeight: '700',
-                          color: 'var(--forest-800)',
-                          border: '1.5px solid var(--border-strong)',
-                          borderRadius: '8px',
-                          padding: '4px 8px',
-                          backgroundColor: '#fff',
+                          padding: '7px 0',
+                          borderRadius: '9999px',
+                          border: sIdx === 0 ? '1.5px solid #A5B4FC' : '1.5px solid #E5E7EB',
+                          backgroundColor: sIdx === 0 ? '#EEF2FF' : '#FFFFFF',
+                          color: sIdx === 0 ? '#4338CA' : '#374151',
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          textAlign: 'center',
                           cursor: 'pointer',
-                          transition: 'all 0.15s',
+                          transition: 'all 0.15s ease',
                           fontFamily: 'var(--font-sans)',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--canvas-bg)'; e.currentTarget.style.borderColor = 'var(--forest-700)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F3F4F6';
+                          e.currentTarget.style.borderColor = '#9CA3AF';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = sIdx === 0 ? '#EEF2FF' : '#FFFFFF';
+                          e.currentTarget.style.borderColor = sIdx === 0 ? '#A5B4FC' : '#E5E7EB';
+                        }}
                       >
                         {slot}
                       </button>
                     ))}
                   </div>
-                </div>
 
-                {/* Action Buttons */}
-                <button
-                  type="button"
-                  onClick={() => handleBookingClick(doc)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: 'var(--forest-800)',
-                    color: '#FFFFFF',
-                    padding: '11px',
-                    borderRadius: '10px',
-                    fontSize: '13.5px',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    transition: 'background 0.15s',
-                    marginBottom: '8px',
-                    fontFamily: 'var(--font-sans)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
-                >
-                  Book visit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedDoctorModal(doc);
-                    setDoctorModalTab('overview');
-                  }}
-                  style={{
-                    width: '100%',
-                    backgroundColor: 'transparent',
-                    color: 'var(--forest-800)',
-                    padding: '9px',
-                    borderRadius: '10px',
-                    fontSize: '12.5px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    border: '1.5px solid var(--border-strong)',
-                    transition: 'all 0.15s',
-                    fontFamily: 'var(--font-sans)',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--canvas-bg)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                >
-                  View profile
-                </button>
-              </div>
-            ))}
+                  {/* Full-width Book Visit Pill Button (Sesame Image 4) */}
+                  <button
+                    type="button"
+                    onClick={() => handleBookingClick(doc)}
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#5B21B6',
+                      color: '#FFFFFF',
+                      padding: '12px',
+                      borderRadius: '9999px',
+                      fontSize: '14px',
+                      fontWeight: '800',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s ease',
+                      marginBottom: '6px',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4C1D95')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#5B21B6')}
+                  >
+                    Book visit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedDoctorModal(doc);
+                      setDoctorModalTab('overview');
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#6B7280',
+                      fontSize: '11.5px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      padding: '4px',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                  >
+                    View full profile →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Sesame Carousel Controls: Dots on Left, Arrow Buttons on Right */}
+          <div className="sesame-carousel-controls">
+            <div className="sesame-carousel-dots">
+              {Array.from({ length: Math.max(1, maxDocIndex + 1) }).map((_, dIdx) => (
+                <div
+                  key={dIdx}
+                  className={`sesame-carousel-dot ${doctorCarouselIdx === dIdx ? 'active' : ''}`}
+                  onClick={() => setDoctorCarouselIdx(dIdx)}
+                />
+              ))}
+            </div>
+
+            <div className="sesame-carousel-arrows">
+              <button
+                type="button"
+                className="sesame-arrow-btn"
+                onClick={prevDoctorSlide}
+                aria-label="Previous Doctor Profile"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                type="button"
+                className="sesame-arrow-btn"
+                onClick={nextDoctorSlide}
+                aria-label="Next Doctor Profile"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
         </section>
 
         {/* =========================================================================
-            SECTION 5: PARTNER TERTIARY HOSPITALS (INTERACTIVE FACILITY INSPECTION)
+            SECTION 5: PREMIER PARTNER HOSPITALS (SESAME CAROUSEL MATCHING IMAGE 3 & 4)
            ========================================================================= */}
-        <section id="hospitals" style={{ marginBottom: '56px' }}>
-          <div className="section-header-row" style={{ marginBottom: '24px' }}>
-            <div className="section-heading-wrap">
-              <span className="section-eyebrow">✦ ACCREDITED FACILITIES</span>
-              <h2 className="section-main-heading">Premier Partner Hospital Networks</h2>
-              <p className="section-subheading">Top tertiary medical institutions and clinical complexes with MedConnect integration</p>
-            </div>
-          </div>
+        <section id="hospitals" style={{ marginBottom: '64px' }}>
+          {/* Sesame Section Header with Title, Emergency Toggle, and See All Link */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '800', color: '#111827', margin: 0, fontFamily: 'var(--font-sans)' }}>
+                Premier Partner Hospitals
+              </h2>
 
-          {/* Hospital Cards Grid — 2-Column Sesame-Style Matching Reference */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-            {branchesList.map((hosp, idx) => {
-              const hospitalImages = [
-                'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=300&q=80',
-                'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=300&q=80',
-                'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=300&q=80',
-                'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=300&q=80',
-                'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=300&q=80',
-                'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=300&q=80',
-              ];
-              const imgUrl = hospitalImages[idx % hospitalImages.length];
-
-              return (
-                <div
-                  key={hosp.id}
-                  className="scroll-seq-card"
-                  data-card-seq={idx}
+              {/* 24/7 Emergency Toggle Pill */}
+              <button
+                type="button"
+                onClick={() => setEmergencyOnlyFilter(!emergencyOnlyFilter)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: emergencyOnlyFilter ? '#5B21B6' : '#FFFFFF',
+                  color: emergencyOnlyFilter ? '#FFFFFF' : '#374151',
+                  border: '1.5px solid',
+                  borderColor: emergencyOnlyFilter ? '#5B21B6' : '#D1D5DB',
+                  padding: '6px 14px',
+                  borderRadius: '9999px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'var(--font-sans)',
+                }}
+              >
+                <span
                   style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '16px',
-                    border: '1px solid var(--border-subtle)',
-                    padding: '20px 22px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    boxShadow: 'var(--shadow-sm)',
-                    transition: 'box-shadow 0.2s, transform 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    width: '32px',
+                    height: '18px',
+                    borderRadius: '9999px',
+                    backgroundColor: emergencyOnlyFilter ? '#9333EA' : '#D1D5DB',
+                    position: 'relative',
+                    display: 'inline-block',
+                    transition: 'background 0.2s ease',
                   }}
                 >
-                  {/* Top Row: Photo + Name/City/Rating */}
-                  <div style={{ display: 'flex', gap: '14px', marginBottom: '10px' }}>
-                    <div style={{ width: '72px', height: '72px', borderRadius: '14px', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-subtle)' }}>
-                      <img
-                        src={imgUrl}
-                        alt={hosp.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '2px',
+                      left: emergencyOnlyFilter ? '16px' : '2px',
+                      width: '14px',
+                      height: '14px',
+                      borderRadius: '50%',
+                      backgroundColor: '#FFFFFF',
+                      transition: 'left 0.2s ease',
+                    }}
+                  />
+                </span>
+                <span>24/7 Emergency Active</span>
+              </button>
+            </div>
 
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 2px 0', color: 'var(--text-main)', fontFamily: 'var(--font-sans)' }}>
-                        {hosp.name}
-                      </h3>
-                      <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                        Tertiary Care Hospital & Research Center · {hosp.city}
-                      </div>
-                      {/* Star Rating Row */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
-                          ★★★★★
-                        </span>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-body)' }}>
-                          4.9
-                        </span>
-                        <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                          (650+ verified patient reviews)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+            <button
+              type="button"
+              onClick={() => setEmergencyOnlyFilter(false)}
+              style={{
+                fontSize: '14px',
+                fontWeight: '700',
+                color: '#5B21B6',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-sans)',
+              }}
+            >
+              See all
+            </button>
+          </div>
 
-                  {/* Availability Badges: Completely consistent across all hospital cards */}
-                  <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#D1FAE5', color: '#065F46', padding: '3px 9px', borderRadius: '6px' }}>
-                      24/7 Emergency Active
-                    </span>
-                    <span style={{ fontSize: '10.5px', fontWeight: '700', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '3px 9px', borderRadius: '6px' }}>
-                      PMC Accredited Network
-                    </span>
-                  </div>
+          {/* Sesame Carousel Window for Hospitals */}
+          <div className="sesame-carousel-wrap">
+            <div
+              className="sesame-carousel-track"
+              style={{
+                transform: `translateX(-${hospitalCarouselIdx * 350}px)`,
+              }}
+            >
+              {filteredHospitals.map((hosp, idx) => {
+                const hospitalImages = [
+                  'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=300&q=80',
+                  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=300&q=80',
+                  'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=300&q=80',
+                  'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=300&q=80',
+                  'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=300&q=80',
+                  'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=300&q=80',
+                ];
+                const imgUrl = hospitalImages[idx % hospitalImages.length];
 
-                  {/* Highlights / Departments Snippet */}
-                  <div style={{
-                    fontSize: '12.5px',
-                    color: 'var(--text-body)',
-                    fontStyle: 'italic',
-                    backgroundColor: 'var(--canvas-bg)',
-                    padding: '10px 13px',
-                    borderRadius: '10px',
-                    marginBottom: '12px',
-                    lineHeight: '1.5',
-                    borderLeft: '3px solid var(--lime-accent)',
-                  }}>
-                    "{hosp.departments?.slice(0, 4).join(', ')} · Equipped with modern ICU/CCU, 24/7 diagnostics and priority MedConnect check-in."
-                  </div>
+                return (
+                  <div
+                    key={hosp.id}
+                    className="sesame-carousel-card scroll-seq-card"
+                    data-card-seq={idx}
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: '1px solid #E5E7EB',
+                      padding: '22px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                    }}
+                  >
+                    {/* Top Row: Circular Facility Photo + Name + City + Rating */}
+                    <div style={{ display: 'flex', gap: '14px', marginBottom: '12px', alignItems: 'flex-start' }}>
+                      <div
+                        style={{
+                          width: '76px',
+                          height: '76px',
+                          borderRadius: '50%',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          border: '2px solid #E5E7EB',
+                        }}
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={hosp.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      </div>
 
-                  {/* Facility Details / Key Specs */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <div>
-                      <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '2px' }}>
-                        Capacity & Emergency
-                      </div>
-                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                        {hosp.beds || '400+ Beds'} · {hosp.activeDoctors || '35+'} Specialists
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      {['Emergency', 'Cardiology', 'OPD Clinic'].map((dep) => (
-                        <span
-                          key={dep}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h3
                           style={{
-                            fontSize: '10.5px', fontWeight: '700',
-                            color: 'var(--forest-800)',
-                            border: '1.5px solid var(--border-strong)',
-                            borderRadius: '8px',
-                            padding: '4px 8px',
-                            backgroundColor: '#fff',
+                            fontSize: '17px',
+                            fontWeight: '800',
+                            margin: '0 0 2px 0',
+                            color: '#111827',
+                            lineHeight: '1.25',
                             fontFamily: 'var(--font-sans)',
                           }}
                         >
-                          {dep}
-                        </span>
+                          {hosp.name}
+                        </h3>
+                        <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>
+                          Tertiary Care · {hosp.city}
+                        </div>
+                        {/* Stars + Rating + Reviews */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
+                            ★★★★★
+                          </span>
+                          <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#111827' }}>
+                            4.9
+                          </span>
+                          <span style={{ fontSize: '12px', color: '#6B7280' }}>
+                            (650+ reviews)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Badges: Green 24/7 Emergency + Blue PMC Accredited */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          backgroundColor: '#D1FAE5',
+                          color: '#065F46',
+                          padding: '3px 9px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        24/7 Emergency Active
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          backgroundColor: '#EFF6FF',
+                          color: '#1D4ED8',
+                          padding: '3px 9px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        PMC Accredited Network
+                      </span>
+                    </div>
+
+                    {/* Gray Quote / Facility Highlights Box */}
+                    <div
+                      style={{
+                        backgroundColor: '#F8FAFC',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        fontSize: '12px',
+                        color: '#374151',
+                        lineHeight: '1.45',
+                        marginBottom: '14px',
+                        minHeight: '52px',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      "Equipped with modern ICU/CCU, 24/7 diagnostic labs and priority MedConnect fast-track check-in."
+                    </div>
+
+                    {/* Next Available Row */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <div>
+                        <div style={{ fontSize: '11px', color: '#6B7280', fontWeight: '600' }}>Admissions & OPD</div>
+                        <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#111827' }}>
+                          Today, 24/7 Active
+                        </div>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          color: '#1E40AF',
+                          backgroundColor: '#EFF6FF',
+                          border: '1px solid #BFDBFE',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        {hosp.beds || '400+ Beds'}
+                      </span>
+                    </div>
+
+                    {/* 6 Department Pills in 2 rows of 3 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '14px' }}>
+                      {['Emergency', 'Cardiology', 'Pediatrics', 'OPD Clinic', 'ICU / CCU', 'More'].map((dept, dIdx) => (
+                        <button
+                          key={dept}
+                          type="button"
+                          onClick={() => {
+                            scrollToSection('doctors');
+                            showToast(`Showing doctors at ${hosp.name}`, 'info');
+                          }}
+                          style={{
+                            padding: '7px 0',
+                            borderRadius: '9999px',
+                            border: dIdx === 0 ? '1.5px solid #A5B4FC' : '1.5px solid #E5E7EB',
+                            backgroundColor: dIdx === 0 ? '#EEF2FF' : '#FFFFFF',
+                            color: dIdx === 0 ? '#4338CA' : '#374151',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            fontFamily: 'var(--font-sans)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#F3F4F6';
+                            e.currentTarget.style.borderColor = '#9CA3AF';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = dIdx === 0 ? '#EEF2FF' : '#FFFFFF';
+                            e.currentTarget.style.borderColor = dIdx === 0 ? '#A5B4FC' : '#E5E7EB';
+                          }}
+                        >
+                          {dept}
+                        </button>
                       ))}
                     </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      scrollToSection('doctors');
-                      showToast(`Showing specialists affiliated with ${hosp.name}`, 'info');
-                    }}
-                    style={{
-                      width: '100%',
-                      backgroundColor: 'var(--forest-800)',
-                      color: '#FFFFFF',
-                      padding: '11px',
-                      borderRadius: '10px',
-                      fontSize: '13.5px',
-                      fontWeight: '800',
-                      cursor: 'pointer',
-                      transition: 'background 0.15s',
-                      marginBottom: '8px',
-                      fontFamily: 'var(--font-sans)',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
-                  >
-                    Book OPD Visit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedHospitalModal(hosp)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: 'transparent',
-                      color: 'var(--forest-800)',
-                      padding: '9px',
-                      borderRadius: '10px',
-                      fontSize: '12.5px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      border: '1.5px solid var(--border-strong)',
-                      transition: 'all 0.15s',
-                      fontFamily: 'var(--font-sans)',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--canvas-bg)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                  >
-                    View Hospital Info
-                  </button>
-                </div>
-              );
-            })}
+                    {/* Full-width Book OPD Visit Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        scrollToSection('doctors');
+                        showToast(`Showing specialists affiliated with ${hosp.name}`, 'info');
+                      }}
+                      style={{
+                        width: '100%',
+                        backgroundColor: '#5B21B6',
+                        color: '#FFFFFF',
+                        padding: '12px',
+                        borderRadius: '9999px',
+                        fontSize: '14px',
+                        fontWeight: '800',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'background 0.15s ease',
+                        marginBottom: '6px',
+                        fontFamily: 'var(--font-sans)',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4C1D95')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#5B21B6')}
+                    >
+                      Book OPD visit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHospitalModal(hosp)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#6B7280',
+                        fontSize: '11.5px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        padding: '4px',
+                        fontFamily: 'var(--font-sans)',
+                      }}
+                    >
+                      View Hospital Info →
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Bottom Sesame Carousel Controls for Hospitals */}
+          <div className="sesame-carousel-controls">
+            <div className="sesame-carousel-dots">
+              {Array.from({ length: Math.max(1, maxHospIndex + 1) }).map((_, hIdx) => (
+                <div
+                  key={hIdx}
+                  className={`sesame-carousel-dot ${hospitalCarouselIdx === hIdx ? 'active' : ''}`}
+                  onClick={() => setHospitalCarouselIdx(hIdx)}
+                />
+              ))}
+            </div>
+
+            <div className="sesame-carousel-arrows">
+              <button
+                type="button"
+                className="sesame-arrow-btn"
+                onClick={prevHospitalSlide}
+                aria-label="Previous Hospital Profile"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                type="button"
+                className="sesame-arrow-btn"
+                onClick={nextHospitalSlide}
+                aria-label="Next Hospital Profile"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
         </section>
 
