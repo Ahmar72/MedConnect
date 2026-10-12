@@ -16,7 +16,13 @@ import {
   DoctorPatientsPage,
   DoctorEarningsPage,
 } from './features/doctor/pages';
-import { AdminDashboard, AdminTable } from './features/admin/pages';
+import {
+  AdminDashboard,
+  AdminDoctorsPage,
+  AdminBranchesPage,
+  AdminQueuePage,
+  AdminReportsPage,
+} from './features/admin/pages';
 
 export default function App() {
   return (
@@ -50,22 +56,14 @@ export default function App() {
         <Route path="/doctor/patients" element={<DoctorPatientsPage />} />
         <Route path="/doctor/earnings" element={<DoctorEarningsPage />} />
 
-        {/* Admin Role (Interconnected Quick Switch) */}
+        {/* Admin Role (Interconnected Operations & Facilities Console) */}
         <Route path="/admin" element={<AdminDashboard />} />
-        {[
-          'doctors',
-          'patients',
-          'staff',
-          'branches',
-          'calendar',
-          'booking',
-          'queue',
-          'configuration',
-          'reports',
-          'audit',
-        ].map((section) => (
-          <Route key={section} path={`/admin/${section}`} element={<AdminTable section={section} />} />
-        ))}
+        <Route path="/admin/doctors" element={<AdminDoctorsPage />} />
+        <Route path="/admin/branches" element={<AdminBranchesPage />} />
+        <Route path="/admin/queue" element={<AdminQueuePage />} />
+        <Route path="/admin/booking" element={<AdminQueuePage />} />
+        <Route path="/admin/reports" element={<AdminReportsPage />} />
+        <Route path="/admin/:section" element={<AdminDashboard />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
