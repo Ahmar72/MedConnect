@@ -499,22 +499,13 @@ export default function Landing() {
               />
             </svg>
 
-            {/* Live Online Doctor Status Badge */}
-            <div className="hero-pill-badge">
-              <span className="live-pulse-dot" style={{ backgroundColor: 'var(--lime-accent)' }}></span>
-              <span>48 PMDC DOCTORS AVAILABLE ONLINE TODAY IN {selectedCity.name.toUpperCase()}</span>
-            </div>
-
-            <h1 className="hero-title">
+            {/* Hero Main Heading */}
+            <h1 className="hero-title" style={{ marginTop: '0', marginBottom: '28px' }}>
               Pakistan's Most Trusted Digital Healthcare Network.
             </h1>
 
-            <p className="hero-sub">
-              Book priority in-clinic consultations at premier hospital networks or connect with PMDC-verified specialists via encrypted video in 15 minutes.
-            </p>
-
             {/* Dual-Pill Interactive Search Bar */}
-            <div style={{ maxWidth: '760px', width: '100%', position: 'relative', marginBottom: '24px' }}>
+            <div style={{ maxWidth: '760px', width: '100%', position: 'relative', marginBottom: '36px' }}>
               <div className="oladoc-dual-search">
                 {/* City Selector Trigger */}
                 <div className="search-city-trigger" onClick={() => setIsCityModalOpen(true)}>
@@ -592,36 +583,6 @@ export default function Landing() {
               )}
             </div>
 
-            {/* Quick Search Chips */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '44px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-white-muted)' }}>Popular:</span>
-              {['Cardiologist', 'Dermatologist', 'Gynecologist', 'Pediatrician', 'General Physician'].map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  onClick={() => {
-                    setSelectedSpecialtyFilter(chip);
-                    scrollToSection('doctors');
-                  }}
-                  style={{
-                    fontSize: '11.5px',
-                    fontWeight: '600',
-                    color: '#FFFFFF',
-                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    padding: '4px 12px',
-                    borderRadius: 'var(--radius-pill)',
-                    transition: 'all 0.15s',
-                    fontFamily: 'var(--font-sans)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)')}
-                >
-                  {chip}
-                </button>
-              ))}
-            </div>
-
             {/* Metrics & Trust Badges Strip */}
             <div
               style={{
@@ -650,7 +611,7 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* RIGHT SIDE: Real Doctor Medical Portrait Picture & Liability Trust Overlay */}
+          {/* RIGHT SIDE: Clear Medical Portrait Picture (No Overlaid Text) */}
           <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{
               position: 'relative',
@@ -662,10 +623,9 @@ export default function Landing() {
               border: '3px solid rgba(255, 255, 255, 0.25)',
               backgroundColor: 'rgba(0, 0, 0, 0.1)',
             }}>
-              {/* Doctor Real Image */}
               <img
                 src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80"
-                alt="PMDC Certified Medical Specialist"
+                alt="Medical Specialist"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -674,64 +634,6 @@ export default function Landing() {
                   display: 'block',
                 }}
               />
-
-              {/* Overlaid Live Status Pill at Top Right */}
-              <div style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                backgroundColor: 'rgba(14, 56, 44, 0.88)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(197, 225, 165, 0.6)',
-                borderRadius: 'var(--radius-pill)',
-                padding: '6px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#FFFFFF',
-                fontSize: '11px',
-                fontWeight: '700',
-              }}>
-                <span className="live-pulse-dot" style={{ backgroundColor: 'var(--lime-accent)' }}></span>
-                <span>Online Available Today</span>
-              </div>
-
-              {/* Overlaid Doctor Credentials & Medical Liability Card at Bottom */}
-              <div style={{
-                position: 'absolute',
-                bottom: '16px',
-                left: '16px',
-                right: '16px',
-                backgroundColor: 'rgba(14, 56, 44, 0.92)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.22)',
-                borderRadius: '18px',
-                padding: '14px 18px',
-                color: '#FFFFFF',
-                boxShadow: '0 10px 28px rgba(0,0,0,0.35)',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                  <div>
-                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>Dr. Haris Malik, FCPS</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--lime-accent)', fontWeight: '600' }}>Consultant Family Physician · 12 yrs exp</div>
-                  </div>
-                  <div style={{
-                    backgroundColor: 'rgba(197, 225, 165, 0.22)',
-                    color: 'var(--lime-accent)',
-                    fontSize: '11px',
-                    fontWeight: '800',
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                  }}>
-                    ★ 4.9
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontSize: '10.5px', color: 'rgba(255,255,255,0.85)' }}>
-                  <ShieldCheck size={14} color="var(--lime-accent)" />
-                  <span>PMDC Reg #39482-P · 100% Medical Liability Covered</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -769,12 +671,8 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Service 2: Video Consult (Highlighted) */}
-            <div className="service-card highlight scroll-seq-card" onClick={() => scrollToSection('telehealth')}>
-              <div className="service-badge-live">
-                <span className="live-pulse-dot"></span>
-                <span>Instant 15-Min Response</span>
-              </div>
+            {/* Service 2: Video Consult */}
+            <div className="service-card scroll-seq-card" onClick={() => scrollToSection('telehealth')}>
               <div className="service-icon-box">
                 <Video size={24} />
               </div>
@@ -896,17 +794,17 @@ export default function Landing() {
         </section>
 
         {/* =========================================================================
-            SECTION 4: FEATURED DOCTORS SHOWCASE (EXACT IMAGE 2 CANVA COMPLIANT)
+            SECTION 4: FEATURED DOCTORS SHOWCASE (SESAME FLOW + SYSTEM PALETTE)
            ========================================================================= */}
         <section id="doctors" style={{ marginBottom: '64px' }}>
-          {/* Sesame Section Header with Title, Within 2 Hours Toggle, and See All Link */}
+          {/* Section Header with Title, Within 2 Hours Toggle, and See All Link */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '26px', fontWeight: '800', color: '#111827', margin: 0, fontFamily: 'var(--font-sans)' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--forest-800)', margin: 0, fontFamily: 'var(--font-sans)' }}>
                 Telehealth visit
               </h2>
 
-              {/* Within 2 Hours Toggle Pill (Sesame Reference) */}
+              {/* Within 2 Hours Toggle Pill (System Theme) */}
               <button
                 type="button"
                 onClick={() => setWithinTwoHoursFilter(!withinTwoHoursFilter)}
@@ -914,10 +812,10 @@ export default function Landing() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  backgroundColor: withinTwoHoursFilter ? '#5B21B6' : '#FFFFFF',
-                  color: withinTwoHoursFilter ? '#FFFFFF' : '#374151',
+                  backgroundColor: withinTwoHoursFilter ? 'var(--forest-800)' : '#FFFFFF',
+                  color: withinTwoHoursFilter ? '#FFFFFF' : 'var(--text-main)',
                   border: '1.5px solid',
-                  borderColor: withinTwoHoursFilter ? '#5B21B6' : '#D1D5DB',
+                  borderColor: withinTwoHoursFilter ? 'var(--forest-800)' : '#D1D5DB',
                   padding: '6px 14px',
                   borderRadius: '9999px',
                   fontSize: '13px',
@@ -932,7 +830,7 @@ export default function Landing() {
                     width: '32px',
                     height: '18px',
                     borderRadius: '9999px',
-                    backgroundColor: withinTwoHoursFilter ? '#9333EA' : '#D1D5DB',
+                    backgroundColor: withinTwoHoursFilter ? 'var(--lime-accent)' : '#D1D5DB',
                     position: 'relative',
                     display: 'inline-block',
                     transition: 'background 0.2s ease',
@@ -946,7 +844,7 @@ export default function Landing() {
                       width: '14px',
                       height: '14px',
                       borderRadius: '50%',
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: withinTwoHoursFilter ? 'var(--forest-900)' : '#FFFFFF',
                       transition: 'left 0.2s ease',
                     }}
                   />
@@ -965,18 +863,19 @@ export default function Landing() {
               style={{
                 fontSize: '14px',
                 fontWeight: '700',
-                color: '#5B21B6',
+                color: 'var(--forest-800)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: 'var(--font-sans)',
+                textDecoration: 'underline',
               }}
             >
               See all
             </button>
           </div>
 
-          {/* Sesame Carousel Window */}
+          {/* Carousel Window */}
           <div className="sesame-carousel-wrap">
             <div
               className="sesame-carousel-track"
@@ -996,6 +895,8 @@ export default function Landing() {
                     padding: '22px',
                     display: 'flex',
                     flexDirection: 'column',
+                    height: '525px',
+                    boxSizing: 'border-box',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                     transition: 'box-shadow 0.2s ease, transform 0.2s ease',
                   }}
@@ -1038,14 +939,29 @@ export default function Landing() {
                           fontSize: '17px',
                           fontWeight: '800',
                           margin: '0 0 2px 0',
-                          color: '#111827',
+                          color: 'var(--text-main)',
                           lineHeight: '1.25',
                           fontFamily: 'var(--font-sans)',
+                          minHeight: '44px',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
                         }}
                       >
                         {doc.name}
                       </h3>
-                      <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          color: '#6B7280',
+                          marginBottom: '4px',
+                          minHeight: '18px',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
                         {doc.specialty}
                       </div>
                       {/* Stars + Rating + Reviews */}
@@ -1063,8 +979,8 @@ export default function Landing() {
                     </div>
                   </div>
 
-                  {/* Badges: Green Available today + Pink Loyal patients (Sesame Image 4) */}
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                  {/* Badges: Green Available today + Pink Loyal patients */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap', minHeight: '26px', alignItems: 'center' }}>
                     <span
                       style={{
                         fontSize: '11px',
@@ -1091,7 +1007,7 @@ export default function Landing() {
                     </span>
                   </div>
 
-                  {/* Gray Review Box (Sesame Image 4) */}
+                  {/* Gray Review Box */}
                   <div
                     style={{
                       backgroundColor: '#F8FAFC',
@@ -1101,21 +1017,23 @@ export default function Landing() {
                       color: '#374151',
                       lineHeight: '1.45',
                       marginBottom: '14px',
-                      minHeight: '52px',
+                      height: '54px',
+                      minHeight: '54px',
                       display: '-webkit-box',
-                      WebkitLineClamp: 3,
+                      WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
+                      boxSizing: 'border-box',
                     }}
                   >
                     "{doc.reviews?.[0]?.comment || 'He was very friendly and helpful, and obviously was researched. He paid attention to my symptoms.'}"
                   </div>
 
                   {/* Next Available Row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', minHeight: '36px' }}>
                     <div>
                       <div style={{ fontSize: '11px', color: '#6B7280', fontWeight: '600' }}>Next available</div>
-                      <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#111827' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
                         {doc.nextSlot ? doc.nextSlot : 'Monday, Oct 12'}
                       </div>
                     </div>
@@ -1134,7 +1052,7 @@ export default function Landing() {
                     </span>
                   </div>
 
-                  {/* 6 Slot Pills in 2 rows of 3 (Sesame Image 4) */}
+                  {/* 6 Slot Pills in 2 rows of 3 */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '14px' }}>
                     {['7:15 pm', '8:30 pm', '8:45 pm', '9:30 pm', '9:45 pm', 'More'].map((slot, sIdx) => (
                       <button
@@ -1144,9 +1062,9 @@ export default function Landing() {
                         style={{
                           padding: '7px 0',
                           borderRadius: '9999px',
-                          border: sIdx === 0 ? '1.5px solid #A5B4FC' : '1.5px solid #E5E7EB',
-                          backgroundColor: sIdx === 0 ? '#EEF2FF' : '#FFFFFF',
-                          color: sIdx === 0 ? '#4338CA' : '#374151',
+                          border: sIdx === 0 ? '1.5px solid var(--forest-800)' : '1.5px solid #E5E7EB',
+                          backgroundColor: sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
+                          color: sIdx === 0 ? 'var(--forest-800)' : '#374151',
                           fontSize: '11px',
                           fontWeight: '700',
                           textAlign: 'center',
@@ -1155,12 +1073,12 @@ export default function Landing() {
                           fontFamily: 'var(--font-sans)',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6';
-                          e.currentTarget.style.borderColor = '#9CA3AF';
+                          e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.12)';
+                          e.currentTarget.style.borderColor = 'var(--forest-800)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = sIdx === 0 ? '#EEF2FF' : '#FFFFFF';
-                          e.currentTarget.style.borderColor = sIdx === 0 ? '#A5B4FC' : '#E5E7EB';
+                          e.currentTarget.style.backgroundColor = sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF';
+                          e.currentTarget.style.borderColor = sIdx === 0 ? 'var(--forest-800)' : '#E5E7EB';
                         }}
                       >
                         {slot}
@@ -1168,13 +1086,13 @@ export default function Landing() {
                     ))}
                   </div>
 
-                  {/* Full-width Book Visit Pill Button (Sesame Image 4) */}
+                  {/* Full-width Book Visit Button (System Palette) */}
                   <button
                     type="button"
                     onClick={() => handleBookingClick(doc)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#5B21B6',
+                      backgroundColor: 'var(--forest-800)',
                       color: '#FFFFFF',
                       padding: '12px',
                       borderRadius: '9999px',
@@ -1183,11 +1101,12 @@ export default function Landing() {
                       border: 'none',
                       cursor: 'pointer',
                       transition: 'background 0.15s ease',
+                      marginTop: 'auto',
                       marginBottom: '6px',
                       fontFamily: 'var(--font-sans)',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4C1D95')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#5B21B6')}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
                   >
                     Book visit
                   </button>
@@ -1200,7 +1119,7 @@ export default function Landing() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#6B7280',
+                      color: 'var(--forest-800)',
                       fontSize: '11.5px',
                       fontWeight: '600',
                       cursor: 'pointer',
@@ -1216,7 +1135,7 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Bottom Sesame Carousel Controls: Dots on Left, Arrow Buttons on Right */}
+          {/* Bottom Carousel Controls: Dots on Left, Arrow Buttons on Right */}
           <div className="sesame-carousel-controls">
             <div className="sesame-carousel-dots">
               {Array.from({ length: Math.max(1, maxDocIndex + 1) }).map((_, dIdx) => (
@@ -1250,17 +1169,17 @@ export default function Landing() {
         </section>
 
         {/* =========================================================================
-            SECTION 5: PREMIER PARTNER HOSPITALS (SESAME CAROUSEL MATCHING IMAGE 3 & 4)
+            SECTION 5: PREMIER PARTNER HOSPITALS (SESAME FLOW + SYSTEM PALETTE)
            ========================================================================= */}
         <section id="hospitals" style={{ marginBottom: '64px' }}>
-          {/* Sesame Section Header with Title, Emergency Toggle, and See All Link */}
+          {/* Section Header with Title, Emergency Toggle, and See All Link */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '26px', fontWeight: '800', color: '#111827', margin: 0, fontFamily: 'var(--font-sans)' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--forest-800)', margin: 0, fontFamily: 'var(--font-sans)' }}>
                 Premier Partner Hospitals
               </h2>
 
-              {/* 24/7 Emergency Toggle Pill */}
+              {/* 24/7 Emergency Toggle Pill (System Theme) */}
               <button
                 type="button"
                 onClick={() => setEmergencyOnlyFilter(!emergencyOnlyFilter)}
@@ -1268,10 +1187,10 @@ export default function Landing() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  backgroundColor: emergencyOnlyFilter ? '#5B21B6' : '#FFFFFF',
-                  color: emergencyOnlyFilter ? '#FFFFFF' : '#374151',
+                  backgroundColor: emergencyOnlyFilter ? 'var(--forest-800)' : '#FFFFFF',
+                  color: emergencyOnlyFilter ? '#FFFFFF' : 'var(--text-main)',
                   border: '1.5px solid',
-                  borderColor: emergencyOnlyFilter ? '#5B21B6' : '#D1D5DB',
+                  borderColor: emergencyOnlyFilter ? 'var(--forest-800)' : '#D1D5DB',
                   padding: '6px 14px',
                   borderRadius: '9999px',
                   fontSize: '13px',
@@ -1286,7 +1205,7 @@ export default function Landing() {
                     width: '32px',
                     height: '18px',
                     borderRadius: '9999px',
-                    backgroundColor: emergencyOnlyFilter ? '#9333EA' : '#D1D5DB',
+                    backgroundColor: emergencyOnlyFilter ? 'var(--lime-accent)' : '#D1D5DB',
                     position: 'relative',
                     display: 'inline-block',
                     transition: 'background 0.2s ease',
@@ -1300,7 +1219,7 @@ export default function Landing() {
                       width: '14px',
                       height: '14px',
                       borderRadius: '50%',
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: emergencyOnlyFilter ? 'var(--forest-900)' : '#FFFFFF',
                       transition: 'left 0.2s ease',
                     }}
                   />
@@ -1315,18 +1234,19 @@ export default function Landing() {
               style={{
                 fontSize: '14px',
                 fontWeight: '700',
-                color: '#5B21B6',
+                color: 'var(--forest-800)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: 'var(--font-sans)',
+                textDecoration: 'underline',
               }}
             >
               See all
             </button>
           </div>
 
-          {/* Sesame Carousel Window for Hospitals */}
+          {/* Carousel Window for Hospitals */}
           <div className="sesame-carousel-wrap">
             <div
               className="sesame-carousel-track"
@@ -1357,6 +1277,8 @@ export default function Landing() {
                       padding: '22px',
                       display: 'flex',
                       flexDirection: 'column',
+                      height: '525px',
+                      boxSizing: 'border-box',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                       transition: 'box-shadow 0.2s ease, transform 0.2s ease',
                     }}
@@ -1386,14 +1308,29 @@ export default function Landing() {
                             fontSize: '17px',
                             fontWeight: '800',
                             margin: '0 0 2px 0',
-                            color: '#111827',
+                            color: 'var(--text-main)',
                             lineHeight: '1.25',
                             fontFamily: 'var(--font-sans)',
+                            minHeight: '44px',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
                           }}
                         >
                           {hosp.name}
                         </h3>
-                        <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>
+                        <div
+                          style={{
+                            fontSize: '13px',
+                            color: '#6B7280',
+                            marginBottom: '4px',
+                            minHeight: '18px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
                           Tertiary Care · {hosp.city}
                         </div>
                         {/* Stars + Rating + Reviews */}
@@ -1412,7 +1349,7 @@ export default function Landing() {
                     </div>
 
                     {/* Badges: Green 24/7 Emergency + Blue PMC Accredited */}
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap', minHeight: '26px', alignItems: 'center' }}>
                       <span
                         style={{
                           fontSize: '11px',
@@ -1449,21 +1386,23 @@ export default function Landing() {
                         color: '#374151',
                         lineHeight: '1.45',
                         marginBottom: '14px',
-                        minHeight: '52px',
+                        height: '54px',
+                        minHeight: '54px',
                         display: '-webkit-box',
-                        WebkitLineClamp: 3,
+                        WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
+                        boxSizing: 'border-box',
                       }}
                     >
                       "Equipped with modern ICU/CCU, 24/7 diagnostic labs and priority MedConnect fast-track check-in."
                     </div>
 
-                    {/* Next Available Row */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    {/* Admissions & OPD Row */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', minHeight: '36px' }}>
                       <div>
                         <div style={{ fontSize: '11px', color: '#6B7280', fontWeight: '600' }}>Admissions & OPD</div>
-                        <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#111827' }}>
+                        <div style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
                           Today, 24/7 Active
                         </div>
                       </div>
@@ -1471,9 +1410,9 @@ export default function Landing() {
                         style={{
                           fontSize: '11px',
                           fontWeight: '700',
-                          color: '#1E40AF',
-                          backgroundColor: '#EFF6FF',
-                          border: '1px solid #BFDBFE',
+                          color: 'var(--forest-800)',
+                          backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                          border: '1px solid rgba(14, 56, 44, 0.2)',
                           padding: '3px 8px',
                           borderRadius: '6px',
                         }}
@@ -1495,9 +1434,9 @@ export default function Landing() {
                           style={{
                             padding: '7px 0',
                             borderRadius: '9999px',
-                            border: dIdx === 0 ? '1.5px solid #A5B4FC' : '1.5px solid #E5E7EB',
-                            backgroundColor: dIdx === 0 ? '#EEF2FF' : '#FFFFFF',
-                            color: dIdx === 0 ? '#4338CA' : '#374151',
+                            border: dIdx === 0 ? '1.5px solid var(--forest-800)' : '1.5px solid #E5E7EB',
+                            backgroundColor: dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
+                            color: dIdx === 0 ? 'var(--forest-800)' : '#374151',
                             fontSize: '11px',
                             fontWeight: '700',
                             textAlign: 'center',
@@ -1506,12 +1445,12 @@ export default function Landing() {
                             fontFamily: 'var(--font-sans)',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#F3F4F6';
-                            e.currentTarget.style.borderColor = '#9CA3AF';
+                            e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.12)';
+                            e.currentTarget.style.borderColor = 'var(--forest-800)';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = dIdx === 0 ? '#EEF2FF' : '#FFFFFF';
-                            e.currentTarget.style.borderColor = dIdx === 0 ? '#A5B4FC' : '#E5E7EB';
+                            e.currentTarget.style.backgroundColor = dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF';
+                            e.currentTarget.style.borderColor = dIdx === 0 ? 'var(--forest-800)' : '#E5E7EB';
                           }}
                         >
                           {dept}
@@ -1519,7 +1458,7 @@ export default function Landing() {
                       ))}
                     </div>
 
-                    {/* Full-width Book OPD Visit Button */}
+                    {/* Full-width Book OPD Visit Button (System Palette) */}
                     <button
                       type="button"
                       onClick={() => {
@@ -1528,7 +1467,7 @@ export default function Landing() {
                       }}
                       style={{
                         width: '100%',
-                        backgroundColor: '#5B21B6',
+                        backgroundColor: 'var(--forest-800)',
                         color: '#FFFFFF',
                         padding: '12px',
                         borderRadius: '9999px',
@@ -1537,11 +1476,12 @@ export default function Landing() {
                         border: 'none',
                         cursor: 'pointer',
                         transition: 'background 0.15s ease',
+                        marginTop: 'auto',
                         marginBottom: '6px',
                         fontFamily: 'var(--font-sans)',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4C1D95')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#5B21B6')}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
                     >
                       Book OPD visit
                     </button>
@@ -1551,7 +1491,7 @@ export default function Landing() {
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#6B7280',
+                        color: 'var(--forest-800)',
                         fontSize: '11.5px',
                         fontWeight: '600',
                         cursor: 'pointer',
@@ -1568,7 +1508,7 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Bottom Sesame Carousel Controls for Hospitals */}
+          {/* Bottom Carousel Controls for Hospitals */}
           <div className="sesame-carousel-controls">
             <div className="sesame-carousel-dots">
               {Array.from({ length: Math.max(1, maxHospIndex + 1) }).map((_, hIdx) => (
