@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDemo } from '../../context/DemoContext';
+import { SPECIALTIES } from '../patient/data/pakistanMedicalData';
+import { validators, FieldError, getFieldInputStyle } from '../../utils/validation';
 import {
   LogIn,
   UserPlus,
@@ -30,9 +32,9 @@ export function Auth({ type = 'login' }) {
 
   // General fields
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('••••••••');
+  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('+92 300 4567890');
+  const [phone, setPhone] = useState('');
   const [city, setCity] = useState('Lahore');
 
   // Patient Mobile Verification Simulation Step
@@ -42,16 +44,20 @@ export function Auth({ type = 'login' }) {
 
   // Doctor specific registration fields
   const [doctorForm, setDoctorForm] = useState({
-    name: 'Dr. Tariq Jamil',
-    specialty: 'Cardiologist',
-    pmdcNumber: '58190-P',
-    qualifications: 'MBBS, FCPS (Cardiology)',
-    hospitalName: 'Doctors Hospital & Medical Centre',
-    videoFee: 2000,
-    inClinicFee: 2500,
+    name: '',
+    specialty: 'Dermatologist',
+    pmdcNumber: '',
+    qualifications: '',
+    hospitalName: '',
+    videoFee: '',
+    inClinicFee: '',
     city: 'Lahore',
-    applicationNote: 'Graduated from King Edward Medical University, 6 years post-fellowship cardiology clinical practice.',
+    applicationNote: '',
   });
+
+  // Validation errors state
+  const [formErrors, setFormErrors] = useState({});
+  const clearFormError = (field) => setFormErrors((prev) => ({ ...prev, [field]: '' }));
 
   const isReset = type === 'reset';
   const isSignup = type === 'signup';
@@ -74,7 +80,13 @@ export function Auth({ type = 'login' }) {
 
   const handleVerifyOtpAndRegister = (e) => {
     e.preventDefault();
+    const otpErr = validators.otp(otpCode);
+    if (otpErr) {
+      setFormErrors({ otpCode: otpErr });
+      return;
+    }
     if (otpCode !== simulatedOtp && otpCode !== '1234') {
+      setFormErrors({ otpCode: 'Invalid verification code. Please enter 8492.' });
       showToast('Invalid verification code. Please enter 8492.', 'error');
       return;
     }
@@ -94,6 +106,11 @@ export function Auth({ type = 'login' }) {
     e.preventDefault();
 
     if (isReset) {
+      const emailErr = validators.email(email);
+      if (emailErr) {
+        setFormErrors({ email: emailErr });
+        return;
+      }
       showToast('Password reset link sent to your email address.', 'info');
       navigate('/login');
       return;
@@ -101,6 +118,25 @@ export function Auth({ type = 'login' }) {
 
     if (isSignup) {
       if (role === 'doctor') {
+        const errs = {};
+        const nameErr = validators.name(doctorForm.name);
+        if (nameErr) errs.docName = nameErr;
+        const pmdcErr = validators.pmdcNumber(doctorForm.pmdcNumber);
+        if (pmdcErr) errs.docPmdc = pmdcErr;
+        const qualErr = validators.required(doctorForm.qualifications, 'Qualifications');
+        if (qualErr) errs.docQual = qualErr;
+        const hospErr = validators.required(doctorForm.hospitalName, 'Hospital affiliation');
+        if (hospErr) errs.docHosp = hospErr;
+        const vidFeeErr = validators.positiveNumber(doctorForm.videoFee, 'Video fee');
+        if (vidFeeErr) errs.docVidFee = vidFeeErr;
+        const clinicFeeErr = validators.positiveNumber(doctorForm.inClinicFee, 'In-clinic fee');
+        if (clinicFeeErr) errs.docClinicFee = clinicFeeErr;
+
+        if (Object.keys(errs).length > 0) {
+          setFormErrors(errs);
+          return;
+        }
+
         // Register new doctor with pending status for Admin review
         const createdDoc = registerDoctor(doctorForm);
         login(createdDoc);
@@ -108,11 +144,37 @@ export function Auth({ type = 'login' }) {
         navigatePostAuth('doctor');
       } else {
         // Patient registration: advance to Mobile OTP verification step
+        const errs = {};
+        const nameErr = validators.name(name);
+        if (nameErr) errs.patientName = nameErr;
+        const phoneErr = validators.phone(phone);
+        if (phoneErr) errs.patientPhone = phoneErr;
+        const emailErr = validators.email(email);
+        if (emailErr) errs.patientEmail = emailErr;
+        const pwdErr = validators.password(password);
+        if (pwdErr) errs.patientPassword = pwdErr;
+
+        if (Object.keys(errs).length > 0) {
+          setFormErrors(errs);
+          return;
+        }
+
         setPatientStep('otp');
         showToast(`Verification SMS sent to ${phone}. Enter code ${simulatedOtp} to verify.`, 'info');
       }
     } else {
       // Normal Login
+      const errs = {};
+      const idErr = validators.emailOrPhone(email);
+      if (idErr) errs.loginId = idErr;
+      const pwdErr = validators.required(password, 'Password');
+      if (pwdErr) errs.loginPassword = pwdErr;
+
+      if (Object.keys(errs).length > 0) {
+        setFormErrors(errs);
+        return;
+      }
+
       if (role === 'patient') {
         login('patient');
         navigatePostAuth('patient');
@@ -390,13 +452,16 @@ export function Auth({ type = 'login' }) {
                   </button>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ textAlign: 'center' }}>
                   <input
                     type="text"
                     maxLength={4}
                     placeholder="• • • •"
                     value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value)}
+                    onChange={(e) => {
+                      setOtpCode(e.target.value);
+                      clearFormError('otpCode');
+                    }}
                     style={{
                       width: '180px',
                       margin: '0 auto',
@@ -406,11 +471,11 @@ export function Auth({ type = 'login' }) {
                       fontWeight: '800',
                       padding: '10px',
                       borderRadius: '12px',
-                      border: '2px solid var(--forest-800)',
+                      border: formErrors.otpCode ? '2px solid #DC2626' : '2px solid var(--forest-800)',
                       backgroundColor: '#FFFFFF',
                     }}
-                    required
                   />
+                  <FieldError error={formErrors.otpCode} />
                 </div>
 
                 <button
@@ -433,7 +498,7 @@ export function Auth({ type = 'login' }) {
             </form>
           ) : (
             /* REGULAR AUTH FORM */
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
             {/* DOCTOR SIGNUP SPECIFIC FORM */}
             {isSignup && role === 'doctor' ? (
               <>
@@ -442,10 +507,15 @@ export function Auth({ type = 'login' }) {
                   <input
                     type="text"
                     className="form-input"
+                    placeholder="e.g. Dr. Tariq Jamil"
                     value={doctorForm.name}
-                    onChange={(e) => setDoctorForm({ ...doctorForm, name: e.target.value })}
-                    required
+                    onChange={(e) => {
+                      setDoctorForm({ ...doctorForm, name: e.target.value });
+                      clearFormError('docName');
+                    }}
+                    style={getFieldInputStyle(formErrors.docName)}
                   />
+                  <FieldError error={formErrors.docName} />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -456,12 +526,11 @@ export function Auth({ type = 'login' }) {
                       value={doctorForm.specialty}
                       onChange={(e) => setDoctorForm({ ...doctorForm, specialty: e.target.value })}
                     >
-                      <option value="Cardiologist">Cardiologist</option>
-                      <option value="Dermatologist">Dermatologist</option>
-                      <option value="General Physician">General Physician</option>
-                      <option value="Gynecologist">Gynecologist</option>
-                      <option value="Pediatrician">Pediatrician</option>
-                      <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+                      {SPECIALTIES.map((sp) => (
+                        <option key={sp.id} value={sp.name}>
+                          {sp.name} {sp.urdu ? `(${sp.urdu})` : ''}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -470,11 +539,15 @@ export function Auth({ type = 'login' }) {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="e.g. 55421-P"
+                      placeholder="e.g. 58190-P"
                       value={doctorForm.pmdcNumber}
-                      onChange={(e) => setDoctorForm({ ...doctorForm, pmdcNumber: e.target.value })}
-                      required
+                      onChange={(e) => {
+                        setDoctorForm({ ...doctorForm, pmdcNumber: e.target.value });
+                        clearFormError('docPmdc');
+                      }}
+                      style={getFieldInputStyle(formErrors.docPmdc)}
                     />
+                    <FieldError error={formErrors.docPmdc} />
                   </div>
                 </div>
 
@@ -483,10 +556,15 @@ export function Auth({ type = 'login' }) {
                   <input
                     type="text"
                     className="form-input"
+                    placeholder="e.g. MBBS, FCPS (Cardiology)"
                     value={doctorForm.qualifications}
-                    onChange={(e) => setDoctorForm({ ...doctorForm, qualifications: e.target.value })}
-                    required
+                    onChange={(e) => {
+                      setDoctorForm({ ...doctorForm, qualifications: e.target.value });
+                      clearFormError('docQual');
+                    }}
+                    style={getFieldInputStyle(formErrors.docQual)}
                   />
+                  <FieldError error={formErrors.docQual} />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -495,10 +573,15 @@ export function Auth({ type = 'login' }) {
                     <input
                       type="text"
                       className="form-input"
+                      placeholder="e.g. Doctors Hospital & Medical Centre"
                       value={doctorForm.hospitalName}
-                      onChange={(e) => setDoctorForm({ ...doctorForm, hospitalName: e.target.value })}
-                      required
+                      onChange={(e) => {
+                        setDoctorForm({ ...doctorForm, hospitalName: e.target.value });
+                        clearFormError('docHosp');
+                      }}
+                      style={getFieldInputStyle(formErrors.docHosp)}
                     />
+                    <FieldError error={formErrors.docHosp} />
                   </div>
 
                   <div className="form-group">
@@ -513,6 +596,9 @@ export function Auth({ type = 'login' }) {
                       <option value="Islamabad">Islamabad</option>
                       <option value="Rawalpindi">Rawalpindi</option>
                       <option value="Faisalabad">Faisalabad</option>
+                      <option value="Multan">Multan</option>
+                      <option value="Peshawar">Peshawar</option>
+                      <option value="Quetta">Quetta</option>
                     </select>
                   </div>
                 </div>
@@ -523,10 +609,15 @@ export function Auth({ type = 'login' }) {
                     <input
                       type="number"
                       className="form-input"
+                      placeholder="e.g. 2000"
                       value={doctorForm.videoFee}
-                      onChange={(e) => setDoctorForm({ ...doctorForm, videoFee: Number(e.target.value) })}
-                      required
+                      onChange={(e) => {
+                        setDoctorForm({ ...doctorForm, videoFee: e.target.value });
+                        clearFormError('docVidFee');
+                      }}
+                      style={getFieldInputStyle(formErrors.docVidFee)}
                     />
+                    <FieldError error={formErrors.docVidFee} />
                   </div>
 
                   <div className="form-group">
@@ -534,10 +625,15 @@ export function Auth({ type = 'login' }) {
                     <input
                       type="number"
                       className="form-input"
+                      placeholder="e.g. 2500"
                       value={doctorForm.inClinicFee}
-                      onChange={(e) => setDoctorForm({ ...doctorForm, inClinicFee: Number(e.target.value) })}
-                      required
+                      onChange={(e) => {
+                        setDoctorForm({ ...doctorForm, inClinicFee: e.target.value });
+                        clearFormError('docClinicFee');
+                      }}
+                      style={getFieldInputStyle(formErrors.docClinicFee)}
                     />
+                    <FieldError error={formErrors.docClinicFee} />
                   </div>
                 </div>
 
@@ -564,9 +660,13 @@ export function Auth({ type = 'login' }) {
                     className="form-input"
                     placeholder="e.g. Ayesha Raza"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      clearFormError('patientName');
+                    }}
+                    style={getFieldInputStyle(formErrors.patientName)}
                   />
+                  <FieldError error={formErrors.patientName} />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -575,10 +675,15 @@ export function Auth({ type = 'login' }) {
                     <input
                       type="text"
                       className="form-input"
+                      placeholder="e.g. +92 300 4567890"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        clearFormError('patientPhone');
+                      }}
+                      style={getFieldInputStyle(formErrors.patientPhone)}
                     />
+                    <FieldError error={formErrors.patientPhone} />
                   </div>
 
                   <div className="form-group">
@@ -599,9 +704,13 @@ export function Auth({ type = 'login' }) {
                     className="form-input"
                     placeholder="name@example.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearFormError('patientEmail');
+                    }}
+                    style={getFieldInputStyle(formErrors.patientEmail)}
                   />
+                  <FieldError error={formErrors.patientEmail} />
                 </div>
 
                 <div className="form-group">
@@ -609,10 +718,15 @@ export function Auth({ type = 'login' }) {
                   <input
                     type="password"
                     className="form-input"
+                    placeholder="Create a secure password (e.g. ••••••••)"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      clearFormError('patientPassword');
+                    }}
+                    style={getFieldInputStyle(formErrors.patientPassword)}
                   />
+                  <FieldError error={formErrors.patientPassword} />
                 </div>
               </>
             ) : (
@@ -631,8 +745,13 @@ export function Auth({ type = 'login' }) {
                         : 'patient@medconnect.pk'
                     }
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearFormError('loginId');
+                    }}
+                    style={getFieldInputStyle(formErrors.loginId)}
                   />
+                  <FieldError error={formErrors.loginId} />
                 </div>
 
                 <div className="form-group">
@@ -640,10 +759,15 @@ export function Auth({ type = 'login' }) {
                   <input
                     type="password"
                     className="form-input"
+                    placeholder="Enter password (e.g. ••••••••)"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      clearFormError('loginPassword');
+                    }}
+                    style={getFieldInputStyle(formErrors.loginPassword)}
                   />
+                  <FieldError error={formErrors.loginPassword} />
                 </div>
               </>
             )}

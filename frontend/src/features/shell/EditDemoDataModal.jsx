@@ -59,6 +59,7 @@ export default function EditDemoDataModal() {
                 <input
                   type="text"
                   className="form-input"
+                  placeholder="e.g. Alex Khan"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -72,6 +73,7 @@ export default function EditDemoDataModal() {
                 <input
                   type="text"
                   className="form-input"
+                  placeholder="e.g. +92 300 1234567"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
@@ -83,6 +85,7 @@ export default function EditDemoDataModal() {
                 <input
                   type="text"
                   className="form-input"
+                  placeholder="e.g. Lahore"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   required
@@ -96,6 +99,7 @@ export default function EditDemoDataModal() {
                 <input
                   type="number"
                   className="form-input"
+                  placeholder="e.g. 29"
                   value={formData.age}
                   onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                   required

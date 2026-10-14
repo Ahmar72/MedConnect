@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDemo } from '../../context/DemoContext';
 import { SPECIALTIES } from '../patient/data/pakistanMedicalData';
 import CitySelectorModal from '../patient/components/CitySelectorModal';
+import { validators, FieldError, getFieldInputStyle } from '../../utils/validation';
 import {
   Sparkles,
   ArrowRight,
@@ -72,6 +73,8 @@ export default function Landing() {
   const [hospitalCarouselIdx, setHospitalCarouselIdx] = useState(0);
   const [withinTwoHoursFilter, setWithinTwoHoursFilter] = useState(false);
   const [emergencyOnlyFilter, setEmergencyOnlyFilter] = useState(false);
+  const [showAllDoctors, setShowAllDoctors] = useState(false);
+  const [showAllHospitals, setShowAllHospitals] = useState(false);
 
   // In-page Inspection Modals (Keep user on landing page for complete info!)
   const [selectedDoctorModal, setSelectedDoctorModal] = useState(null);
@@ -82,31 +85,44 @@ export default function Landing() {
   // Interactive In-Page Auth Modals (Requested by user)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
+  const [adminLoginEmail, setAdminLoginEmail] = useState('');
+  const [adminLoginPassword, setAdminLoginPassword] = useState('');
+
+  // Validation States for all Landing Page Auth Forms
+  const [loginErrors, setLoginErrors] = useState({});
+  const [loginTouched, setLoginTouched] = useState({});
+  const [signupErrors, setSignupErrors] = useState({});
+  const [signupTouched, setSignupTouched] = useState({});
+  const [docErrors, setDocErrors] = useState({});
+  const [docTouched, setDocTouched] = useState({});
+  const [adminErrors, setAdminErrors] = useState({});
+  const [adminTouched, setAdminTouched] = useState({});
 
   // Auth Form State inside Modal
-  const [loginRoleTab, setLoginRoleTab] = useState('patient'); // 'patient' | 'doctor' | 'admin'
+  const [loginRoleTab, setLoginRoleTab] = useState('patient'); // 'patient' | 'doctor'
   const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('••••••••');
+  const [loginPassword, setLoginPassword] = useState('');
 
   const [signupRoleTab, setSignupRoleTab] = useState('patient'); // 'patient' | 'doctor'
   const [signupStep, setSignupStep] = useState('form'); // 'form' | 'otp'
   const [signupName, setSignupName] = useState('');
-  const [signupPhone, setSignupPhone] = useState('+92 300 4567890');
+  const [signupPhone, setSignupPhone] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupCity, setSignupCity] = useState('Lahore');
   const [signupOtp, setSignupOtp] = useState('');
   const simulatedOtp = '8492';
 
   const [docSignupForm, setDocSignupForm] = useState({
-    name: 'Dr. Tariq Jamil',
-    specialty: 'Cardiologist',
-    pmdcNumber: '58190-P',
-    qualifications: 'MBBS, FCPS (Cardiology)',
-    hospitalName: 'Doctors Hospital & Medical Centre',
-    videoFee: 2000,
-    inClinicFee: 2500,
+    name: '',
+    specialty: 'Dermatologist',
+    pmdcNumber: '',
+    qualifications: '',
+    hospitalName: '',
+    videoFee: '',
+    inClinicFee: '',
     city: 'Lahore',
-    applicationNote: 'King Edward Medical University alumnus with 6 years post-fellowship clinical practice.',
+    applicationNote: '',
   });
 
   // Verified Doctors (Active PMDC approved)
@@ -144,8 +160,8 @@ export default function Landing() {
     });
   }, [branchesList, emergencyOnlyFilter]);
 
-  // Carousel Navigation Helpers (3 visible cards on desktop)
-  const maxDocIndex = Math.max(0, filteredDoctors.length - 3);
+  // Carousel Navigation Helpers (4 visible cards on desktop without clipping)
+  const maxDocIndex = Math.max(0, filteredDoctors.length - 4);
   const nextDoctorSlide = () => {
     setDoctorCarouselIdx((prev) => (prev >= maxDocIndex ? 0 : prev + 1));
   };
@@ -153,7 +169,7 @@ export default function Landing() {
     setDoctorCarouselIdx((prev) => (prev <= 0 ? maxDocIndex : prev - 1));
   };
 
-  const maxHospIndex = Math.max(0, filteredHospitals.length - 3);
+  const maxHospIndex = Math.max(0, filteredHospitals.length - 4);
   const nextHospitalSlide = () => {
     setHospitalCarouselIdx((prev) => (prev >= maxHospIndex ? 0 : prev + 1));
   };
@@ -224,18 +240,64 @@ export default function Landing() {
     }
   };
 
-  // Handle In-Modal Login
+  // Handle In-Modal Login with Validation
   const handleModalLogin = (roleOrSpecific) => {
     login(roleOrSpecific || loginRoleTab);
     setIsLoginModalOpen(false);
+    setLoginErrors({});
+    setLoginTouched({});
     if ((roleOrSpecific || loginRoleTab) === 'patient') navigate('/patient');
     else if ((roleOrSpecific || loginRoleTab) === 'doctor') navigate('/doctor');
     else if ((roleOrSpecific || loginRoleTab) === 'admin') navigate('/admin');
   };
 
+  const handleModalLoginSubmit = (e) => {
+    e.preventDefault();
+    const errors = {
+      email: validators.emailOrPhone(loginEmail),
+      password: validators.password(loginPassword, 6),
+    };
+    setLoginErrors(errors);
+    setLoginTouched({ email: true, password: true });
+
+    if (Object.values(errors).some(Boolean)) {
+      showToast('Please enter a valid email/phone and password (minimum 6 characters).', 'error');
+      return;
+    }
+
+    handleModalLogin(loginRoleTab);
+  };
+
+  // Handle Patient Signup Step 1 with Validation
+  const handlePatientSignupSubmit = (e) => {
+    e.preventDefault();
+    const errors = {
+      name: validators.name(signupName, 'Full Name'),
+      phone: validators.phone(signupPhone),
+      email: validators.email(signupEmail),
+      city: validators.required(signupCity, 'City'),
+    };
+    setSignupErrors(errors);
+    setSignupTouched({ name: true, phone: true, email: true, city: true });
+
+    if (Object.values(errors).some(Boolean)) {
+      showToast('Please fix the highlighted fields to continue.', 'error');
+      return;
+    }
+
+    setSignupStep('otp');
+    showToast(`SMS verification dispatched to ${signupPhone}. Code: ${simulatedOtp}`, 'info');
+  };
+
   // Handle Patient OTP Verification & Activation
   const handleVerifyOtp = (e) => {
     e.preventDefault();
+    const otpError = validators.otp(signupOtp, 4);
+    if (otpError) {
+      showToast(otpError, 'error');
+      return;
+    }
+
     if (signupOtp !== simulatedOtp && signupOtp !== '1234') {
       showToast('Invalid verification code. Please enter 8492.', 'error');
       return;
@@ -249,18 +311,60 @@ export default function Landing() {
     });
 
     setIsSignupModalOpen(false);
+    setSignupErrors({});
+    setSignupTouched({});
     showToast(`Mobile verified! Welcome, ${createdPatient.name}.`, 'success');
     navigate('/patient');
   };
 
-  // Handle Clinician Application in Modal
+  // Handle Clinician Application in Modal with Validation
   const handleDoctorSignup = (e) => {
     e.preventDefault();
+    const errors = {
+      name: validators.name(docSignupForm.name, 'Doctor Full Name'),
+      pmdcNumber: validators.pmdcNumber(docSignupForm.pmdcNumber),
+      qualifications: validators.required(docSignupForm.qualifications, 'qualifications'),
+      hospitalName: validators.required(docSignupForm.hospitalName, 'hospital affiliation'),
+      inClinicFee: validators.positiveNumber(docSignupForm.inClinicFee, 'consultation fee'),
+    };
+    setDocErrors(errors);
+    setDocTouched({ name: true, pmdcNumber: true, qualifications: true, hospitalName: true, inClinicFee: true });
+
+    if (Object.values(errors).some(Boolean)) {
+      showToast('Please complete all required doctor registration fields.', 'error');
+      return;
+    }
+
     const createdDoc = registerDoctor(docSignupForm);
     login(createdDoc);
     setIsSignupModalOpen(false);
+    setDocErrors({});
+    setDocTouched({});
     showToast('Clinician application submitted! Awaiting PMDC verification by Admin.', 'success');
     navigate('/doctor');
+  };
+
+  // Handle Admin Operations Login with Validation
+  const handleAdminLoginSubmit = (e) => {
+    e.preventDefault();
+    const errors = {
+      email: validators.email(adminLoginEmail),
+      password: validators.password(adminLoginPassword, 6),
+    };
+    setAdminErrors(errors);
+    setAdminTouched({ email: true, password: true });
+
+    if (Object.values(errors).some(Boolean)) {
+      showToast('Please enter a valid administrator email and password.', 'error');
+      return;
+    }
+
+    login('admin');
+    setIsAdminLoginModalOpen(false);
+    setAdminErrors({});
+    setAdminTouched({});
+    showToast('Authenticated as Operations Administrator', 'success');
+    navigate('/admin');
   };
 
   // FAQs Data
@@ -286,6 +390,456 @@ export default function Landing() {
       a: 'Qualified clinicians can submit an application via the "Join as Clinician" link. Once verified by our operations team, you gain access to the Clinician Workspace to set OPD timetables, confirm or reschedule booking requests, conduct encrypted HD video visits, and manage patient records.',
     },
   ];
+
+  const hospitalImages = [
+    'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=300&q=80',
+    'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=300&q=80',
+    'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=300&q=80',
+    'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=300&q=80',
+    'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=300&q=80',
+    'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=300&q=80',
+  ];
+
+  const renderDoctorCard = (doc, idx) => (
+    <div
+      key={doc.id}
+      className="sesame-carousel-card"
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '16px',
+        border: '1px solid #E5E7EB',
+        padding: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+        opacity: 1,
+        width: showAllDoctors ? '100%' : undefined,
+      }}
+    >
+      {/* Top Row: Circular Photo (Compact 56px) + Name + Specialty + Stars */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '10px', alignItems: 'center' }}>
+        <div
+          style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            flexShrink: 0,
+            border: '2px solid #E5E7EB',
+            backgroundColor: doc.photoColor || 'var(--forest-800)',
+            display: 'grid',
+            placeItems: 'center',
+          }}
+        >
+          {doc.photoUrl ? (
+            <img
+              src={doc.photoUrl}
+              alt={doc.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement.innerHTML = `<span style="color:#fff;font-size:18px;font-weight:700;">${doc.initials || doc.name.slice(0, 2)}</span>`;
+              }}
+            />
+          ) : (
+            <span style={{ color: '#fff', fontSize: '18px', fontWeight: '700' }}>
+              {doc.initials || doc.name.slice(0, 2)}
+            </span>
+          )}
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h3
+            style={{
+              fontSize: '15.5px',
+              fontWeight: '800',
+              margin: '0 0 2px 0',
+              color: 'var(--text-main)',
+              lineHeight: '1.25',
+              fontFamily: 'var(--font-sans)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {doc.name}
+          </h3>
+          <div
+            style={{
+              fontSize: '12px',
+              color: '#6B7280',
+              marginBottom: '3px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {doc.specialty}
+          </div>
+          {/* Stars + Rating + Reviews */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ color: '#F59E0B', fontSize: '12px', letterSpacing: '-1px' }}>
+              ★★★★★
+            </span>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#111827' }}>
+              {doc.rating || '4.8'}
+            </span>
+            <span style={{ fontSize: '11px', color: '#6B7280' }}>
+              ({doc.reviewsCount || '2010'})
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Badges: Available today + Loyal patients */}
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <span
+          style={{
+            fontSize: '10.5px',
+            fontWeight: '700',
+            backgroundColor: '#D1FAE5',
+            color: '#065F46',
+            padding: '2px 8px',
+            borderRadius: '6px',
+          }}
+        >
+          Available today
+        </span>
+        <span
+          style={{
+            fontSize: '10.5px',
+            fontWeight: '700',
+            backgroundColor: '#FCE7F3',
+            color: '#9D174D',
+            padding: '2px 8px',
+            borderRadius: '6px',
+          }}
+        >
+          Loyal patients
+        </span>
+      </div>
+
+      {/* Next Available Row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <div>
+          <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '600' }}>Next available</div>
+          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+            {doc.nextSlot ? doc.nextSlot : 'Monday, Oct 12'}
+          </div>
+        </div>
+        <span
+          style={{
+            fontSize: '10px',
+            fontWeight: '700',
+            color: '#065F46',
+            backgroundColor: '#ECFDF5',
+            border: '1px solid #A7F3D0',
+            padding: '2px 6px',
+            borderRadius: '4px',
+          }}
+        >
+          PMDC Verified
+        </span>
+      </div>
+
+      {/* 6 Slot Pills in 2 rows of 3 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px', marginBottom: '8px' }}>
+        {['7:15 pm', '8:30 pm', '8:45 pm', '9:30 pm', '9:45 pm', 'More'].map((slot, sIdx) => (
+          <button
+            key={slot}
+            type="button"
+            onClick={() => handleBookingClick(doc)}
+            style={{
+              padding: '6px 0',
+              borderRadius: '9999px',
+              border: sIdx === 0 ? '1.5px solid var(--forest-800)' : '1.5px solid #E5E7EB',
+              backgroundColor: sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
+              color: sIdx === 0 ? 'var(--forest-800)' : '#374151',
+              fontSize: '10.5px',
+              fontWeight: '700',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              fontFamily: 'var(--font-sans)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.12)';
+              e.currentTarget.style.borderColor = 'var(--forest-800)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF';
+              e.currentTarget.style.borderColor = sIdx === 0 ? 'var(--forest-800)' : '#E5E7EB';
+            }}
+          >
+            {slot}
+          </button>
+        ))}
+      </div>
+
+      {/* Full-width Book Visit Button directly under time slots */}
+      <button
+        type="button"
+        onClick={() => handleBookingClick(doc)}
+        style={{
+          width: '100%',
+          backgroundColor: 'var(--forest-800)',
+          color: '#FFFFFF',
+          padding: '9px',
+          borderRadius: '9999px',
+          fontSize: '13px',
+          fontWeight: '800',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'background 0.15s ease',
+          marginBottom: '4px',
+          fontFamily: 'var(--font-sans)',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
+      >
+        Book visit
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setSelectedDoctorModal(doc);
+          setDoctorModalTab('overview');
+        }}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'var(--forest-800)',
+          fontSize: '11px',
+          fontWeight: '600',
+          cursor: 'pointer',
+          textAlign: 'center',
+          padding: '2px',
+          fontFamily: 'var(--font-sans)',
+        }}
+      >
+        View full profile →
+      </button>
+    </div>
+  );
+
+  const renderHospitalCard = (hosp, idx) => {
+    const imgUrl = hospitalImages[idx % hospitalImages.length];
+    return (
+      <div
+        key={hosp.id}
+        className="sesame-carousel-card"
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          border: '1px solid #E5E7EB',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          boxSizing: 'border-box',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+          opacity: 1,
+          width: showAllHospitals ? '100%' : undefined,
+        }}
+      >
+        {/* Top Row: Circular Facility Photo (Compact 56px) + Name + City + Rating */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '10px', alignItems: 'center' }}>
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              flexShrink: 0,
+              border: '2px solid #E5E7EB',
+            }}
+          >
+            <img
+              src={imgUrl}
+              alt={hosp.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3
+              style={{
+                fontSize: '15.5px',
+                fontWeight: '800',
+                margin: '0 0 2px 0',
+                color: 'var(--text-main)',
+                lineHeight: '1.25',
+                fontFamily: 'var(--font-sans)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {hosp.name}
+            </h3>
+            <div
+              style={{
+                fontSize: '12px',
+                color: '#6B7280',
+                marginBottom: '3px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              Tertiary Care · {hosp.city}
+            </div>
+            {/* Stars + Rating + Reviews */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ color: '#F59E0B', fontSize: '12px', letterSpacing: '-1px' }}>
+                ★★★★★
+              </span>
+              <span style={{ fontSize: '12px', fontWeight: '700', color: '#111827' }}>
+                4.9
+              </span>
+              <span style={{ fontSize: '11px', color: '#6B7280' }}>
+                (1420 reviews)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Badges: 24/7 Emergency + PMC Accredited */}
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span
+            style={{
+              fontSize: '10.5px',
+              fontWeight: '700',
+              backgroundColor: '#D1FAE5',
+              color: '#065F46',
+              padding: '2px 8px',
+              borderRadius: '6px',
+            }}
+          >
+            24/7 Emergency Active
+          </span>
+          <span
+            style={{
+              fontSize: '10.5px',
+              fontWeight: '700',
+              backgroundColor: '#EFF6FF',
+              color: '#1D4ED8',
+              padding: '2px 8px',
+              borderRadius: '6px',
+            }}
+          >
+            PMC Accredited
+          </span>
+        </div>
+
+        {/* Admissions & OPD Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <div>
+            <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '600' }}>Admissions & OPD</div>
+            <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+              Today, 24/7 Active
+            </div>
+          </div>
+          <span
+            style={{
+              fontSize: '10px',
+              fontWeight: '700',
+              color: 'var(--forest-800)',
+              backgroundColor: 'rgba(14, 56, 44, 0.08)',
+              border: '1px solid rgba(14, 56, 44, 0.2)',
+              padding: '2px 6px',
+              borderRadius: '4px',
+            }}
+          >
+            {hosp.beds || '400+ Beds'}
+          </span>
+        </div>
+
+        {/* 6 Department Pills in 2 rows of 3 */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px', marginBottom: '8px' }}>
+          {['Emergency', 'Cardiology', 'Pediatrics', 'OPD Clinic', 'ICU / CCU', 'More'].map((dept, dIdx) => (
+            <button
+              key={dept}
+              type="button"
+              onClick={() => {
+                scrollToSection('doctors');
+                showToast(`Showing doctors at ${hosp.name}`, 'info');
+              }}
+              style={{
+                padding: '6px 0',
+                borderRadius: '9999px',
+                border: dIdx === 0 ? '1.5px solid var(--forest-800)' : '1.5px solid #E5E7EB',
+                backgroundColor: dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
+                color: dIdx === 0 ? 'var(--forest-800)' : '#374151',
+                fontSize: '10.5px',
+                fontWeight: '700',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'var(--font-sans)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.12)';
+                e.currentTarget.style.borderColor = 'var(--forest-800)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF';
+                e.currentTarget.style.borderColor = dIdx === 0 ? 'var(--forest-800)' : '#E5E7EB';
+              }}
+            >
+              {dept}
+            </button>
+          ))}
+        </div>
+
+        {/* Full-width Book OPD Visit Button directly under pills */}
+        <button
+          type="button"
+          onClick={() => {
+            scrollToSection('doctors');
+            showToast(`Showing specialists affiliated with ${hosp.name}`, 'info');
+          }}
+          style={{
+            width: '100%',
+            backgroundColor: 'var(--forest-800)',
+            color: '#FFFFFF',
+            padding: '9px',
+            borderRadius: '9999px',
+            fontSize: '13px',
+            fontWeight: '800',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'background 0.15s ease',
+            marginBottom: '4px',
+            fontFamily: 'var(--font-sans)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
+        >
+          Book OPD visit
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelectedHospitalModal(hosp)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--forest-800)',
+            fontSize: '11px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            textAlign: 'center',
+            padding: '2px',
+            fontFamily: 'var(--font-sans)',
+          }}
+        >
+          View Hospital Info →
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div style={{ backgroundColor: 'var(--canvas-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -323,7 +877,13 @@ export default function Landing() {
           {/* Admin Control Link on Left Side of Header */}
           <button
             type="button"
-            onClick={() => navigate('/admin')}
+            onClick={() => {
+              if (currentUser?.role === 'admin') {
+                navigate('/admin');
+              } else {
+                setIsAdminLoginModalOpen(true);
+              }
+            }}
             style={{
               color: 'var(--lime-accent)',
               backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -619,12 +1179,12 @@ export default function Landing() {
               height: '420px',
               borderRadius: '28px',
               overflow: 'hidden',
-              boxShadow: '0 24px 50px rgba(0,0,0,0.35)',
-              border: '3px solid rgba(255, 255, 255, 0.25)',
-              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 24px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(197, 225, 165, 0.25)',
+              border: '3px solid rgba(255, 255, 255, 0.45)',
+              backgroundColor: '#FFFFFF',
             }}>
               <img
-                src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80"
                 alt="Medical Specialist"
                 style={{
                   width: '100%',
@@ -751,40 +1311,36 @@ export default function Landing() {
                     setSelectedSpecialtyFilter(sp.name);
                     scrollToSection('doctors');
                   }}
-                  style={{
-                    backgroundColor: isSelected ? 'rgba(197, 225, 165, 0.25)' : '#FFFFFF',
-                    borderColor: isSelected ? 'var(--forest-800)' : 'var(--border-subtle)',
-                    borderWidth: isSelected ? '2px' : '1px',
-                    transform: isSelected ? 'translateY(-2px)' : 'none',
-                  }}
                 >
-                  <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div
                       style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '10px',
-                        backgroundColor: isSelected ? 'var(--forest-800)' : 'rgba(197, 225, 165, 0.35)',
-                        color: isSelected ? '#FFFFFF' : 'var(--forest-800)',
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '12px',
+                        background: isSelected ? 'var(--forest-800)' : 'linear-gradient(135deg, rgba(197, 225, 165, 0.45) 0%, rgba(14, 56, 44, 0.08) 100%)',
+                        color: isSelected ? 'var(--lime-accent)' : 'var(--forest-800)',
+                        border: '1px solid rgba(14, 56, 44, 0.12)',
                         display: 'grid',
                         placeItems: 'center',
+                        transition: 'all 0.2s ease',
                       }}
                     >
-                      <Stethoscope size={18} />
+                      <Stethoscope size={19} />
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-700)', fontFamily: 'serif' }}>
+                    <span className="specialty-urdu-badge">
                       {sp.urdu}
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: '14.5px', fontWeight: '700', margin: '4px 0', color: 'var(--text-main)', textAlign: 'left', width: '100%' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: '800', margin: '2px 0 6px 0', color: 'var(--forest-800)', textAlign: 'left', width: '100%', letterSpacing: '-0.01em' }}>
                     {sp.name}
                   </h3>
-                  <p style={{ fontSize: '11.5px', color: 'var(--text-muted)', margin: '0 0 10px 0', lineHeight: '1.4', textAlign: 'left', width: '100%' }}>
+                  <p style={{ fontSize: '12px', color: '#4A5568', margin: '0 0 12px 0', lineHeight: '1.45', textAlign: 'left', width: '100%' }}>
                     {sp.description}
                   </p>
 
-                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', width: '100%', fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
+                  <div className="specialty-filter-pill">
                     <span>Filter Doctors ↓</span>
                   </div>
                 </div>
@@ -855,11 +1411,7 @@ export default function Landing() {
 
             <button
               type="button"
-              onClick={() => {
-                setSelectedSpecialtyFilter('All');
-                setConsultationTypeFilter('all');
-                setWithinTwoHoursFilter(false);
-              }}
+              onClick={() => setShowAllDoctors((prev) => !prev)}
               style={{
                 fontSize: '14px',
                 fontWeight: '700',
@@ -871,301 +1423,70 @@ export default function Landing() {
                 textDecoration: 'underline',
               }}
             >
-              See all
+              {showAllDoctors ? 'Show carousel' : `See all (${filteredDoctors.length})`}
             </button>
           </div>
 
-          {/* Carousel Window */}
-          <div className="sesame-carousel-wrap">
+          {/* If showAllDoctors: Render Full Grid on Same Page */}
+          {showAllDoctors ? (
             <div
-              className="sesame-carousel-track"
               style={{
-                transform: `translateX(-${doctorCarouselIdx * 350}px)`,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '16px',
+                marginTop: '8px',
               }}
             >
-              {filteredDoctors.map((doc, idx) => (
-                <div
-                  key={doc.id}
-                  className="sesame-carousel-card scroll-seq-card"
-                  data-card-seq={idx}
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '16px',
-                    border: '1px solid #E5E7EB',
-                    padding: '22px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '525px',
-                    boxSizing: 'border-box',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                    transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-                  }}
+              {filteredDoctors.map((doc, idx) => renderDoctorCard(doc, idx))}
+            </div>
+          ) : (
+            <>
+              {/* Carousel Window Flanked by Left & Right Navigation Buttons */}
+              <div className="sesame-carousel-outer">
+                <button
+                  type="button"
+                  className="sesame-arrow-btn"
+                  onClick={prevDoctorSlide}
+                  aria-label="Previous Doctor Profile"
                 >
-                  {/* Top Row: Circular Photo + Name + Specialty + Stars */}
-                  <div style={{ display: 'flex', gap: '14px', marginBottom: '12px', alignItems: 'flex-start' }}>
-                    <div
-                      style={{
-                        width: '76px',
-                        height: '76px',
-                        borderRadius: '50%',
-                        overflow: 'hidden',
-                        flexShrink: 0,
-                        border: '2px solid #E5E7EB',
-                        backgroundColor: doc.photoColor || 'var(--forest-800)',
-                        display: 'grid',
-                        placeItems: 'center',
-                      }}
-                    >
-                      {doc.photoUrl ? (
-                        <img
-                          src={doc.photoUrl}
-                          alt={doc.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.parentElement.innerHTML = `<span style="color:#fff;font-size:22px;font-weight:700;">${doc.initials || doc.name.slice(0, 2)}</span>`;
-                          }}
-                        />
-                      ) : (
-                        <span style={{ color: '#fff', fontSize: '22px', fontWeight: '700' }}>
-                          {doc.initials || doc.name.slice(0, 2)}
-                        </span>
-                      )}
-                    </div>
+                  <ChevronLeft size={22} />
+                </button>
 
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <h3
-                        style={{
-                          fontSize: '17px',
-                          fontWeight: '800',
-                          margin: '0 0 2px 0',
-                          color: 'var(--text-main)',
-                          lineHeight: '1.25',
-                          fontFamily: 'var(--font-sans)',
-                          minHeight: '44px',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {doc.name}
-                      </h3>
-                      <div
-                        style={{
-                          fontSize: '13px',
-                          color: '#6B7280',
-                          marginBottom: '4px',
-                          minHeight: '18px',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {doc.specialty}
-                      </div>
-                      {/* Stars + Rating + Reviews */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
-                          ★★★★★
-                        </span>
-                        <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#111827' }}>
-                          {doc.rating || '4.8'}
-                        </span>
-                        <span style={{ fontSize: '12px', color: '#6B7280' }}>
-                          ({doc.reviewsCount || '2010'})
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Badges: Green Available today + Pink Loyal patients */}
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap', minHeight: '26px', alignItems: 'center' }}>
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: '700',
-                        backgroundColor: '#D1FAE5',
-                        color: '#065F46',
-                        padding: '3px 9px',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      Available today
-                    </span>
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: '700',
-                        backgroundColor: '#FCE7F3',
-                        color: '#9D174D',
-                        padding: '3px 9px',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      Loyal patients
-                    </span>
-                  </div>
-
-                  {/* Gray Review Box */}
+                <div className="sesame-carousel-wrap">
                   <div
+                    className="sesame-carousel-track"
                     style={{
-                      backgroundColor: '#F8FAFC',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      fontSize: '12px',
-                      color: '#374151',
-                      lineHeight: '1.45',
-                      marginBottom: '14px',
-                      height: '54px',
-                      minHeight: '54px',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      boxSizing: 'border-box',
+                      transform: `translateX(calc(-${doctorCarouselIdx} * (25% + 4px)))`,
                     }}
                   >
-                    "{doc.reviews?.[0]?.comment || 'He was very friendly and helpful, and obviously was researched. He paid attention to my symptoms.'}"
+                    {filteredDoctors.map((doc, idx) => renderDoctorCard(doc, idx))}
                   </div>
-
-                  {/* Next Available Row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', minHeight: '36px' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: '#6B7280', fontWeight: '600' }}>Next available</div>
-                      <div style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                        {doc.nextSlot ? doc.nextSlot : 'Monday, Oct 12'}
-                      </div>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: '700',
-                        color: '#065F46',
-                        backgroundColor: '#ECFDF5',
-                        border: '1px solid #A7F3D0',
-                        padding: '3px 8px',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      PMDC Verified
-                    </span>
-                  </div>
-
-                  {/* 6 Slot Pills in 2 rows of 3 */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '14px' }}>
-                    {['7:15 pm', '8:30 pm', '8:45 pm', '9:30 pm', '9:45 pm', 'More'].map((slot, sIdx) => (
-                      <button
-                        key={slot}
-                        type="button"
-                        onClick={() => handleBookingClick(doc)}
-                        style={{
-                          padding: '7px 0',
-                          borderRadius: '9999px',
-                          border: sIdx === 0 ? '1.5px solid var(--forest-800)' : '1.5px solid #E5E7EB',
-                          backgroundColor: sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
-                          color: sIdx === 0 ? 'var(--forest-800)' : '#374151',
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                          fontFamily: 'var(--font-sans)',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.12)';
-                          e.currentTarget.style.borderColor = 'var(--forest-800)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF';
-                          e.currentTarget.style.borderColor = sIdx === 0 ? 'var(--forest-800)' : '#E5E7EB';
-                        }}
-                      >
-                        {slot}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Full-width Book Visit Button (System Palette) */}
-                  <button
-                    type="button"
-                    onClick={() => handleBookingClick(doc)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: 'var(--forest-800)',
-                      color: '#FFFFFF',
-                      padding: '12px',
-                      borderRadius: '9999px',
-                      fontSize: '14px',
-                      fontWeight: '800',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background 0.15s ease',
-                      marginTop: 'auto',
-                      marginBottom: '6px',
-                      fontFamily: 'var(--font-sans)',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
-                  >
-                    Book visit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedDoctorModal(doc);
-                      setDoctorModalTab('overview');
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--forest-800)',
-                      fontSize: '11.5px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      textAlign: 'center',
-                      padding: '4px',
-                      fontFamily: 'var(--font-sans)',
-                    }}
-                  >
-                    View full profile →
-                  </button>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Bottom Carousel Controls: Dots on Left, Arrow Buttons on Right */}
-          <div className="sesame-carousel-controls">
-            <div className="sesame-carousel-dots">
-              {Array.from({ length: Math.max(1, maxDocIndex + 1) }).map((_, dIdx) => (
-                <div
-                  key={dIdx}
-                  className={`sesame-carousel-dot ${doctorCarouselIdx === dIdx ? 'active' : ''}`}
-                  onClick={() => setDoctorCarouselIdx(dIdx)}
-                />
-              ))}
-            </div>
+                <button
+                  type="button"
+                  className="sesame-arrow-btn"
+                  onClick={nextDoctorSlide}
+                  aria-label="Next Doctor Profile"
+                >
+                  <ChevronRight size={22} />
+                </button>
+              </div>
 
-            <div className="sesame-carousel-arrows">
-              <button
-                type="button"
-                className="sesame-arrow-btn"
-                onClick={prevDoctorSlide}
-                aria-label="Previous Doctor Profile"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                type="button"
-                className="sesame-arrow-btn"
-                onClick={nextDoctorSlide}
-                aria-label="Next Doctor Profile"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-          </div>
+              {/* Dots Indicator Centered Below */}
+              <div className="sesame-carousel-controls">
+                <div className="sesame-carousel-dots">
+                  {Array.from({ length: Math.max(1, maxDocIndex + 1) }).map((_, dIdx) => (
+                    <div
+                      key={dIdx}
+                      className={`sesame-carousel-dot ${doctorCarouselIdx === dIdx ? 'active' : ''}`}
+                      onClick={() => setDoctorCarouselIdx(dIdx)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
         {/* =========================================================================
@@ -1230,7 +1551,7 @@ export default function Landing() {
 
             <button
               type="button"
-              onClick={() => setEmergencyOnlyFilter(false)}
+              onClick={() => setShowAllHospitals((prev) => !prev)}
               style={{
                 fontSize: '14px',
                 fontWeight: '700',
@@ -1242,303 +1563,70 @@ export default function Landing() {
                 textDecoration: 'underline',
               }}
             >
-              See all
+              {showAllHospitals ? 'Show carousel' : `See all (${filteredHospitals.length})`}
             </button>
           </div>
 
-          {/* Carousel Window for Hospitals */}
-          <div className="sesame-carousel-wrap">
+          {/* If showAllHospitals: Render Full Grid on Same Page */}
+          {showAllHospitals ? (
             <div
-              className="sesame-carousel-track"
               style={{
-                transform: `translateX(-${hospitalCarouselIdx * 350}px)`,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '16px',
+                marginTop: '8px',
               }}
             >
-              {filteredHospitals.map((hosp, idx) => {
-                const hospitalImages = [
-                  'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=300&q=80',
-                  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=300&q=80',
-                  'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=300&q=80',
-                  'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=300&q=80',
-                  'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=300&q=80',
-                  'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=300&q=80',
-                ];
-                const imgUrl = hospitalImages[idx % hospitalImages.length];
+              {filteredHospitals.map((hosp, idx) => renderHospitalCard(hosp, idx))}
+            </div>
+          ) : (
+            <>
+              {/* Carousel Window Flanked by Left & Right Navigation Buttons */}
+              <div className="sesame-carousel-outer">
+                <button
+                  type="button"
+                  className="sesame-arrow-btn"
+                  onClick={prevHospitalSlide}
+                  aria-label="Previous Hospital Profile"
+                >
+                  <ChevronLeft size={22} />
+                </button>
 
-                return (
+                <div className="sesame-carousel-wrap">
                   <div
-                    key={hosp.id}
-                    className="sesame-carousel-card scroll-seq-card"
-                    data-card-seq={idx}
+                    className="sesame-carousel-track"
                     style={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '16px',
-                      border: '1px solid #E5E7EB',
-                      padding: '22px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      height: '525px',
-                      boxSizing: 'border-box',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                      transform: `translateX(calc(-${hospitalCarouselIdx} * (25% + 4px)))`,
                     }}
                   >
-                    {/* Top Row: Circular Facility Photo + Name + City + Rating */}
-                    <div style={{ display: 'flex', gap: '14px', marginBottom: '12px', alignItems: 'flex-start' }}>
-                      <div
-                        style={{
-                          width: '76px',
-                          height: '76px',
-                          borderRadius: '50%',
-                          overflow: 'hidden',
-                          flexShrink: 0,
-                          border: '2px solid #E5E7EB',
-                        }}
-                      >
-                        <img
-                          src={imgUrl}
-                          alt={hosp.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      </div>
-
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <h3
-                          style={{
-                            fontSize: '17px',
-                            fontWeight: '800',
-                            margin: '0 0 2px 0',
-                            color: 'var(--text-main)',
-                            lineHeight: '1.25',
-                            fontFamily: 'var(--font-sans)',
-                            minHeight: '44px',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {hosp.name}
-                        </h3>
-                        <div
-                          style={{
-                            fontSize: '13px',
-                            color: '#6B7280',
-                            marginBottom: '4px',
-                            minHeight: '18px',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          Tertiary Care · {hosp.city}
-                        </div>
-                        {/* Stars + Rating + Reviews */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <span style={{ color: '#F59E0B', fontSize: '13px', letterSpacing: '-1px' }}>
-                            ★★★★★
-                          </span>
-                          <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#111827' }}>
-                            4.9
-                          </span>
-                          <span style={{ fontSize: '12px', color: '#6B7280' }}>
-                            (650+ reviews)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Badges: Green 24/7 Emergency + Blue PMC Accredited */}
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap', minHeight: '26px', alignItems: 'center' }}>
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          backgroundColor: '#D1FAE5',
-                          color: '#065F46',
-                          padding: '3px 9px',
-                          borderRadius: '6px',
-                        }}
-                      >
-                        24/7 Emergency Active
-                      </span>
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          backgroundColor: '#EFF6FF',
-                          color: '#1D4ED8',
-                          padding: '3px 9px',
-                          borderRadius: '6px',
-                        }}
-                      >
-                        PMC Accredited Network
-                      </span>
-                    </div>
-
-                    {/* Gray Quote / Facility Highlights Box */}
-                    <div
-                      style={{
-                        backgroundColor: '#F8FAFC',
-                        padding: '10px 12px',
-                        borderRadius: '10px',
-                        fontSize: '12px',
-                        color: '#374151',
-                        lineHeight: '1.45',
-                        marginBottom: '14px',
-                        height: '54px',
-                        minHeight: '54px',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        boxSizing: 'border-box',
-                      }}
-                    >
-                      "Equipped with modern ICU/CCU, 24/7 diagnostic labs and priority MedConnect fast-track check-in."
-                    </div>
-
-                    {/* Admissions & OPD Row */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', minHeight: '36px' }}>
-                      <div>
-                        <div style={{ fontSize: '11px', color: '#6B7280', fontWeight: '600' }}>Admissions & OPD</div>
-                        <div style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                          Today, 24/7 Active
-                        </div>
-                      </div>
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          color: 'var(--forest-800)',
-                          backgroundColor: 'rgba(14, 56, 44, 0.08)',
-                          border: '1px solid rgba(14, 56, 44, 0.2)',
-                          padding: '3px 8px',
-                          borderRadius: '6px',
-                        }}
-                      >
-                        {hosp.beds || '400+ Beds'}
-                      </span>
-                    </div>
-
-                    {/* 6 Department Pills in 2 rows of 3 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '14px' }}>
-                      {['Emergency', 'Cardiology', 'Pediatrics', 'OPD Clinic', 'ICU / CCU', 'More'].map((dept, dIdx) => (
-                        <button
-                          key={dept}
-                          type="button"
-                          onClick={() => {
-                            scrollToSection('doctors');
-                            showToast(`Showing doctors at ${hosp.name}`, 'info');
-                          }}
-                          style={{
-                            padding: '7px 0',
-                            borderRadius: '9999px',
-                            border: dIdx === 0 ? '1.5px solid var(--forest-800)' : '1.5px solid #E5E7EB',
-                            backgroundColor: dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
-                            color: dIdx === 0 ? 'var(--forest-800)' : '#374151',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            textAlign: 'center',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                            fontFamily: 'var(--font-sans)',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.12)';
-                            e.currentTarget.style.borderColor = 'var(--forest-800)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF';
-                            e.currentTarget.style.borderColor = dIdx === 0 ? 'var(--forest-800)' : '#E5E7EB';
-                          }}
-                        >
-                          {dept}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Full-width Book OPD Visit Button (System Palette) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        scrollToSection('doctors');
-                        showToast(`Showing specialists affiliated with ${hosp.name}`, 'info');
-                      }}
-                      style={{
-                        width: '100%',
-                        backgroundColor: 'var(--forest-800)',
-                        color: '#FFFFFF',
-                        padding: '12px',
-                        borderRadius: '9999px',
-                        fontSize: '14px',
-                        fontWeight: '800',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'background 0.15s ease',
-                        marginTop: 'auto',
-                        marginBottom: '6px',
-                        fontFamily: 'var(--font-sans)',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-700)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--forest-800)')}
-                    >
-                      Book OPD visit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedHospitalModal(hosp)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--forest-800)',
-                        fontSize: '11.5px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        padding: '4px',
-                        fontFamily: 'var(--font-sans)',
-                      }}
-                    >
-                      View Hospital Info →
-                    </button>
+                    {filteredHospitals.map((hosp, idx) => renderHospitalCard(hosp, idx))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
 
-          {/* Bottom Carousel Controls for Hospitals */}
-          <div className="sesame-carousel-controls">
-            <div className="sesame-carousel-dots">
-              {Array.from({ length: Math.max(1, maxHospIndex + 1) }).map((_, hIdx) => (
-                <div
-                  key={hIdx}
-                  className={`sesame-carousel-dot ${hospitalCarouselIdx === hIdx ? 'active' : ''}`}
-                  onClick={() => setHospitalCarouselIdx(hIdx)}
-                />
-              ))}
-            </div>
+                <button
+                  type="button"
+                  className="sesame-arrow-btn"
+                  onClick={nextHospitalSlide}
+                  aria-label="Next Hospital Profile"
+                >
+                  <ChevronRight size={22} />
+                </button>
+              </div>
 
-            <div className="sesame-carousel-arrows">
-              <button
-                type="button"
-                className="sesame-arrow-btn"
-                onClick={prevHospitalSlide}
-                aria-label="Previous Hospital Profile"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                type="button"
-                className="sesame-arrow-btn"
-                onClick={nextHospitalSlide}
-                aria-label="Next Hospital Profile"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-          </div>
+              {/* Dots Indicator Centered Below */}
+              <div className="sesame-carousel-controls">
+                <div className="sesame-carousel-dots">
+                  {Array.from({ length: Math.max(1, maxHospIndex + 1) }).map((_, hIdx) => (
+                    <div
+                      key={hIdx}
+                      className={`sesame-carousel-dot ${hospitalCarouselIdx === hIdx ? 'active' : ''}`}
+                      onClick={() => setHospitalCarouselIdx(hIdx)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
         {/* =========================================================================
@@ -1551,62 +1639,61 @@ export default function Landing() {
             backgroundColor: 'var(--forest-800)',
             color: '#FFFFFF',
             borderRadius: '28px',
-            padding: '56px',
+            padding: '52px 36px',
             position: 'relative',
             overflow: 'hidden',
+            width: '100%',
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
           }}
         >
-          <div style={{ maxWidth: '720px', position: 'relative', zIndex: 2 }}>
-            <div className="hero-pill-badge" style={{ marginBottom: '16px' }}>
+          <div style={{ width: '100%', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="hero-pill-badge" style={{ margin: '0 auto 16px auto', display: 'inline-flex' }}>
               <Video size={13} />
               <span>OFFICIAL PMDC TELEHEALTH PLATFORM</span>
             </div>
 
-            <h2 className="section-main-heading" style={{ color: '#FFFFFF', margin: '0 0 14px 0' }}>
+            <h2 className="section-main-heading" style={{ color: '#FFFFFF', margin: '0 0 14px 0', textAlign: 'center', width: '100%' }}>
               Instant Video Consultations with Top Doctors across Pakistan
             </h2>
 
-            <p className="section-subheading" style={{ color: 'var(--text-white-muted)', margin: '0 0 28px 0' }}>
+            <p className="section-subheading" style={{ color: 'var(--text-white-muted)', margin: '0 auto 32px auto', textAlign: 'center', maxWidth: '860px' }}>
               No matter where you are in Pakistan—from small towns to major metropolitan centers—consult senior professors and specialists via encrypted HD video.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', marginBottom: '32px' }}>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <CheckCircle2 size={18} color="var(--lime-accent)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <b style={{ fontSize: '13.5px', color: '#FFF' }}>100% Encrypted Video</b>
-                  <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: '2px 0 0 0' }}>End-to-end clinical privacy conforming to international telehealth standards.</p>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '16px', marginBottom: '32px', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '20px 16px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <CheckCircle2 size={22} color="var(--lime-accent)" style={{ marginBottom: '8px' }} />
+                <b style={{ fontSize: '13.5px', color: '#FFF', marginBottom: '4px' }}>100% Encrypted Video</b>
+                <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: 0, lineHeight: '1.4' }}>End-to-end clinical privacy conforming to international telehealth standards.</p>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <CheckCircle2 size={18} color="var(--lime-accent)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <b style={{ fontSize: '13.5px', color: '#FFF' }}>Electronic PMDC Rx</b>
-                  <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: '2px 0 0 0' }}>Official digital prescription delivered to your phone and patient portal.</p>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '20px 16px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <CheckCircle2 size={22} color="var(--lime-accent)" style={{ marginBottom: '8px' }} />
+                <b style={{ fontSize: '13.5px', color: '#FFF', marginBottom: '4px' }}>Electronic PMDC Rx</b>
+                <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: 0, lineHeight: '1.4' }}>Official digital prescription delivered to your phone and patient portal.</p>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <CheckCircle2 size={18} color="var(--lime-accent)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <b style={{ fontSize: '13.5px', color: '#FFF' }}>JazzCash & EasyPaisa</b>
-                  <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: '2px 0 0 0' }}>Prepay effortlessly with Pakistani mobile wallets or debit/credit cards.</p>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '20px 16px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <CheckCircle2 size={22} color="var(--lime-accent)" style={{ marginBottom: '8px' }} />
+                <b style={{ fontSize: '13.5px', color: '#FFF', marginBottom: '4px' }}>JazzCash & EasyPaisa</b>
+                <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: 0, lineHeight: '1.4' }}>Prepay effortlessly with Pakistani mobile wallets or debit/credit cards.</p>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <CheckCircle2 size={18} color="var(--lime-accent)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <b style={{ fontSize: '13.5px', color: '#FFF' }}>48-Hour Free Follow-up</b>
-                  <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: '2px 0 0 0' }}>Ask follow-up questions to your doctor after lab results are ready.</p>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '20px 16px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <CheckCircle2 size={22} color="var(--lime-accent)" style={{ marginBottom: '8px' }} />
+                <b style={{ fontSize: '13.5px', color: '#FFF', marginBottom: '4px' }}>48-Hour Free Follow-up</b>
+                <p style={{ fontSize: '12px', color: 'var(--text-white-muted)', margin: 0, lineHeight: '1.4' }}>Ask follow-up questions to your doctor after lab results are ready.</p>
               </div>
             </div>
 
             <button
               type="button"
               className="btn-lime-pill"
+              style={{ margin: '0 auto' }}
               onClick={() => {
                 setConsultationTypeFilter('video');
                 scrollToSection('doctors');
@@ -1801,16 +1888,16 @@ export default function Landing() {
         {/* =========================================================================
             SECTION 9: FREQUENTLY ASKED QUESTIONS (INTERACTIVE ACCORDION)
            ========================================================================= */}
-        <section id="faq" style={{ marginBottom: '56px' }}>
-          <div className="section-header-row" style={{ marginBottom: '24px' }}>
-            <div className="section-heading-wrap">
-              <span className="section-eyebrow">✦ HELP & SUPPORT</span>
-              <h2 className="section-main-heading">Frequently Asked Questions (FAQ)</h2>
-              <p className="section-subheading">Everything you need to know about PMDC validation, bookings, and digital healthcare</p>
-            </div>
+        <section id="faq" style={{ marginBottom: '56px', width: '100%' }}>
+          <div style={{ textAlign: 'center', marginBottom: '28px', width: '100%' }}>
+            <span className="section-eyebrow" style={{ display: 'inline-block' }}>✦ HELP & SUPPORT</span>
+            <h2 className="section-main-heading" style={{ textAlign: 'center' }}>Frequently Asked Questions (FAQ)</h2>
+            <p className="section-subheading" style={{ textAlign: 'center', margin: '8px auto 0 auto', maxWidth: '800px' }}>
+              Everything you need to know about PMDC validation, bookings, and digital healthcare
+            </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '960px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
             {FAQS.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
@@ -1823,6 +1910,8 @@ export default function Landing() {
                     border: '1px solid var(--border-subtle)',
                     overflow: 'hidden',
                     transition: 'all 0.2s',
+                    width: '100%',
+                    boxSizing: 'border-box',
                   }}
                 >
                   <button
@@ -1830,22 +1919,27 @@ export default function Landing() {
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
                     style={{
                       width: '100%',
-                      padding: '20px 24px',
+                      padding: '18px 24px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      textAlign: 'left',
+                      textAlign: 'center',
                       fontWeight: '700',
                       fontSize: '15px',
                       color: 'var(--text-main)',
+                      cursor: 'pointer',
                     }}
                   >
-                    <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp size={18} color="var(--forest-800)" /> : <ChevronDown size={18} color="var(--text-muted)" />}
+                    <span style={{ flex: 1, textAlign: 'center', paddingLeft: '24px', paddingRight: '24px' }}>
+                      {faq.q}
+                    </span>
+                    <span style={{ flexShrink: 0 }}>
+                      {isOpen ? <ChevronUp size={18} color="var(--forest-800)" /> : <ChevronDown size={18} color="var(--text-muted)" />}
+                    </span>
                   </button>
 
                   {isOpen && (
-                    <div style={{ padding: '0 24px 20px 24px', fontSize: '13.5px', color: 'var(--text-body)', lineHeight: '1.6' }}>
+                    <div style={{ padding: '0 32px 22px 32px', fontSize: '13.5px', color: 'var(--text-body)', lineHeight: '1.65', textAlign: 'center', maxWidth: '960px', margin: '0 auto' }}>
                       {faq.a}
                     </div>
                   )}
@@ -1863,30 +1957,30 @@ export default function Landing() {
             backgroundColor: 'var(--forest-800)',
             color: '#FFFFFF',
             borderRadius: '28px',
-            padding: '48px 56px',
+            padding: '52px 36px',
             display: 'flex',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
             alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '24px',
+            textAlign: 'center',
+            width: '100%',
+            boxSizing: 'border-box',
+            marginBottom: '56px',
           }}
         >
-          <div style={{ maxWidth: '680px' }}>
-            <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
-              JOIN THE MEDCONNECT CLINICIAN NETWORK
-            </span>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '30px', margin: '6px 0 10px 0' }}>
-              Are you a qualified medical practitioner in Pakistan?
-            </h2>
-            <p style={{ fontSize: '14px', color: 'var(--text-white-muted)', margin: 0, lineHeight: '1.6' }}>
-              Expand your clinical consultation reach, manage in-clinic hospital timetables, and consult patients across Pakistan. Submit your PMDC license number for prompt verification by our operations team.
-            </p>
-          </div>
+          <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase', marginBottom: '8px', display: 'inline-block' }}>
+            JOIN THE MEDCONNECT CLINICIAN NETWORK
+          </span>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '30px', margin: '6px 0 12px 0', maxWidth: '850px', textAlign: 'center' }}>
+            Are you a qualified medical practitioner in Pakistan?
+          </h2>
+          <p style={{ fontSize: '14px', color: 'var(--text-white-muted)', margin: '0 auto 28px auto', maxWidth: '850px', lineHeight: '1.6', textAlign: 'center' }}>
+            Expand your clinical consultation reach, manage in-clinic hospital timetables, and consult patients across Pakistan. Submit your PMDC license number for prompt verification by our operations team.
+          </p>
 
           <button
             type="button"
             className="btn-lime-pill"
-            style={{ padding: '14px 28px', fontSize: '14px' }}
+            style={{ padding: '14px 32px', fontSize: '14px', margin: '0 auto' }}
             onClick={() => {
               setSignupRoleTab('doctor');
               setIsSignupModalOpen(true);
@@ -2067,8 +2161,8 @@ export default function Landing() {
                 >
                   {loginRoleTab === 'admin' ? '🛡️ OPERATIONS CONSOLE' : '🏥 MEDCONNECT ACCESS'}
                 </span>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
-                  {loginRoleTab === 'admin' ? 'Hospital Administration Sign In' : 'Sign in to MedConnect'}
+                <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '22px', margin: '4px 0 0 0', color: 'var(--text-main)', fontWeight: '800' }}>
+                  Sign in to MedConnect
                 </h2>
               </div>
 
@@ -2082,7 +2176,7 @@ export default function Landing() {
             </div>
 
             <div className="modal-interactive-body">
-              {/* Role Selector Tabs (Patient, Doctor, Admin) */}
+              {/* Role Selector Tabs (Patient, Doctor) */}
               <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', backgroundColor: 'var(--canvas-bg)', padding: '4px', borderRadius: 'var(--radius-pill)' }}>
                 <button
                   type="button"
@@ -2101,37 +2195,7 @@ export default function Landing() {
                 >
                   Doctor
                 </button>
-
-                <button
-                  type="button"
-                  className={`modal-tab-pill ${loginRoleTab === 'admin' ? 'active' : ''}`}
-                  style={{ flex: 1 }}
-                  onClick={() => setLoginRoleTab('admin')}
-                >
-                  🛡️ Admin
-                </button>
               </div>
-
-              {/* Admin Notice if Admin Tab Active */}
-              {loginRoleTab === 'admin' && (
-                <div
-                  style={{
-                    backgroundColor: 'rgba(220, 38, 38, 0.08)',
-                    border: '1.5px solid rgba(220, 38, 38, 0.25)',
-                    borderRadius: '14px',
-                    padding: '12px 14px',
-                    marginBottom: '18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                  }}
-                >
-                  <Lock size={18} color="#DC2626" />
-                  <div style={{ fontSize: '11.5px', color: '#7F1D1D', lineHeight: '1.4' }}>
-                    <b>Hospital Operations Gateway:</b> Access doctor approvals, clinic facility management, patient records, and real-time audit feed.
-                  </div>
-                </div>
-              )}
 
               {/* Quick 1-Click Demo Profiles */}
               <div
@@ -2146,63 +2210,55 @@ export default function Landing() {
                 <div style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
                   ⚡ ONE-CLICK DEMO SIGN-IN
                 </div>
-                {loginRoleTab === 'admin' ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <button
                     type="button"
-                    className="btn-lime-pill"
-                    style={{ width: '100%', padding: '10px 14px', fontSize: '12.5px', justifyContent: 'center' }}
-                    onClick={() => handleModalLogin('admin')}
+                    className="btn-white-capsule"
+                    style={{ border: '1px solid var(--border-strong)', fontSize: '11px', padding: '8px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    onClick={() => handleModalLogin('patient')}
                   >
-                    <ShieldCheck size={16} />
-                    <span>Enter as Operations Administrator</span>
+                    <Users size={13} color="var(--forest-800)" />
+                    <span>Alex Khan (Patient)</span>
                   </button>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                    <button
-                      type="button"
-                      className="btn-white-capsule"
-                      style={{ border: '1px solid var(--border-strong)', fontSize: '11px', padding: '8px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
-                      onClick={() => handleModalLogin('patient')}
-                    >
-                      <Users size={13} color="var(--forest-800)" />
-                      <span>Alex Khan (Patient)</span>
-                    </button>
 
-                    <button
-                      type="button"
-                      className="btn-white-capsule"
-                      style={{ border: '1px solid var(--border-strong)', fontSize: '11px', padding: '8px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
-                      onClick={() => handleModalLogin('doctor')}
-                    >
-                      <Stethoscope size={13} color="var(--forest-800)" />
-                      <span>Dr. Maya (Doctor)</span>
-                    </button>
-                  </div>
-                )}
+                  <button
+                    type="button"
+                    className="btn-white-capsule"
+                    style={{ border: '1px solid var(--border-strong)', fontSize: '11px', padding: '8px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    onClick={() => handleModalLogin('doctor')}
+                  >
+                    <Stethoscope size={13} color="var(--forest-800)" />
+                    <span>Dr. Maya (Doctor)</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Standard Email/Password Form */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleModalLogin(loginRoleTab);
-                }}
-              >
+              {/* Standard Email/Password Form with Validation */}
+              <form onSubmit={handleModalLoginSubmit} noValidate>
                 <div className="form-group">
                   <label className="form-label">Email or Mobile Number</label>
                   <input
                     type="text"
                     className="form-input"
+                    style={getFieldInputStyle(loginTouched.email && loginErrors.email)}
                     placeholder={
-                      loginRoleTab === 'admin'
-                        ? 'admin@medconnect.pk'
-                        : loginRoleTab === 'doctor'
+                      loginRoleTab === 'doctor'
                         ? 'doctor@medconnect.pk'
                         : 'patient@medconnect.pk'
                     }
                     value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
+                    onChange={(e) => {
+                      setLoginEmail(e.target.value);
+                      if (loginTouched.email) {
+                        setLoginErrors((prev) => ({ ...prev, email: validators.emailOrPhone(e.target.value) }));
+                      }
+                    }}
+                    onBlur={() => {
+                      setLoginTouched((prev) => ({ ...prev, email: true }));
+                      setLoginErrors((prev) => ({ ...prev, email: validators.emailOrPhone(loginEmail) }));
+                    }}
                   />
+                  <FieldError error={loginTouched.email ? loginErrors.email : null} />
                 </div>
 
                 <div className="form-group">
@@ -2210,9 +2266,21 @@ export default function Landing() {
                   <input
                     type="password"
                     className="form-input"
+                    style={getFieldInputStyle(loginTouched.password && loginErrors.password)}
+                    placeholder="Enter password (e.g. ••••••••)"
                     value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
+                    onChange={(e) => {
+                      setLoginPassword(e.target.value);
+                      if (loginTouched.password) {
+                        setLoginErrors((prev) => ({ ...prev, password: validators.password(e.target.value, 6) }));
+                      }
+                    }}
+                    onBlur={() => {
+                      setLoginTouched((prev) => ({ ...prev, password: true }));
+                      setLoginErrors((prev) => ({ ...prev, password: validators.password(loginPassword, 6) }));
+                    }}
                   />
+                  <FieldError error={loginTouched.password ? loginErrors.password : null} />
                 </div>
 
                 <button
@@ -2398,24 +2466,28 @@ export default function Landing() {
                   </div>
                 </form>
               ) : signupRoleTab === 'patient' ? (
-                /* Case 2: Patient Registration Form */
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setSignupStep('otp');
-                    showToast(`SMS verification dispatched to ${signupPhone}. Code: ${simulatedOtp}`, 'info');
-                  }}
-                >
+                /* Case 2: Patient Registration Form with Validation */
+                <form onSubmit={handlePatientSignupSubmit} noValidate>
                   <div className="form-group">
                     <label className="form-label">Full Name</label>
                     <input
                       type="text"
                       className="form-input"
+                      style={getFieldInputStyle(signupTouched.name && signupErrors.name)}
                       placeholder="e.g. Ayesha Raza"
                       value={signupName}
-                      onChange={(e) => setSignupName(e.target.value)}
-                      required
+                      onChange={(e) => {
+                        setSignupName(e.target.value);
+                        if (signupTouched.name) {
+                          setSignupErrors((prev) => ({ ...prev, name: validators.name(e.target.value, 'Full Name') }));
+                        }
+                      }}
+                      onBlur={() => {
+                        setSignupTouched((prev) => ({ ...prev, name: true }));
+                        setSignupErrors((prev) => ({ ...prev, name: validators.name(signupName, 'Full Name') }));
+                      }}
                     />
+                    <FieldError error={signupTouched.name ? signupErrors.name : null} />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -2424,15 +2496,30 @@ export default function Landing() {
                       <input
                         type="text"
                         className="form-input"
+                        style={getFieldInputStyle(signupTouched.phone && signupErrors.phone)}
+                        placeholder="e.g. +92 300 4567890"
                         value={signupPhone}
-                        onChange={(e) => setSignupPhone(e.target.value)}
-                        required
+                        onChange={(e) => {
+                          setSignupPhone(e.target.value);
+                          if (signupTouched.phone) {
+                            setSignupErrors((prev) => ({ ...prev, phone: validators.phone(e.target.value) }));
+                          }
+                        }}
+                        onBlur={() => {
+                          setSignupTouched((prev) => ({ ...prev, phone: true }));
+                          setSignupErrors((prev) => ({ ...prev, phone: validators.phone(signupPhone) }));
+                        }}
                       />
+                      <FieldError error={signupTouched.phone ? signupErrors.phone : null} />
                     </div>
 
                     <div className="form-group">
                       <label className="form-label">City</label>
-                      <select className="form-select" value={signupCity} onChange={(e) => setSignupCity(e.target.value)}>
+                      <select
+                        className="form-select"
+                        value={signupCity}
+                        onChange={(e) => setSignupCity(e.target.value)}
+                      >
                         <option value="Lahore">Lahore</option>
                         <option value="Karachi">Karachi</option>
                         <option value="Islamabad">Islamabad</option>
@@ -2447,11 +2534,21 @@ export default function Landing() {
                     <input
                       type="email"
                       className="form-input"
+                      style={getFieldInputStyle(signupTouched.email && signupErrors.email)}
                       placeholder="name@example.com"
                       value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      required
+                      onChange={(e) => {
+                        setSignupEmail(e.target.value);
+                        if (signupTouched.email) {
+                          setSignupErrors((prev) => ({ ...prev, email: validators.email(e.target.value) }));
+                        }
+                      }}
+                      onBlur={() => {
+                        setSignupTouched((prev) => ({ ...prev, email: true }));
+                        setSignupErrors((prev) => ({ ...prev, email: validators.email(signupEmail) }));
+                      }}
                     />
+                    <FieldError error={signupTouched.email ? signupErrors.email : null} />
                   </div>
 
                   <button
@@ -2464,17 +2561,28 @@ export default function Landing() {
                   </button>
                 </form>
               ) : (
-                /* Case 3: Clinician PMDC Registration Form */
-                <form onSubmit={handleDoctorSignup}>
+                /* Case 3: Clinician PMDC Registration Form with Validation */
+                <form onSubmit={handleDoctorSignup} noValidate>
                   <div className="form-group">
                     <label className="form-label">Doctor Full Name & Title</label>
                     <input
                       type="text"
                       className="form-input"
+                      style={getFieldInputStyle(docTouched.name && docErrors.name)}
+                      placeholder="e.g. Dr. Tariq Jamil"
                       value={docSignupForm.name}
-                      onChange={(e) => setDocSignupForm({ ...docSignupForm, name: e.target.value })}
-                      required
+                      onChange={(e) => {
+                        setDocSignupForm({ ...docSignupForm, name: e.target.value });
+                        if (docTouched.name) {
+                          setDocErrors((prev) => ({ ...prev, name: validators.name(e.target.value, 'Doctor Full Name') }));
+                        }
+                      }}
+                      onBlur={() => {
+                        setDocTouched((prev) => ({ ...prev, name: true }));
+                        setDocErrors((prev) => ({ ...prev, name: validators.name(docSignupForm.name, 'Doctor Full Name') }));
+                      }}
                     />
+                    <FieldError error={docTouched.name ? docErrors.name : null} />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -2485,12 +2593,11 @@ export default function Landing() {
                         value={docSignupForm.specialty}
                         onChange={(e) => setDocSignupForm({ ...docSignupForm, specialty: e.target.value })}
                       >
-                        <option value="Cardiologist">Cardiologist</option>
-                        <option value="Dermatologist">Dermatologist</option>
-                        <option value="General Physician">General Physician</option>
-                        <option value="Gynecologist">Gynecologist</option>
-                        <option value="Pediatrician">Pediatrician</option>
-                        <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+                        {SPECIALTIES.map((sp) => (
+                          <option key={sp.id} value={sp.name}>
+                            {sp.name} {sp.urdu ? `(${sp.urdu})` : ''}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -2499,11 +2606,21 @@ export default function Landing() {
                       <input
                         type="text"
                         className="form-input"
-                        placeholder="e.g. 55421-P"
+                        style={getFieldInputStyle(docTouched.pmdcNumber && docErrors.pmdcNumber)}
+                        placeholder="e.g. 58190-P"
                         value={docSignupForm.pmdcNumber}
-                        onChange={(e) => setDocSignupForm({ ...docSignupForm, pmdcNumber: e.target.value })}
-                        required
+                        onChange={(e) => {
+                          setDocSignupForm({ ...docSignupForm, pmdcNumber: e.target.value });
+                          if (docTouched.pmdcNumber) {
+                            setDocErrors((prev) => ({ ...prev, pmdcNumber: validators.pmdcNumber(e.target.value) }));
+                          }
+                        }}
+                        onBlur={() => {
+                          setDocTouched((prev) => ({ ...prev, pmdcNumber: true }));
+                          setDocErrors((prev) => ({ ...prev, pmdcNumber: validators.pmdcNumber(docSignupForm.pmdcNumber) }));
+                        }}
                       />
+                      <FieldError error={docTouched.pmdcNumber ? docErrors.pmdcNumber : null} />
                     </div>
                   </div>
 
@@ -2512,10 +2629,21 @@ export default function Landing() {
                     <input
                       type="text"
                       className="form-input"
+                      style={getFieldInputStyle(docTouched.qualifications && docErrors.qualifications)}
+                      placeholder="e.g. MBBS, FCPS (Cardiology)"
                       value={docSignupForm.qualifications}
-                      onChange={(e) => setDocSignupForm({ ...docSignupForm, qualifications: e.target.value })}
-                      required
+                      onChange={(e) => {
+                        setDocSignupForm({ ...docSignupForm, qualifications: e.target.value });
+                        if (docTouched.qualifications) {
+                          setDocErrors((prev) => ({ ...prev, qualifications: validators.required(e.target.value, 'qualifications') }));
+                        }
+                      }}
+                      onBlur={() => {
+                        setDocTouched((prev) => ({ ...prev, qualifications: true }));
+                        setDocErrors((prev) => ({ ...prev, qualifications: validators.required(docSignupForm.qualifications, 'qualifications') }));
+                      }}
                     />
+                    <FieldError error={docTouched.qualifications ? docErrors.qualifications : null} />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -2524,10 +2652,21 @@ export default function Landing() {
                       <input
                         type="text"
                         className="form-input"
+                        style={getFieldInputStyle(docTouched.hospitalName && docErrors.hospitalName)}
+                        placeholder="e.g. Doctors Hospital & Medical Centre"
                         value={docSignupForm.hospitalName}
-                        onChange={(e) => setDocSignupForm({ ...docSignupForm, hospitalName: e.target.value })}
-                        required
+                        onChange={(e) => {
+                          setDocSignupForm({ ...docSignupForm, hospitalName: e.target.value });
+                          if (docTouched.hospitalName) {
+                            setDocErrors((prev) => ({ ...prev, hospitalName: validators.required(e.target.value, 'hospital affiliation') }));
+                          }
+                        }}
+                        onBlur={() => {
+                          setDocTouched((prev) => ({ ...prev, hospitalName: true }));
+                          setDocErrors((prev) => ({ ...prev, hospitalName: validators.required(docSignupForm.hospitalName, 'hospital affiliation') }));
+                        }}
                       />
+                      <FieldError error={docTouched.hospitalName ? docErrors.hospitalName : null} />
                     </div>
 
                     <div className="form-group">
@@ -2535,10 +2674,21 @@ export default function Landing() {
                       <input
                         type="number"
                         className="form-input"
+                        style={getFieldInputStyle(docTouched.inClinicFee && docErrors.inClinicFee)}
+                        placeholder="e.g. 2500"
                         value={docSignupForm.inClinicFee}
-                        onChange={(e) => setDocSignupForm({ ...docSignupForm, inClinicFee: Number(e.target.value) })}
-                        required
+                        onChange={(e) => {
+                          setDocSignupForm({ ...docSignupForm, inClinicFee: e.target.value });
+                          if (docTouched.inClinicFee) {
+                            setDocErrors((prev) => ({ ...prev, inClinicFee: validators.positiveNumber(e.target.value, 'consultation fee') }));
+                          }
+                        }}
+                        onBlur={() => {
+                          setDocTouched((prev) => ({ ...prev, inClinicFee: true }));
+                          setDocErrors((prev) => ({ ...prev, inClinicFee: validators.positiveNumber(docSignupForm.inClinicFee, 'consultation fee') }));
+                        }}
                       />
+                      <FieldError error={docTouched.inClinicFee ? docErrors.inClinicFee : null} />
                     </div>
                   </div>
 
@@ -3014,6 +3164,175 @@ export default function Landing() {
                   Continue Browsing Without Booking
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          INTERACTIVE MODAL: DEDICATED /ADMIN AUTHENTICATION MODAL
+         ========================================================================= */}
+      {isAdminLoginModalOpen && (
+        <div className="modal-backdrop" onClick={() => setIsAdminLoginModalOpen(false)}>
+          <div
+            className="interactive-modal-card"
+            style={{ maxWidth: '450px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-interactive-header" style={{ borderBottom: '1px solid rgba(14, 56, 44, 0.12)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    background: 'var(--forest-800)',
+                    color: 'var(--lime-accent)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    boxShadow: '0 4px 12px rgba(14, 56, 44, 0.2)',
+                  }}
+                >
+                  <ShieldCheck size={22} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)', letterSpacing: '-0.01em' }}>
+                    Admin Operations Sign-In
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>
+                    Restricted Hospital & PMDC Control Console (/admin)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon-btn"
+                onClick={() => setIsAdminLoginModalOpen(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="modal-interactive-body">
+              {/* Security Alert Banner */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(14, 56, 44, 0.05)',
+                  border: '1.5px solid rgba(14, 56, 44, 0.14)',
+                  borderRadius: '14px',
+                  padding: '12px 14px',
+                  marginBottom: '18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                <Lock size={18} color="var(--forest-800)" />
+                <div style={{ fontSize: '11.5px', color: 'var(--forest-800)', lineHeight: '1.4' }}>
+                  <b>Hospital Operations Gateway:</b> Access clinician approvals, clinic hospital networks, patient audits, and system records.
+                </div>
+              </div>
+
+              {/* One-Click Fast Admin Sign-In */}
+              <div
+                style={{
+                  backgroundColor: 'var(--canvas-bg)',
+                  borderRadius: '16px',
+                  padding: '14px',
+                  marginBottom: '18px',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <div style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  ⚡ ONE-CLICK DEMO ACCESS
+                </div>
+                <button
+                  type="button"
+                  className="btn-lime-pill"
+                  style={{ width: '100%', padding: '11px 16px', fontSize: '13px', justifyContent: 'center' }}
+                  onClick={() => {
+                    login('admin');
+                    setIsAdminLoginModalOpen(false);
+                    showToast('Authenticated as Operations Administrator', 'success');
+                    navigate('/admin');
+                  }}
+                >
+                  <ShieldCheck size={16} />
+                  <span>Enter as Operations Administrator</span>
+                </button>
+              </div>
+
+              {/* Admin Form with Validation */}
+              <form onSubmit={handleAdminLoginSubmit} noValidate>
+                <div className="form-group">
+                  <label className="form-label">Administrator Email</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={getFieldInputStyle(adminTouched.email && adminErrors.email)}
+                    placeholder="admin@medconnect.pk"
+                    value={adminLoginEmail}
+                    onChange={(e) => {
+                      setAdminLoginEmail(e.target.value);
+                      if (adminTouched.email) {
+                        setAdminErrors((prev) => ({ ...prev, email: validators.email(e.target.value) }));
+                      }
+                    }}
+                    onBlur={() => {
+                      setAdminTouched((prev) => ({ ...prev, email: true }));
+                      setAdminErrors((prev) => ({ ...prev, email: validators.email(adminLoginEmail) }));
+                    }}
+                  />
+                  <FieldError error={adminTouched.email ? adminErrors.email : null} />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    style={getFieldInputStyle(adminTouched.password && adminErrors.password)}
+                    placeholder="Enter admin password (e.g. ••••••••)"
+                    value={adminLoginPassword}
+                    onChange={(e) => {
+                      setAdminLoginPassword(e.target.value);
+                      if (adminTouched.password) {
+                        setAdminErrors((prev) => ({ ...prev, password: validators.password(e.target.value, 6) }));
+                      }
+                    }}
+                    onBlur={() => {
+                      setAdminTouched((prev) => ({ ...prev, password: true }));
+                      setAdminErrors((prev) => ({ ...prev, password: validators.password(adminLoginPassword, 6) }));
+                    }}
+                  />
+                  <FieldError error={adminTouched.password ? adminErrors.password : null} />
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{
+                    width: '100%',
+                    padding: '13px',
+                    fontSize: '13.5px',
+                    marginTop: '6px',
+                    backgroundColor: 'var(--forest-800)',
+                    color: '#FFFFFF',
+                    borderRadius: 'var(--radius-pill)',
+                    border: 'none',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <ShieldCheck size={16} color="var(--lime-accent)" />
+                  <span>Authenticate & Open /admin</span>
+                </button>
+              </form>
             </div>
           </div>
         </div>

@@ -27,9 +27,9 @@ export default function AdminBranchesPage() {
     city: 'Lahore',
     address: '',
     phone: '',
-    rooms: 8,
-    activeDoctors: 12,
-    timings: '08:00 AM - 10:00 PM',
+    rooms: '',
+    activeDoctors: '',
+    timings: '',
   });
 
   const handleAddSubmit = (e) => {
@@ -42,9 +42,9 @@ export default function AdminBranchesPage() {
       city: 'Lahore',
       address: '',
       phone: '',
-      rooms: 8,
-      activeDoctors: 12,
-      timings: '08:00 AM - 10:00 PM',
+      rooms: '',
+      activeDoctors: '',
+      timings: '',
     });
   };
 
@@ -382,8 +382,9 @@ export default function AdminBranchesPage() {
                     <input
                       type="number"
                       className="form-input"
+                      placeholder="e.g. 8"
                       value={newBranch.rooms}
-                      onChange={(e) => setNewBranch({ ...newBranch, rooms: Number(e.target.value) })}
+                      onChange={(e) => setNewBranch({ ...newBranch, rooms: e.target.value })}
                       required
                     />
                   </div>
@@ -393,8 +394,9 @@ export default function AdminBranchesPage() {
                     <input
                       type="number"
                       className="form-input"
+                      placeholder="e.g. 12"
                       value={newBranch.activeDoctors}
-                      onChange={(e) => setNewBranch({ ...newBranch, activeDoctors: Number(e.target.value) })}
+                      onChange={(e) => setNewBranch({ ...newBranch, activeDoctors: e.target.value })}
                       required
                     />
                   </div>

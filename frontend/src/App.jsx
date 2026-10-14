@@ -43,6 +43,7 @@ export default function App() {
         {/* Public Doctor Discovery */}
         <Route path="/doctors" element={<DoctorListingPage />} />
         <Route path="/doctors/:id" element={<DoctorProfilePage />} />
+        <Route path="/doctor-profile/:id" element={<DoctorProfilePage />} />
 
         {/* Patient Role (Strictly Protected: Only Verified Patients) */}
         <Route

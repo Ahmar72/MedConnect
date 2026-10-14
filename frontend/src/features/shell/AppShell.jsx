@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useDemo } from '../../context/DemoContext';
 import EditDemoDataModal from './EditDemoDataModal';
 import CitySelectorModal from '../patient/components/CitySelectorModal';
+import PatientProfileModal from '../patient/components/PatientProfileModal';
+import DoctorProfileModal from '../doctor/components/DoctorProfileModal';
 import {
   Sparkles,
   LogIn,
@@ -10,6 +12,7 @@ import {
   ShieldCheck,
   KeyRound,
   ArrowRight,
+  ArrowLeft,
   User,
   Stethoscope,
   Shield,
@@ -43,12 +46,58 @@ export default function AppShell({ children }) {
     toast,
     doctorsList,
     appointments,
+    labReports,
   } = useDemo();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [roleSwitcherOpen, setRoleSwitcherOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isDoctorProfileModalOpen, setIsDoctorProfileModalOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Resizable Sidebar State
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    return parseInt(localStorage.getItem('medconnect_sidebar_width') || '260', 10);
+  });
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResizing = (mouseDownEvent) => {
+    mouseDownEvent.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      let newWidth = e.clientX;
+      if (newWidth < 200) newWidth = 200;
+      if (newWidth > 420) newWidth = 420;
+      setSidebarWidth(newWidth);
+      localStorage.setItem('medconnect_sidebar_width', newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
 
   const role = currentUser?.role || currentRole || 'patient';
   const isPatient = role === 'patient';
@@ -57,6 +106,9 @@ export default function AppShell({ children }) {
 
   const pendingDoctorsCount = doctorsList.filter((d) => d.status === 'pending').length;
   const pendingRequestsCount = appointments.filter((a) => a.status === 'Pending Doctor Confirmation').length;
+  const pendingLabCount = labReports?.filter(
+    (r) => r.status === 'Processing' || (r.status && r.status.toLowerCase().includes('pending'))
+  ).length || 0;
 
   const handleLogout = () => {
     logout();
@@ -72,7 +124,7 @@ export default function AppShell({ children }) {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ '--sidebar-width': `${sidebarWidth}px` }}>
       {/* Mobile Drawer Backdrop */}
       {mobileMenuOpen && (
         <div
@@ -82,8 +134,17 @@ export default function AppShell({ children }) {
         />
       )}
 
-      {/* Canva Dark Forest Green Sidebar */}
-      <aside className={`canva-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+      {/* Canva Dark Forest Green Sidebar (Resizable) */}
+      <aside
+        className={`canva-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}
+        style={{ width: `${sidebarWidth}px` }}
+      >
+        {/* Drag Resizer Handle on right edge of sidebar */}
+        <div
+          className={`sidebar-resize-handle ${isResizing ? 'is-resizing' : ''}`}
+          onMouseDown={startResizing}
+          title="Drag to resize sidebar width"
+        />
         {/* Brand Logo */}
         <div className="sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
           <div className="logo-badge">+</div>
@@ -130,7 +191,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Search size={17} />
-                <span>Find Doctors & Book</span>
+                <span>Filter Doctors</span>
               </NavLink>
 
               <NavLink
@@ -144,30 +205,41 @@ export default function AppShell({ children }) {
               </NavLink>
 
               <NavLink
-                to="/appointments?tab=prescriptions"
-                className={({ isActive }) => `sidebar-item ${location.search.includes('prescriptions') ? 'active' : ''}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <FileText size={17} />
-                <span>Prescriptions (Rx)</span>
-              </NavLink>
-
-              <NavLink
                 to="/appointments?tab=labs"
                 className={({ isActive }) => `sidebar-item ${location.search.includes('labs') ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Activity size={17} />
                 <span>Lab Test Reports</span>
-              </NavLink>
-
-              <NavLink
-                to="/appointments?tab=profile"
-                className={({ isActive }) => `sidebar-item ${location.search.includes('profile') ? 'active' : ''}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <User size={17} />
-                <span>My Health Profile</span>
+                {pendingLabCount > 0 ? (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      backgroundColor: '#F59E0B',
+                      color: '#0E382C',
+                      fontSize: '10.5px',
+                      fontWeight: '800',
+                      padding: '2px 7px',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    {pendingLabCount} Pending
+                  </span>
+                ) : (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      backgroundColor: 'rgba(197, 225, 165, 0.25)',
+                      color: 'var(--lime-accent)',
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      padding: '2px 6px',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    {labReports?.length || 0} Reports
+                  </span>
+                )}
               </NavLink>
             </nav>
           </>
@@ -209,7 +281,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Calendar size={17} />
-                <span>Weekly Schedule</span>
+                <span>Practice Timetables & Fees</span>
               </NavLink>
 
               <NavLink
@@ -218,7 +290,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Users size={17} />
-                <span>Patient Records</span>
+                <span>Patient Records & History</span>
               </NavLink>
 
               <NavLink
@@ -227,7 +299,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <TrendingUp size={17} />
-                <span>Earnings & Payouts</span>
+                <span>Earnings & Settlements</span>
               </NavLink>
 
               <NavLink
@@ -334,6 +406,92 @@ export default function AppShell({ children }) {
             </span>
           </div>
 
+          {/* Dedicated My Profile button at the bottom of the sidebar for patient */}
+          {isPatient && (
+            <button
+              type="button"
+              className="sidebar-item"
+              style={{
+                color: '#FFFFFF',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                padding: '9px 12px',
+                marginBottom: '8px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                width: '100%',
+                fontWeight: '700',
+                fontSize: '13px',
+              }}
+              onClick={() => {
+                setIsProfileModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+            >
+              <User size={16} color="var(--lime-accent)" />
+              <span>My Profile</span>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  fontSize: '10px',
+                  backgroundColor: 'rgba(197, 225, 165, 0.25)',
+                  color: 'var(--lime-accent)',
+                  padding: '2px 7px',
+                  borderRadius: '6px',
+                  fontWeight: '800',
+                }}
+              >
+                Edit
+              </span>
+            </button>
+          )}
+
+          {/* Dedicated Update Profile & Photo button at bottom of sidebar for doctor */}
+          {isDoctor && (
+            <button
+              type="button"
+              className="sidebar-item"
+              style={{
+                color: '#FFFFFF',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                padding: '9px 12px',
+                marginBottom: '8px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                width: '100%',
+                fontWeight: '700',
+                fontSize: '13px',
+              }}
+              onClick={() => {
+                setIsDoctorProfileModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+            >
+              <User size={16} color="var(--lime-accent)" />
+              <span>Update Profile & Photo</span>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  fontSize: '10px',
+                  backgroundColor: 'rgba(197, 225, 165, 0.25)',
+                  color: 'var(--lime-accent)',
+                  padding: '2px 7px',
+                  borderRadius: '6px',
+                  fontWeight: '800',
+                }}
+              >
+                Edit
+              </span>
+            </button>
+          )}
+
           <button
             type="button"
             className="sidebar-item"
@@ -351,6 +509,36 @@ export default function AppShell({ children }) {
         {/* Top Navigation Bar */}
         <header className="app-topbar">
           <div className="topbar-left">
+            {/* Global Back Arrow Button for Dashboards */}
+            <button
+              type="button"
+              className="topbar-back-btn"
+              onClick={() => navigate(-1)}
+              title="Go back to previous page"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--canvas-bg)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--forest-800)',
+                display: 'grid',
+                placeItems: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(14, 56, 44, 0.08)';
+                e.currentTarget.style.borderColor = 'var(--forest-800)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--canvas-bg)';
+                e.currentTarget.style.borderColor = 'var(--border-subtle)';
+              }}
+            >
+              <ArrowLeft size={18} />
+            </button>
+
             <button
               type="button"
               className="mobile-toggle"
@@ -446,69 +634,171 @@ export default function AppShell({ children }) {
           </div>
 
           <div className="topbar-right">
-            {/* City Selector Pill */}
-            <button
-              type="button"
-              className="city-pill-btn"
-              onClick={() => setIsCityModalOpen(true)}
-              title="Click to change city"
-            >
-              <MapPin size={15} />
-              <span>{selectedCity.name}</span>
-              <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
-            </button>
+            {isPatient ? (
+              /* For Patient Dashboard: No location pill and no signout button. Round clickable profile avatar button */
+              <button
+                type="button"
+                className="patient-round-profile-btn"
+                onClick={() => setIsProfileModalOpen(true)}
+                title="Click to view & edit your health profile"
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--forest-800)',
+                  color: 'var(--lime-accent)',
+                  border: '2.5px solid var(--lime-accent)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontSize: '15px',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  boxShadow: '0 3px 12px rgba(14, 56, 44, 0.25)',
+                  transition: 'all 0.2s ease',
+                  outline: 'none',
+                  overflow: 'hidden',
+                  padding: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.08)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(14, 56, 44, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 3px 12px rgba(14, 56, 44, 0.25)';
+                }}
+              >
+                {currentUser?.avatarUrl ? (
+                  <img
+                    src={currentUser.avatarUrl}
+                    alt="Patient Profile"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  currentUser?.name
+                    ? currentUser.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                    : 'AK'
+                )}
+              </button>
+            ) : isDoctor ? (
+              /* For Doctor Dashboard: Circular avatar button to edit profile & photo */
+              <button
+                type="button"
+                className="doctor-round-profile-btn"
+                onClick={() => setIsDoctorProfileModalOpen(true)}
+                title="Click to update clinician credentials & profile photo"
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--forest-800)',
+                  color: 'var(--lime-accent)',
+                  border: '2.5px solid var(--lime-accent)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontSize: '15px',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  boxShadow: '0 3px 12px rgba(14, 56, 44, 0.25)',
+                  transition: 'all 0.2s ease',
+                  outline: 'none',
+                  overflow: 'hidden',
+                  padding: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.08)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(14, 56, 44, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 3px 12px rgba(14, 56, 44, 0.25)';
+                }}
+              >
+                {currentUser?.photoUrl || currentUser?.image ? (
+                  <img
+                    src={currentUser.photoUrl || currentUser.image}
+                    alt={currentUser?.name || 'Doctor Profile'}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  currentUser?.name
+                    ? currentUser.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                    : 'AS'
+                )}
+              </button>
+            ) : (
+              /* Clinician & Admin Topbar Right Controls */
+              <>
+                {/* City Selector Pill */}
+                <button
+                  type="button"
+                  className="city-pill-btn"
+                  onClick={() => setIsCityModalOpen(true)}
+                  title="Click to change city"
+                >
+                  <MapPin size={15} />
+                  <span>{selectedCity.name}</span>
+                  <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
+                </button>
 
-            {/* User Profile Chip */}
-            <div
-              className="user-profile-chip"
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                if (isPatient) navigate('/appointments?tab=profile');
-                else if (isDoctor) navigate('/doctor?tab=profile');
-                else if (isAdmin) navigate('/admin');
-              }}
-            >
-              <div className="chip-avatar">
-                {currentUser?.name
-                  ? currentUser.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')
-                      .slice(0, 2)
-                  : isAdmin
-                  ? 'AD'
-                  : 'AK'}
-              </div>
-              <div className="chip-info">
-                <span className="chip-name">{currentUser?.name || 'Operations Admin'}</span>
-                <span className="chip-role">
-                  {isAdmin
-                    ? 'Super Administrator'
-                    : isDoctor
-                    ? `PMDC: ${currentUser?.pmdcNumber || 'Verified'}`
-                    : `Patient (MRN: ${currentUser?.mrn || 'MC-89241'})`}
-                </span>
-              </div>
-            </div>
+                {/* User Profile Chip */}
+                <div
+                  className="user-profile-chip"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    if (isDoctor) navigate('/doctor?tab=profile');
+                    else if (isAdmin) navigate('/admin');
+                  }}
+                >
+                  <div className="chip-avatar">
+                    {currentUser?.name
+                      ? currentUser.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .slice(0, 2)
+                      : isAdmin
+                      ? 'AD'
+                      : 'DR'}
+                  </div>
+                  <div className="chip-info">
+                    <span className="chip-name">{currentUser?.name || 'Operations Admin'}</span>
+                    <span className="chip-role">
+                      {isAdmin
+                        ? 'Super Administrator'
+                        : `PMDC: ${currentUser?.pmdcNumber || 'Verified'}`}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Logout Icon */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                backgroundColor: 'var(--canvas-bg)',
-                color: 'var(--forest-800)',
-                display: 'grid',
-                placeItems: 'center',
-                border: '1px solid var(--border-subtle)',
-              }}
-              title="Sign Out"
-            >
-              <LogOut size={16} />
-            </button>
+                {/* Logout Icon */}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--canvas-bg)',
+                    color: 'var(--forest-800)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                  title="Sign Out"
+                >
+                  <LogOut size={16} />
+                </button>
+              </>
+            )}
           </div>
         </header>
 
@@ -521,6 +811,14 @@ export default function AppShell({ children }) {
       {/* Interactive Global Modals */}
       <CitySelectorModal />
       <EditDemoDataModal />
+      <PatientProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
+      <DoctorProfileModal
+        isOpen={isDoctorProfileModalOpen}
+        onClose={() => setIsDoctorProfileModalOpen(false)}
+      />
 
       {/* Interactive Toast Notifications */}
       {toast && (
