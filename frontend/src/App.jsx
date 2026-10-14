@@ -9,12 +9,14 @@ import DoctorProfilePage from './features/patient/pages/DoctorProfilePage';
 import BookingFlowPage from './features/patient/pages/BookingFlowPage';
 import TelehealthWaitingRoom from './features/patient/pages/TelehealthWaitingRoom';
 import PatientDashboard from './features/patient/pages/PatientDashboard';
+import PatientProfileSettingsPage from './features/patient/pages/PatientProfileSettingsPage';
 import {
   DoctorDashboard,
   DoctorConsultationRoom,
   DoctorSchedulePage,
   DoctorPatientsPage,
   DoctorEarningsPage,
+  DoctorProfileSettingsPage,
 } from './features/doctor/pages';
 import {
   AdminDashboard,
@@ -103,10 +105,18 @@ export default function App() {
           }
         />
         <Route
+          path="/patient/profile"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientProfileSettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/settings"
           element={
             <ProtectedRoute allowedRoles={['patient']}>
-              <PatientDashboard />
+              <PatientProfileSettingsPage />
             </ProtectedRoute>
           }
         />
@@ -149,6 +159,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['doctor']}>
               <DoctorEarningsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/profile"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorProfileSettingsPage />
             </ProtectedRoute>
           }
         />

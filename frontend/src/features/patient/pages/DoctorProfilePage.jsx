@@ -243,32 +243,32 @@ export default function DoctorProfilePage() {
             </div>
           </div>
 
-          {/* Direct CTA Cluster */}
+          {/* Direct CTA Cluster matching Image 4 style */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '220px' }}>
             <button
               type="button"
               className="btn-lime-pill"
-              style={{ width: '100%', padding: '13px 20px', fontSize: '13.5px' }}
-              onClick={() => handleStartBooking('video')}
+              style={{
+                width: '100%',
+                padding: '14px 24px',
+                fontSize: '14.5px',
+                fontWeight: '800',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(197, 225, 165, 0.4)',
+              }}
+              onClick={() => navigate(`/book?doctorId=${doctor.id}`)}
             >
-              <Video size={16} />
-              <span>Book Video Consult</span>
-            </button>
-
-            <button
-              type="button"
-              className="btn-book-clinic"
-              style={{ width: '100%', padding: '12px 20px', fontSize: '13.5px', justifyContent: 'center' }}
-              onClick={() => handleStartBooking('clinic')}
-            >
-              <Building2 size={16} />
-              <span>Book Clinic Visit</span>
+              <Calendar size={17} />
+              <span>Book Appointment</span>
             </button>
 
             <button
               type="button"
               className="btn-white-capsule"
-              style={{ border: '1px solid var(--border-strong)', fontSize: '12px', padding: '9px' }}
+              style={{ width: '100%', border: '1.5px solid var(--border-strong)', fontSize: '13px', padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
               onClick={() => showToast('Doctor profile link copied to clipboard!', 'info')}
             >
               <Share2 size={14} />

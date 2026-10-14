@@ -241,6 +241,15 @@ export default function AppShell({ children }) {
                   </span>
                 )}
               </NavLink>
+
+              <NavLink
+                to="/patient/profile"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <User size={17} />
+                <span>My Health Profile</span>
+              </NavLink>
             </nav>
           </>
         )}
@@ -303,8 +312,8 @@ export default function AppShell({ children }) {
               </NavLink>
 
               <NavLink
-                to="/doctor?tab=profile"
-                className={({ isActive }) => `sidebar-item ${location.pathname === '/doctor' && location.search.includes('profile') ? 'active' : ''}`}
+                to="/doctor/profile"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <User size={17} />
@@ -449,48 +458,6 @@ export default function AppShell({ children }) {
             </button>
           )}
 
-          {/* Dedicated Update Profile & Photo button at bottom of sidebar for doctor */}
-          {isDoctor && (
-            <button
-              type="button"
-              className="sidebar-item"
-              style={{
-                color: '#FFFFFF',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                padding: '9px 12px',
-                marginBottom: '8px',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                width: '100%',
-                fontWeight: '700',
-                fontSize: '13px',
-              }}
-              onClick={() => {
-                setIsDoctorProfileModalOpen(true);
-                setMobileMenuOpen(false);
-              }}
-            >
-              <User size={16} color="var(--lime-accent)" />
-              <span>Update Profile & Photo</span>
-              <span
-                style={{
-                  marginLeft: 'auto',
-                  fontSize: '10px',
-                  backgroundColor: 'rgba(197, 225, 165, 0.25)',
-                  color: 'var(--lime-accent)',
-                  padding: '2px 7px',
-                  borderRadius: '6px',
-                  fontWeight: '800',
-                }}
-              >
-                Edit
-              </span>
-            </button>
-          )}
 
           <button
             type="button"
@@ -639,7 +606,7 @@ export default function AppShell({ children }) {
               <button
                 type="button"
                 className="patient-round-profile-btn"
-                onClick={() => setIsProfileModalOpen(true)}
+                onClick={() => navigate('/patient/profile')}
                 title="Click to view & edit your health profile"
                 style={{
                   width: '44px',
@@ -689,8 +656,8 @@ export default function AppShell({ children }) {
               <button
                 type="button"
                 className="doctor-round-profile-btn"
-                onClick={() => setIsDoctorProfileModalOpen(true)}
-                title="Click to update clinician credentials & profile photo"
+                onClick={() => navigate('/doctor/profile')}
+                title="Click to view & edit your clinician profile"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -754,7 +721,7 @@ export default function AppShell({ children }) {
                   className="user-profile-chip"
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
-                    if (isDoctor) navigate('/doctor?tab=profile');
+                    if (isDoctor) navigate('/doctor/profile');
                     else if (isAdmin) navigate('/admin');
                   }}
                 >

@@ -67,6 +67,12 @@ export default function DoctorDashboard() {
 
   const doctorTab = searchParams.get('tab') || 'schedule'; // 'schedule' | 'profile'
 
+  useEffect(() => {
+    if (searchParams.get('tab') === 'profile') {
+      navigate('/doctor/profile', { replace: true });
+    }
+  }, [searchParams, navigate]);
+
   // Doctor Profile Editor State
   const [isEditingDoctorProfile, setIsEditingDoctorProfile] = useState(false);
   const [doctorForm, setDoctorForm] = useState({
@@ -151,6 +157,27 @@ export default function DoctorDashboard() {
 
   const handleStartConsultation = (apt) => {
     navigate(`/doctor/consultation/${apt.id}`);
+  };
+
+  const handleCallNextPatient = () => {
+    const activeConfirmed = confirmedAppointments.find((a) => a.status === 'Confirmed');
+    const targetApt = activeConfirmed || confirmedAppointments[0] || myAppointments[0] || appointments[0];
+
+    if (!targetApt) {
+      showToast('No patients currently waiting in queue.', 'info');
+      return;
+    }
+
+    const pName = targetApt.patientName || 'Patient';
+    const slotInfo = targetApt.time ? `${targetApt.date || 'Today'} at ${targetApt.time}` : 'upcoming slot';
+    const isVideo = targetApt.type && targetApt.type.toLowerCase().includes('video');
+
+    if (isVideo) {
+      showToast(`Notified ${pName} for ${slotInfo}! Calling patient into Video Consultation Session...`, 'success');
+      navigate(`/doctor/consultation/${targetApt.id}`);
+    } else {
+      showToast(`Notified ${pName} for ${slotInfo}! Patient alerted via SMS to proceed to OPD Room.`, 'success');
+    }
   };
 
   // IF DOCTOR IS PENDING PMDC VERIFICATION: SHOW STATUS SCREEN
@@ -275,29 +302,15 @@ export default function DoctorDashboard() {
             Welcome back, {currentUser?.name || 'Dr. Maya Patel'}
           </h1>
           <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
-            {currentUser?.specialty || 'General Physician'} · <b>PMC/PMDC #{currentUser?.pmdcNumber || '39482-P'}</b> · {confirmedAppointments.length} Confirmed Appointments
+            {currentUser?.specialty || 'General Physician'} · <b>PMC/PMDC #{currentUser?.pmdcNumber || '39482-P'}</b>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
             type="button"
-            className="btn-white-capsule"
-            onClick={() => setSearchParams({ tab: 'profile' })}
-            style={{ padding: '12px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <User size={15} />
-            <span>My Profile</span>
-          </button>
-
-          <button
-            type="button"
             className="btn-lime-pill"
-            onClick={() => {
-              const nextApt = confirmedAppointments.find((a) => a.canJoin) || confirmedAppointments[0];
-              if (nextApt) handleStartConsultation(nextApt);
-              else showToast('No waiting video patients in queue.', 'info');
-            }}
+            onClick={handleCallNextPatient}
             style={{ padding: '12px 22px', fontSize: '13.5px' }}
           >
             <Play size={16} fill="var(--forest-800)" />
@@ -445,7 +458,7 @@ export default function DoctorDashboard() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {pendingRequests.map((req) => (
               <div
                 key={req.id}
@@ -453,44 +466,47 @@ export default function DoctorDashboard() {
                 className="pending-request-card"
                 style={{
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: '1.5px solid #FCD34D',
-                  padding: '20px 24px',
+                  borderRadius: '20px',
+                  border: '2px solid #F59E0B',
+                  padding: '24px 28px',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   flexWrap: 'wrap',
-                  gap: '20px',
+                  gap: '24px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.08)',
+                  boxShadow: '0 4px 14px rgba(245, 158, 11, 0.12)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 6px 18px rgba(14, 56, 44, 0.12)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(14, 56, 44, 0.18)';
                   e.currentTarget.style.borderColor = 'var(--forest-800)';
+                  e.currentTarget.style.backgroundColor = '#FCFDFB';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(245, 158, 11, 0.08)';
-                  e.currentTarget.style.borderColor = '#FCD34D';
+                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(245, 158, 11, 0.12)';
+                  e.currentTarget.style.borderColor = '#F59E0B';
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
                 }}
-                title="Click anywhere to inspect patient's medical profile & history"
+                title="Click anywhere on this card to view complete patient health record"
               >
-                {/* Left Side: Clean, Structured & Spacious Patient & Appointment Info */}
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
-                  {/* Patient Avatar Circle */}
+                {/* Left Side: Crystal Clear, High-Contrast Typography & Structured Entities */}
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flex: 1, minWidth: '320px' }}>
+                  {/* High-Contrast Patient Avatar (60px) */}
                   <div
                     style={{
-                      width: '52px',
-                      height: '52px',
-                      borderRadius: '14px',
-                      backgroundColor: 'rgba(14, 56, 44, 0.08)',
-                      border: '1.5px solid rgba(14, 56, 44, 0.2)',
-                      color: 'var(--forest-800)',
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '16px',
+                      backgroundColor: 'var(--forest-800)',
+                      color: 'var(--lime-accent)',
                       display: 'grid',
                       placeItems: 'center',
                       fontWeight: '800',
-                      fontSize: '17px',
+                      fontSize: '20px',
                       flexShrink: 0,
+                      border: '2px solid var(--forest-900)',
+                      boxShadow: '0 2px 8px rgba(14, 56, 44, 0.2)',
                     }}
                   >
                     {(req.patientName || 'Patient')
@@ -501,114 +517,137 @@ export default function DoctorDashboard() {
                       .toUpperCase()}
                   </div>
 
-                  <div style={{ flex: 1 }}>
-                    {/* Top Badges Row */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* Top Row Badges: ID, Consultation Mode, Rescheduled Badge, Fee */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                       <span
                         style={{
-                          fontSize: '11px',
+                          fontSize: '12.5px',
                           fontWeight: '800',
                           backgroundColor: '#FEF3C7',
-                          color: '#92400E',
-                          padding: '2px 8px',
+                          color: '#78350F',
+                          padding: '3px 10px',
                           borderRadius: '8px',
+                          border: '1px solid #FCD34D',
                         }}
                       >
                         #{req.id}
                       </span>
+
                       <span
                         style={{
-                          fontSize: '11.5px',
-                          fontWeight: '700',
-                          backgroundColor: req.type.includes('Video') ? 'rgba(197, 225, 165, 0.4)' : '#EFF6FF',
-                          color: req.type.includes('Video') ? 'var(--forest-900)' : '#1D4ED8',
-                          padding: '2px 10px',
+                          fontSize: '12.5px',
+                          fontWeight: '800',
+                          backgroundColor: req.type.includes('Video') ? '#D1FAE5' : '#DBEAFE',
+                          color: req.type.includes('Video') ? '#065F46' : '#1E40AF',
+                          padding: '3px 12px',
                           borderRadius: '8px',
+                          border: req.type.includes('Video') ? '1px solid #6EE7B7' : '1px solid #93C5FD',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '5px',
+                          gap: '6px',
                         }}
                       >
-                        {req.type.includes('Video') ? <Video size={13} /> : <Building2 size={13} />}
+                        {req.type.includes('Video') ? <Video size={14} /> : <Building2 size={14} />}
                         {req.type}
                       </span>
+
                       {req.rescheduled && (
                         <span
                           style={{
-                            fontSize: '11px',
+                            fontSize: '12px',
                             fontWeight: '800',
                             backgroundColor: '#EDE9FE',
-                            color: '#6D28D9',
-                            padding: '2px 8px',
+                            color: '#5B21B6',
+                            padding: '3px 10px',
                             borderRadius: '8px',
+                            border: '1px solid #C4B5FD',
                           }}
                         >
-                          Rescheduled by Patient
+                          ⚠ Rescheduled by Patient
                         </span>
                       )}
-                      <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '800', marginLeft: 'auto' }}>
-                        Fee: Rs. {req.fee ? req.fee.toLocaleString() : '1,500'}
-                      </span>
                     </div>
 
-                    {/* Patient Name & Metadata */}
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-                      <h4 style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main)', margin: 0 }}>
-                        {req.patientName}
-                      </h4>
-                      <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
-                        {req.patientAge ? `${req.patientAge} yrs` : ''} {req.patientGender ? `· ${req.patientGender}` : ''} · {req.patientPhone}
-                      </span>
-                    </div>
-
-                    {/* Appointment Slot & Reason */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '6px', flexWrap: 'wrap', fontSize: '13px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--forest-800)', fontWeight: '700' }}>
-                        <Clock size={14} />
-                        <span>{req.date} at {req.time}</span>
-                      </div>
-                      <div style={{ color: '#4B5563', fontSize: '12.5px' }}>
-                        Reason: <i>"{req.reason || 'General Consultation'}"</i>
-                      </div>
-                      <span
+                    {/* Patient Name & Demographics (Age removed - available on full record click) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                      <h3
                         style={{
-                          fontSize: '11px',
-                          color: 'var(--forest-700)',
-                          fontWeight: '600',
-                          backgroundColor: 'var(--canvas-bg)',
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px',
+                          fontSize: '20px',
+                          fontWeight: '800',
+                          color: '#111827',
+                          margin: 0,
+                          letterSpacing: '-0.01em',
                         }}
                       >
-                        <User size={12} />
-                        Click card to see profile
+                        {req.patientName}
+                      </h3>
+                      <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+                        {req.patientGender ? `${req.patientGender} · ` : ''}📞 <b>{req.patientPhone}</b>
                       </span>
+                    </div>
+
+                    {/* High-Contrast Clinical Visit Details: Appointment Slot & Fee (Chief complaint removed) */}
+                    <div
+                      style={{
+                        backgroundColor: '#F9FAFB',
+                        borderRadius: '12px',
+                        padding: '12px 16px',
+                        border: '1px solid #E5E7EB',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '20px',
+                        flexWrap: 'wrap',
+                        fontSize: '14px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#111827', fontWeight: '700' }}>
+                        <Clock size={16} color="var(--forest-800)" />
+                        <span style={{ color: 'var(--forest-900)' }}>Appointment Slot:</span>
+                        <span style={{ color: '#047857', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                          {req.date} at {req.time}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: '#4B5563', fontWeight: '600', fontSize: '13px' }}>Consultation Fee:</span>
+                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: '#065F46', backgroundColor: '#ECFDF5', padding: '2px 10px', borderRadius: '6px', border: '1.5px solid #10B981' }}>
+                          Rs. {req.fee ? req.fee.toLocaleString() : '2,000'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Side: ONLY TWO BUTTONS SIDE BY SIDE: Reject (left) and Confirm (right) */}
                 <div
-                  style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+                  style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     type="button"
-                    className="btn-white-capsule"
                     style={{
                       border: '1.5px solid #DC2626',
                       color: '#DC2626',
                       backgroundColor: '#FEF2F2',
-                      padding: '9px 20px',
+                      padding: '8px 16px',
                       fontSize: '13px',
                       fontWeight: '700',
+                      borderRadius: '9999px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
                       cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      boxShadow: '0 1px 4px rgba(220, 38, 38, 0.12)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#DC2626';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FEF2F2';
+                      e.currentTarget.style.color = '#DC2626';
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -627,13 +666,14 @@ export default function DoctorDashboard() {
                     type="button"
                     className="btn-lime-pill"
                     style={{
-                      padding: '9px 24px',
+                      padding: '8px 20px',
                       fontSize: '13px',
                       fontWeight: '800',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
                       cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(14, 56, 44, 0.2)',
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -654,22 +694,6 @@ export default function DoctorDashboard() {
         </div>
       )}
 
-      {/* Profile Back Banner (When Viewing Profile Tab) - Duplicate Horizontal Tabs Bar Removed */}
-      {doctorTab === 'profile' && (
-        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-          <button
-            type="button"
-            className="btn-white-capsule"
-            style={{ border: '1px solid var(--border-subtle)', padding: '8px 16px', fontSize: '12.5px', color: 'var(--forest-800)', fontWeight: '700' }}
-            onClick={() => setSearchParams({})}
-          >
-            ← Back to Dashboard & Queue
-          </button>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            Practice credentials & photo are synced live across the patient search directory
-          </span>
-        </div>
-      )}
 
       {doctorTab === 'profile' ? (
         <div className="my-profile-container">
@@ -1395,15 +1419,15 @@ export default function DoctorDashboard() {
               borderRadius: '24px',
               overflow: 'hidden',
               backgroundColor: '#FFFFFF',
-              boxShadow: '0 25px 50px -12px rgba(220, 38, 38, 0.25)',
-              border: '1.5px solid #FCA5A5',
+              boxShadow: '0 25px 50px -12px rgba(14, 56, 44, 0.25)',
+              border: '1px solid var(--border-subtle)',
             }}
           >
-            {/* Header */}
+            {/* Header in Main Forest Theme */}
             <div
               style={{
                 padding: '24px 28px',
-                backgroundColor: '#DC2626',
+                backgroundColor: 'var(--forest-800)',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
@@ -1411,8 +1435,8 @@ export default function DoctorDashboard() {
               }}
             >
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: '#FEE2E2', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
-                  CLINICAL REJECTION
+                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
+                  DECLINE APPOINTMENT
                 </span>
                 <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
                   Decline Booking Request
@@ -1426,7 +1450,7 @@ export default function DoctorDashboard() {
                   height: '34px',
                   borderRadius: '50%',
                   border: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
                   color: '#FFFFFF',
                   display: 'grid',
                   placeItems: 'center',
@@ -1439,13 +1463,13 @@ export default function DoctorDashboard() {
             </div>
 
             <div style={{ padding: '26px 28px' }}>
-              {/* Patient & Slot Summary Box */}
+              {/* Patient & Slot Summary Box in Main Brand Theme */}
               <div
                 style={{
-                  backgroundColor: '#FEF2F2',
+                  backgroundColor: 'var(--canvas-bg)',
                   borderRadius: '16px',
                   padding: '16px 20px',
-                  border: '1px solid #FECACA',
+                  border: '1px solid var(--border-subtle)',
                   marginBottom: '20px',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -1455,16 +1479,16 @@ export default function DoctorDashboard() {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#991B1B' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)' }}>
                     {declineRemarksModal.appointment.patientName}
                   </div>
-                  <div style={{ fontSize: '12.5px', color: '#7F1D1D', marginTop: '2px' }}>
+                  <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
                     Requested: <b>{declineRemarksModal.appointment.date} at {declineRemarksModal.appointment.time}</b> ({declineRemarksModal.appointment.type})
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '11px', color: '#7F1D1D', display: 'block' }}>Fee</span>
-                  <span style={{ fontSize: '15px', fontWeight: '800', color: '#991B1B' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Fee</span>
+                  <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
                     Rs. {declineRemarksModal.appointment.fee ? declineRemarksModal.appointment.fee.toLocaleString() : '1,500'}
                   </span>
                 </div>
@@ -1485,7 +1509,7 @@ export default function DoctorDashboard() {
                 />
               </div>
 
-              {/* Quick Preset Chips */}
+              {/* Quick Preset Chips in Main Brand Theme */}
               <div style={{ marginBottom: '24px' }}>
                 <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '8px' }}>
                   QUICK PRESET REASONS:
@@ -1508,10 +1532,10 @@ export default function DoctorDashboard() {
                       }}
                       style={{
                         fontSize: '11.5px',
-                        backgroundColor: '#FEE2E2',
-                        border: '1px solid #FCA5A5',
-                        color: '#991B1B',
-                        padding: '5px 11px',
+                        backgroundColor: 'rgba(14, 56, 44, 0.06)',
+                        border: '1px solid rgba(14, 56, 44, 0.15)',
+                        color: 'var(--forest-800)',
+                        padding: '5px 12px',
                         borderRadius: '20px',
                         cursor: 'pointer',
                         fontWeight: '600',
@@ -1523,7 +1547,7 @@ export default function DoctorDashboard() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons: ONLY the rejection button is red */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                 <button
                   type="button"
@@ -1547,6 +1571,7 @@ export default function DoctorDashboard() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
+                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.25)',
                   }}
                   onClick={() => {
                     declineAppointmentByDoctor(

@@ -1923,14 +1923,16 @@ export default function Landing() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      textAlign: 'center',
+                      textAlign: 'left',
                       fontWeight: '700',
                       fontSize: '15px',
                       color: 'var(--text-main)',
                       cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
                     }}
                   >
-                    <span style={{ flex: 1, textAlign: 'center', paddingLeft: '24px', paddingRight: '24px' }}>
+                    <span style={{ flex: 1, textAlign: 'left', paddingRight: '16px' }}>
                       {faq.q}
                     </span>
                     <span style={{ flexShrink: 0 }}>
@@ -1939,7 +1941,7 @@ export default function Landing() {
                   </button>
 
                   {isOpen && (
-                    <div style={{ padding: '0 32px 22px 32px', fontSize: '13.5px', color: 'var(--text-body)', lineHeight: '1.65', textAlign: 'center', maxWidth: '960px', margin: '0 auto' }}>
+                    <div style={{ padding: '0 24px 22px 24px', fontSize: '13.5px', color: 'var(--text-body)', lineHeight: '1.65', textAlign: 'left', width: '100%', boxSizing: 'border-box' }}>
                       {faq.a}
                     </div>
                   )}

@@ -47,6 +47,12 @@ export default function DoctorListingPage() {
     // Only show approved/verified doctors to patients
     let list = doctorsList.filter((doc) => doc.status === 'verified' || doc.verified === true);
 
+    // City filter (if city is selected and not 'all')
+    if (selectedCity && selectedCity.id !== 'all' && selectedCity.name && selectedCity.name !== 'All Cities') {
+      const cityLower = selectedCity.name.toLowerCase();
+      list = list.filter((doc) => !doc.city || doc.city.toLowerCase() === cityLower);
+    }
+
     // Search query filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -54,32 +60,72 @@ export default function DoctorListingPage() {
         (doc) =>
           doc.name.toLowerCase().includes(q) ||
           doc.specialty.toLowerCase().includes(q) ||
-          doc.bio.toLowerCase().includes(q) ||
-          doc.qualifications.toLowerCase().includes(q)
+          (doc.bio && doc.bio.toLowerCase().includes(q)) ||
+          (doc.qualifications && doc.qualifications.toLowerCase().includes(q)) ||
+          (doc.city && doc.city.toLowerCase().includes(q)) ||
+          doc.practices?.some((p) => p.hospital?.toLowerCase().includes(q) || p.address?.toLowerCase().includes(q))
       );
     }
 
     // Specialty filter
-    if (filters.specialty !== 'All') {
-      list = list.filter((doc) => doc.specialty === filters.specialty);
+    if (filters.specialty && filters.specialty !== 'All') {
+      list = list.filter((doc) => doc.specialty?.toLowerCase() === filters.specialty.toLowerCase());
     }
 
     // Mode filter
     if (filters.mode === 'video') {
-      list = list.filter((doc) => (doc.videoFee && doc.videoFee > 0) || doc.onlineNow || doc.practices?.some((p) => p.isVideo));
+      list = list.filter(
+        (doc) =>
+          (doc.videoFee && doc.videoFee > 0) ||
+          doc.onlineNow ||
+          doc.practices?.some((p) => p.isVideo)
+      );
     } else if (filters.mode === 'clinic') {
-      list = list.filter((doc) => (doc.inClinicFee && doc.inClinicFee > 0) || (doc.practices && doc.practices.length > 0));
+      list = list.filter(
+        (doc) =>
+          (doc.inClinicFee && doc.inClinicFee > 0) ||
+          doc.practices?.some((p) => !p.isVideo) ||
+          (doc.practices && doc.practices.length > 0)
+      );
     }
 
     // Availability filter
     if (filters.availability === 'today') {
-      list = list.filter((doc) => doc.nextSlot.toLowerCase().includes('today') || doc.onlineNow);
+      list = list.filter(
+        (doc) =>
+          (doc.nextSlot && doc.nextSlot.toLowerCase().includes('today')) ||
+          doc.onlineNow ||
+          doc.practices?.some((p) => p.nextDate && p.nextDate.toLowerCase().includes('today'))
+      );
     } else if (filters.availability === 'tomorrow') {
-      list = list.filter((doc) => doc.nextSlot.toLowerCase().includes('tomorrow'));
+      list = list.filter(
+        (doc) =>
+          (doc.nextSlot && doc.nextSlot.toLowerCase().includes('tomorrow')) ||
+          doc.practices?.some((p) => p.nextDate && p.nextDate.toLowerCase().includes('tomorrow'))
+      );
+    }
+
+    // Gender filter
+    if (filters.gender && filters.gender !== 'all') {
+      list = list.filter((doc) => {
+        const isFemale =
+          doc.gender === 'female' ||
+          /amina|fatima|ayesha|zainab|maya|sana|mariam|sadia|hina|rabia|farah/i.test(doc.name);
+        return filters.gender === 'female' ? isFemale : !isFemale;
+      });
     }
 
     // Max fee filter
-    list = list.filter((doc) => doc.videoFee <= filters.maxFee || doc.inClinicFee <= filters.maxFee);
+    list = list.filter((doc) => {
+      if (filters.mode === 'video') {
+        return (doc.videoFee || 0) <= filters.maxFee;
+      } else if (filters.mode === 'clinic') {
+        return (doc.inClinicFee || 0) <= filters.maxFee;
+      }
+      const fees = [doc.videoFee, doc.inClinicFee].filter((f) => typeof f === 'number' && f > 0);
+      if (fees.length === 0) return true;
+      return Math.min(...fees) <= filters.maxFee;
+    });
 
     // Minimum experience filter
     if (filters.minExp > 0) {
@@ -93,13 +139,17 @@ export default function DoctorListingPage() {
     if (sortBy === 'rating') {
       list.sort((a, b) => b.rating - a.rating);
     } else if (sortBy === 'fee_low') {
-      list.sort((a, b) => Math.min(a.videoFee, a.inClinicFee) - Math.min(b.videoFee, b.inClinicFee));
+      list.sort((a, b) => {
+        const feeA = Math.min(a.videoFee || 99999, a.inClinicFee || 99999);
+        const feeB = Math.min(b.videoFee || 99999, b.inClinicFee || 99999);
+        return feeA - feeB;
+      });
     } else if (sortBy === 'exp') {
       list.sort((a, b) => (parseInt(b.experience, 10) || 0) - (parseInt(a.experience, 10) || 0));
     }
 
     return list;
-  }, [doctorsList, searchQuery, filters, sortBy, previewState]);
+  }, [doctorsList, searchQuery, filters, sortBy, previewState, selectedCity]);
 
   return (
     <AppShell>

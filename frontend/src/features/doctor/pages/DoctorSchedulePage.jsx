@@ -25,6 +25,43 @@ import {
   Trash2,
 } from 'lucide-react';
 
+const TIME_OPTIONS = [
+  'Closed',
+  '07:00 AM',
+  '07:30 AM',
+  '08:00 AM',
+  '08:30 AM',
+  '09:00 AM',
+  '09:30 AM',
+  '10:00 AM',
+  '10:30 AM',
+  '11:00 AM',
+  '11:30 AM',
+  '12:00 PM',
+  '12:30 PM',
+  '01:00 PM',
+  '01:30 PM',
+  '02:00 PM',
+  '02:30 PM',
+  '03:00 PM',
+  '03:30 PM',
+  '04:00 PM',
+  '04:30 PM',
+  '05:00 PM',
+  '05:30 PM',
+  '06:00 PM',
+  '06:30 PM',
+  '07:00 PM',
+  '07:30 PM',
+  '08:00 PM',
+  '08:30 PM',
+  '09:00 PM',
+  '09:30 PM',
+  '10:00 PM',
+  '10:30 PM',
+  '11:00 PM',
+];
+
 export default function DoctorSchedulePage() {
   const navigate = useNavigate();
   const { currentUser, editDoctorProfile, showToast } = useDemo();
@@ -136,17 +173,53 @@ export default function DoctorSchedulePage() {
     }, 300);
   };
 
-  // Handle Day Toggle in Matrix
+  // Handle Day Toggle in Matrix (Monday through Sunday)
   const handleToggleDay = (dayIndex) => {
     setWeeklySchedule((prev) =>
       prev.map((item, idx) => {
         if (idx === dayIndex) {
           const nextActive = !item.active;
+          const hasValidMorning = item.morningStart && item.morningStart !== 'Closed';
+          const hasValidEvening = item.eveningStart && item.eveningStart !== 'Closed';
+
           return {
             ...item,
             active: nextActive,
-            mode: nextActive ? 'Hybrid (Clinic + Video)' : 'Day Off',
+            morningStart: nextActive && !hasValidMorning ? '10:00 AM' : item.morningStart,
+            morningEnd: nextActive && !hasValidMorning ? '01:00 PM' : item.morningEnd,
+            eveningStart: nextActive && !hasValidEvening ? '05:00 PM' : item.eveningStart,
+            eveningEnd: nextActive && !hasValidEvening ? '08:30 PM' : item.eveningEnd,
+            slotDuration: nextActive && (!item.slotDuration || item.slotDuration === 0) ? 20 : item.slotDuration,
+            maxQuota: nextActive && (!item.maxQuota || item.maxQuota === 0) ? 20 : item.maxQuota,
+            mode: nextActive ? (item.mode === 'Day Off' ? 'Hybrid (Clinic + Video)' : item.mode) : 'Day Off',
           };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Toggle Shift (Morning or Evening)
+  const handleToggleShift = (dayIndex, shiftType) => {
+    setWeeklySchedule((prev) =>
+      prev.map((item, idx) => {
+        if (idx === dayIndex) {
+          if (shiftType === 'morning') {
+            const isClosed = item.morningStart === 'Closed';
+            return {
+              ...item,
+              morningStart: isClosed ? '10:00 AM' : 'Closed',
+              morningEnd: isClosed ? '01:00 PM' : 'Closed',
+            };
+          }
+          if (shiftType === 'evening') {
+            const isClosed = item.eveningStart === 'Closed';
+            return {
+              ...item,
+              eveningStart: isClosed ? '05:00 PM' : 'Closed',
+              eveningEnd: isClosed ? '08:30 PM' : 'Closed',
+            };
+          }
         }
         return item;
       })
@@ -182,6 +255,22 @@ export default function DoctorSchedulePage() {
       })
     );
     showToast('Copied Monday timetable to Tuesday through Friday.', 'success');
+  };
+
+  // Enable All 7 Days (including Sunday)
+  const handleEnableAllDays = () => {
+    setWeeklySchedule((prev) =>
+      prev.map((item) => ({
+        ...item,
+        active: true,
+        morningStart: item.morningStart === 'Closed' ? '10:00 AM' : item.morningStart,
+        morningEnd: item.morningEnd === 'Closed' ? '01:00 PM' : item.morningEnd,
+        eveningStart: item.eveningStart === 'Closed' ? '05:00 PM' : item.eveningStart,
+        eveningEnd: item.eveningEnd === 'Closed' ? '08:30 PM' : item.eveningEnd,
+        mode: item.mode === 'Day Off' ? 'Hybrid (Clinic + Video)' : item.mode,
+      }))
+    );
+    showToast('All 7 days including Sunday are now active and open for bookings!', 'success');
   };
 
   // Save Weekly Schedule
@@ -268,20 +357,9 @@ export default function DoctorSchedulePage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.8px', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
-                CLINICAL PRACTICE OPERATIONS
-              </span>
-              <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '10px' }}>
-                Live Sync with Patient Booking Directory
-              </span>
-            </div>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0, color: 'var(--text-main)' }}>
               Practice Timetable & Consultation Fees
             </h1>
-            <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Configure consultation pricing, weekly operating hours, slot intervals, and hospital OPD locations
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -485,7 +563,18 @@ export default function DoctorSchedulePage() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn-white-capsule"
+              onClick={handleEnableAllDays}
+              style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', padding: '8px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '700' }}
+              title="Activate Monday through Sunday"
+            >
+              <CheckCircle2 size={14} color="var(--forest-800)" />
+              <span>Enable All 7 Days (Inc. Sunday)</span>
+            </button>
+
             <button
               type="button"
               className="btn-white-capsule"
@@ -529,83 +618,143 @@ export default function DoctorSchedulePage() {
                   key={item.day}
                   style={{
                     borderBottom: '1px solid #F3F4F6',
-                    backgroundColor: item.active ? '#FFFFFF' : '#FAFAFA',
-                    opacity: item.active ? 1 : 0.6,
+                    backgroundColor: item.active ? '#FFFFFF' : '#FAFAF9',
+                    transition: 'background-color 0.15s ease',
                   }}
                 >
                   {/* Day Name */}
-                  <td style={{ padding: '14px 16px', fontWeight: '800', color: item.active ? 'var(--forest-900)' : '#9CA3AF' }}>
-                    {item.day}
+                  <td style={{ padding: '14px 16px', fontWeight: '800', color: item.active ? 'var(--forest-900)' : '#6B7280' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>{item.day}</span>
+                      {item.day === 'Sunday' && item.active && (
+                        <span style={{ fontSize: '10px', backgroundColor: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                          Weekend OPD
+                        </span>
+                      )}
+                    </div>
                   </td>
 
-                  {/* Toggle Active */}
+                  {/* Toggle Active / Day Off Status (Enable / Disable Button - No ticks or checks) */}
                   <td style={{ padding: '14px 16px' }}>
                     <button
                       type="button"
                       onClick={() => handleToggleDay(idx)}
                       style={{
-                        padding: '4px 12px',
-                        borderRadius: '9999px',
-                        fontSize: '11.5px',
-                        fontWeight: '700',
+                        padding: '6px 16px',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: '800',
                         border: 'none',
                         cursor: 'pointer',
-                        backgroundColor: item.active ? '#DCFCE7' : '#F3F4F6',
-                        color: item.active ? '#166534' : '#6B7280',
+                        backgroundColor: item.active ? '#059669' : '#E5E7EB',
+                        color: item.active ? '#FFFFFF' : '#4B5563',
+                        transition: 'all 0.15s ease',
+                        boxShadow: item.active ? '0 2px 6px rgba(5, 150, 105, 0.25)' : 'none',
+                        minWidth: '85px',
+                        textAlign: 'center',
                       }}
+                      title={`Click to ${item.active ? 'disable' : 'enable'} ${item.day}`}
                     >
-                      {item.active ? '✓ Available' : 'Off'}
+                      {item.active ? 'Enabled' : 'Disabled'}
                     </button>
                   </td>
 
-                  {/* Morning Shift */}
+                  {/* Morning Shift (Time Slot Dropdowns - No crosses) */}
                   <td style={{ padding: '14px 16px' }}>
-                    {item.active ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <input
-                          type="text"
-                          value={item.morningStart}
-                          onChange={(e) => handleScheduleChange(idx, 'morningStart', e.target.value)}
-                          placeholder="e.g. 10:00 AM"
-                          style={{ width: '85px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center' }}
-                        />
-                        <span style={{ color: '#9CA3AF' }}>-</span>
-                        <input
-                          type="text"
-                          value={item.morningEnd}
-                          onChange={(e) => handleScheduleChange(idx, 'morningEnd', e.target.value)}
-                          placeholder="e.g. 01:00 PM"
-                          style={{ width: '85px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center' }}
-                        />
-                      </div>
-                    ) : (
-                      <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Closed</span>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <select
+                        value={item.active ? item.morningStart : 'Closed'}
+                        disabled={!item.active}
+                        onChange={(e) => handleScheduleChange(idx, 'morningStart', e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '8px',
+                          border: '1px solid #D1D5DB',
+                          fontSize: '12px',
+                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
+                          color: item.active && item.morningStart !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
+                          fontWeight: item.active && item.morningStart !== 'Closed' ? '700' : '500',
+                          cursor: item.active ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        {TIME_OPTIONS.map((t) => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                      <span style={{ color: '#9CA3AF' }}>-</span>
+                      <select
+                        value={item.active ? item.morningEnd : 'Closed'}
+                        disabled={!item.active}
+                        onChange={(e) => handleScheduleChange(idx, 'morningEnd', e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '8px',
+                          border: '1px solid #D1D5DB',
+                          fontSize: '12px',
+                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
+                          color: item.active && item.morningEnd !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
+                          fontWeight: item.active && item.morningEnd !== 'Closed' ? '700' : '500',
+                          cursor: item.active ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        {TIME_OPTIONS.map((t) => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </td>
 
-                  {/* Evening Shift */}
+                  {/* Evening Shift (Time Slot Dropdowns - No crosses) */}
                   <td style={{ padding: '14px 16px' }}>
-                    {item.active ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <input
-                          type="text"
-                          value={item.eveningStart}
-                          onChange={(e) => handleScheduleChange(idx, 'eveningStart', e.target.value)}
-                          placeholder="e.g. 05:00 PM"
-                          style={{ width: '85px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center' }}
-                        />
-                        <span style={{ color: '#9CA3AF' }}>-</span>
-                        <input
-                          type="text"
-                          value={item.eveningEnd}
-                          onChange={(e) => handleScheduleChange(idx, 'eveningEnd', e.target.value)}
-                          placeholder="e.g. 08:30 PM"
-                          style={{ width: '85px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center' }}
-                        />
-                      </div>
-                    ) : (
-                      <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Closed</span>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <select
+                        value={item.active ? item.eveningStart : 'Closed'}
+                        disabled={!item.active}
+                        onChange={(e) => handleScheduleChange(idx, 'eveningStart', e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '8px',
+                          border: '1px solid #D1D5DB',
+                          fontSize: '12px',
+                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
+                          color: item.active && item.eveningStart !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
+                          fontWeight: item.active && item.eveningStart !== 'Closed' ? '700' : '500',
+                          cursor: item.active ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        {TIME_OPTIONS.map((t) => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                      <span style={{ color: '#9CA3AF' }}>-</span>
+                      <select
+                        value={item.active ? item.eveningEnd : 'Closed'}
+                        disabled={!item.active}
+                        onChange={(e) => handleScheduleChange(idx, 'eveningEnd', e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '8px',
+                          border: '1px solid #D1D5DB',
+                          fontSize: '12px',
+                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
+                          color: item.active && item.eveningEnd !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
+                          fontWeight: item.active && item.eveningEnd !== 'Closed' ? '700' : '500',
+                          cursor: item.active ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        {TIME_OPTIONS.map((t) => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </td>
 
                   {/* Slot Duration */}
@@ -614,12 +763,13 @@ export default function DoctorSchedulePage() {
                       <select
                         value={item.slotDuration}
                         onChange={(e) => handleScheduleChange(idx, 'slotDuration', Number(e.target.value))}
-                        style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px' }}
+                        style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', backgroundColor: '#FFFFFF' }}
                       >
                         <option value={15}>15 mins</option>
                         <option value={20}>20 mins</option>
                         <option value={30}>30 mins</option>
                         <option value={45}>45 mins</option>
+                        <option value={60}>60 mins</option>
                       </select>
                     ) : (
                       <span style={{ color: '#9CA3AF' }}>-</span>
@@ -635,7 +785,7 @@ export default function DoctorSchedulePage() {
                         max="60"
                         value={item.maxQuota}
                         onChange={(e) => handleScheduleChange(idx, 'maxQuota', Number(e.target.value))}
-                        style={{ width: '60px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center' }}
+                        style={{ width: '60px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center', backgroundColor: '#FFFFFF' }}
                       />
                     ) : (
                       <span style={{ color: '#9CA3AF' }}>-</span>
@@ -648,14 +798,14 @@ export default function DoctorSchedulePage() {
                       <select
                         value={item.mode}
                         onChange={(e) => handleScheduleChange(idx, 'mode', e.target.value)}
-                        style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px' }}
+                        style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', backgroundColor: '#FFFFFF' }}
                       >
                         <option value="Hybrid (Clinic + Video)">Hybrid (Clinic + Video)</option>
                         <option value="In-Clinic OPD Only">In-Clinic OPD Only</option>
                         <option value="Video Only">Video Only</option>
                       </select>
                     ) : (
-                      <span style={{ color: '#9CA3AF' }}>Day Off</span>
+                      <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Day Off</span>
                     )}
                   </td>
                 </tr>

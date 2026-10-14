@@ -3,3 +3,4 @@ export { default as DoctorConsultationRoom } from './pages/DoctorConsultationRoo
 export { default as DoctorSchedulePage } from './pages/DoctorSchedulePage';
 export { default as DoctorPatientsPage } from './pages/DoctorPatientsPage';
 export { default as DoctorEarningsPage } from './pages/DoctorEarningsPage';
+export { default as DoctorProfileSettingsPage } from './pages/DoctorProfileSettingsPage';
