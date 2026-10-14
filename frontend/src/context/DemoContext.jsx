@@ -197,6 +197,24 @@ const ENHANCED_INITIAL_DOCTORS = [
         timing: '4:00 PM - 7:00 PM',
         nextDate: 'Pending',
       },
+      {
+        id: 'clinic-national-hosp',
+        hospital: 'National Hospital & Medical Centre',
+        address: 'Sector L, Phase 1, DHA, Lahore',
+        fee: 2700,
+        days: 'Tue, Thu, Sat',
+        timing: '10:00 AM - 1:00 PM',
+        nextDate: 'Pending',
+      },
+      {
+        id: 'clinic-hameed-latif',
+        hospital: 'Hameed Latif Hospital',
+        address: '14 New Garden Town, Lahore',
+        fee: 2600,
+        days: 'Mon, Wed, Fri',
+        timing: '7:30 PM - 9:30 PM',
+        nextDate: 'Pending',
+      },
     ],
     reviews: [],
   },
@@ -205,18 +223,30 @@ const ENHANCED_INITIAL_DOCTORS = [
 const INITIAL_APPOINTMENTS = [
   {
     id: 'apt-101',
-    doctorId: 'dr-maya-patel',
-    doctorName: 'Dr. Maya Patel',
+    doctorId: 'dr-amina-shah',
+    doctorName: 'Dr. Amina Shah',
     specialty: 'General Physician',
     type: 'Video Consultation',
     clinicName: 'MedConnect Telehealth Suite',
     date: 'Today',
-    rawDate: '2026-10-12',
+    rawDate: '2026-10-14',
     time: '4:30 PM',
     fee: 1500,
     status: 'Confirmed', // 'Confirmed' | 'Pending Doctor Confirmation' | 'Completed' | 'Cancelled'
     patientName: 'Alex Khan',
     patientPhone: '+92 300 1234567',
+    patientId: 'patient-alex',
+    patientMrn: 'MC-89241',
+    patientAge: 29,
+    patientGender: 'Male',
+    patientBloodGroup: 'B+',
+    patientEmail: 'alex.khan@medconnect.pk',
+    patientCity: 'Lahore',
+    patientAddress: 'House 42, Street 7, Cavalry Ground, Lahore',
+    patientEmergencyContact: '+92 321 9876543 (Brother)',
+    patientAllergies: 'Penicillin, Dust Mites',
+    patientConditions: 'Seasonal Allergic Rhinitis',
+    patientTotalVisits: 3,
     reason: 'Routine Health Review & Seasonal Allergy Advice',
     paymentMethod: 'JazzCash (Prepaid)',
     paymentStatus: 'Paid',
@@ -224,18 +254,30 @@ const INITIAL_APPOINTMENTS = [
   },
   {
     id: 'apt-102',
-    doctorId: 'dr-maya-patel',
-    doctorName: 'Dr. Maya Patel',
+    doctorId: 'dr-amina-shah',
+    doctorName: 'Dr. Amina Shah',
     specialty: 'General Physician',
-    type: 'In-Clinic Appointment',
-    clinicName: 'MedConnect Downtown Clinic',
-    date: 'Tomorrow, Oct 13',
-    rawDate: '2026-10-13',
+    type: 'In-Clinic Hospital Visit',
+    clinicName: 'Central Medical Complex',
+    date: 'Tomorrow, Oct 15',
+    rawDate: '2026-10-15',
     time: '5:15 PM',
     fee: 2000,
     status: 'Pending Doctor Confirmation', // Patient booked, awaiting Doctor confirmation!
     patientName: 'Madiha Tariq',
     patientPhone: '+92 321 4455667',
+    patientId: 'patient-madiha',
+    patientMrn: 'MC-77190',
+    patientAge: 32,
+    patientGender: 'Female',
+    patientBloodGroup: 'O+',
+    patientEmail: 'madiha.tariq@gmail.com',
+    patientCity: 'Lahore',
+    patientAddress: '18-B, Model Town, Lahore',
+    patientEmergencyContact: '+92 333 1122334 (Spouse)',
+    patientAllergies: 'None reported',
+    patientConditions: 'Post-viral fatigue, Vitamin D deficiency',
+    patientTotalVisits: 4,
     reason: 'Post-viral fatigue & Vitamin D follow-up',
     paymentMethod: 'Pay at Hospital',
     paymentStatus: 'Pending at Clinic Desk',
@@ -367,7 +409,7 @@ export function DemoProvider({ children }) {
   // Roles: 'patient' | 'doctor' | 'admin' | null (guest on landing page)
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = sessionStorage.getItem('medconnect_session');
+      const saved = localStorage.getItem('medconnect_session') || sessionStorage.getItem('medconnect_session');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -462,6 +504,7 @@ export function DemoProvider({ children }) {
     if (sessionUser) {
       try {
         sessionStorage.setItem('medconnect_session', JSON.stringify(sessionUser));
+        localStorage.setItem('medconnect_session', JSON.stringify(sessionUser));
       } catch (e) {
         console.error('Failed to save session', e);
       }
@@ -473,6 +516,7 @@ export function DemoProvider({ children }) {
     setCurrentRole('guest');
     try {
       sessionStorage.removeItem('medconnect_session');
+      localStorage.removeItem('medconnect_session');
     } catch (e) {
       console.error(e);
     }
@@ -602,18 +646,30 @@ export function DemoProvider({ children }) {
     showToast(`Application for ${rejectedDoc?.name} was rejected.`, 'info');
   };
 
-  // ADMIN EDIT DOCTOR PROFILE
+  // DOCTOR & ADMIN EDIT DOCTOR PROFILE
   const editDoctorProfile = (doctorId, updatedFields) => {
     setDoctorsList((prev) =>
       prev.map((doc) => (doc.id === doctorId ? { ...doc, ...updatedFields } : doc))
     );
+    if (currentUser?.id === doctorId || currentUser?.role === 'doctor') {
+      setCurrentUser((prev) => {
+        const updated = { ...prev, ...updatedFields };
+        try {
+          sessionStorage.setItem('medconnect_session', JSON.stringify(updated));
+          localStorage.setItem('medconnect_session', JSON.stringify(updated));
+        } catch (e) {
+          console.error(e);
+        }
+        return updated;
+      });
+    }
     addActivity(
-      'Operations Admin',
-      'Edited Doctor Profile',
-      `Updated details and scheduling fees for doctor #${doctorId}.`,
-      'admin_edit'
+      `${updatedFields.name || 'Doctor'} (Clinician)`,
+      'Updated Clinician Profile',
+      `Updated credentials, profile photo, and clinical scheduling.`,
+      'clinical'
     );
-    showToast('Doctor profile updated successfully.', 'success');
+    showToast('Doctor profile and photo updated successfully.', 'success');
   };
 
   // ADMIN EDIT PATIENT PROFILE
@@ -692,14 +748,15 @@ export function DemoProvider({ children }) {
     return newAppointment;
   };
 
-  // DOCTOR CONFIRMS BOOKING
-  const confirmAppointmentByDoctor = (appointmentId) => {
+  // DOCTOR CONFIRMS BOOKING WITH REMARKS
+  const confirmAppointmentByDoctor = (appointmentId, remarks = '') => {
     setAppointments((prev) =>
       prev.map((apt) =>
         apt.id === appointmentId
           ? {
               ...apt,
               status: 'Confirmed',
+              doctorRemarks: remarks || apt.doctorRemarks || '',
               canJoin: apt.type.includes('Video'),
             }
           : apt
@@ -709,10 +766,10 @@ export function DemoProvider({ children }) {
     addActivity(
       `${confirmedApt?.doctorName || 'Doctor'} (Clinician)`,
       'Confirmed Appointment Booking',
-      `Accepted booking #${appointmentId} for patient ${confirmedApt?.patientName} at ${confirmedApt?.time}.`,
+      `Accepted booking #${appointmentId} for patient ${confirmedApt?.patientName}. ${remarks ? `Remarks: "${remarks}"` : ''}`,
       'doctor_confirmation'
     );
-    showToast(`Appointment #${appointmentId} confirmed! Patient notified.`, 'success');
+    showToast(`Appointment #${appointmentId} confirmed with remarks! Patient notified.`, 'success');
   };
 
   // DOCTOR DECLINES BOOKING
@@ -748,6 +805,42 @@ export function DemoProvider({ children }) {
     showToast('Appointment successfully cancelled.', 'info');
   };
 
+  const rescheduleAppointment = (appointmentId, newDate, newTime) => {
+    let targetDocName = null;
+    let patientName = '';
+
+    setAppointments((prev) =>
+      prev.map((apt) => {
+        if (apt.id === appointmentId) {
+          targetDocName = apt.doctorName;
+          patientName = apt.patientName || 'Patient';
+          return {
+            ...apt,
+            date: newDate,
+            time: newTime,
+            status: 'Pending Doctor Confirmation',
+            rescheduled: true,
+            rescheduledBy: 'Patient',
+            rescheduledAt: 'Just now',
+          };
+        }
+        return apt;
+      })
+    );
+
+    addActivity(
+      `${patientName || 'Patient'}`,
+      'Rescheduled Appointment Slot',
+      `Requested new slot for ${targetDocName || 'Doctor'}: ${newDate} at ${newTime}. Awaiting clinician confirmation.`,
+      'reschedule'
+    );
+
+    showToast(
+      `Appointment rescheduled for ${newDate} at ${newTime}. ${targetDocName || 'Your doctor'} has been notified!`,
+      'success'
+    );
+  };
+
   // Clinical Prescription Writer
   const issuePrescription = (newRx) => {
     const rxItem = {
@@ -766,6 +859,124 @@ export function DemoProvider({ children }) {
     );
     showToast(`Prescription #${rxItem.id} issued and sent to patient portal!`, 'success');
     return rxItem;
+  };
+
+  // Book Diagnostic Lab Test
+  const bookLabTest = (labTestData) => {
+    const newReport = {
+      id: `lab-${Date.now().toString().slice(-4)}`,
+      testName: labTestData.testName || 'Diagnostic Lab Test',
+      lab: labTestData.lab || 'Chughtai Lab',
+      date: labTestData.date || 'Today, Oct 13',
+      status: 'Processing', // Live pending report
+      sampleType: labTestData.collectionType === 'home' ? 'Home Sample Collection' : 'In-Lab Collection',
+      patientName: labTestData.patientName || currentUser?.name || 'Alex Khan',
+      patientPhone: labTestData.phone || '+92 300 1234567',
+      address: labTestData.address || 'Address provided at booking',
+      pdfUrl: '#',
+      summary: 'Sample collection underway. Verified report will be generated within 12 hours.',
+      bookedAt: 'Just now',
+    };
+    setLabReports((prev) => [newReport, ...prev]);
+    addActivity(
+      `${currentUser?.name || 'Patient'} (Patient)`,
+      'Booked Diagnostic Lab Test',
+      `Ordered ${newReport.testName} with ${newReport.lab}.`,
+      'booking'
+    );
+    return newReport;
+  };
+
+  // Live timer tick every 15 seconds to sync appointment ongoing/upcoming/missed status
+  const [liveClock, setLiveClock] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveClock(new Date());
+    }, 15000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Compute live visit status based on current live ongoing date/time
+  const getAppointmentLiveStatus = (appointment) => {
+    if (!appointment) return { status: 'upcoming', badge: 'Upcoming', color: 'blue' };
+    if (appointment.status === 'Cancelled' || appointment.status === 'Declined') {
+      return { status: 'cancelled', badge: 'Cancelled', color: 'red' };
+    }
+    if (appointment.status === 'Completed') {
+      return { status: 'completed', badge: 'Completed', color: 'green' };
+    }
+
+    const now = liveClock;
+    const currentHour = now.getHours();
+    const currentMin = now.getMinutes();
+    const currentTotalMins = currentHour * 60 + currentMin;
+
+    const dateStr = (appointment.date || '').toLowerCase();
+    const isToday = dateStr.includes('today') || dateStr.includes('oct 12') || dateStr.includes('oct 13');
+    const isPastDate = dateStr.includes('sep') || dateStr.includes('aug') || dateStr.includes('yesterday');
+
+    if (isPastDate) {
+      return { status: 'missed', badge: '⚠️ Missed Slot - Please Reschedule', color: 'amber', isOverdue: true };
+    }
+
+    // Parse appointment time e.g. "4:30 PM", "5:15 PM", "11:00 AM"
+    let aptTotalMins = -1;
+    const timeMatch = (appointment.time || '').match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      let h = parseInt(timeMatch[1], 10);
+      const m = parseInt(timeMatch[2], 10);
+      const ampm = timeMatch[3].toUpperCase();
+      if (ampm === 'PM' && h < 12) h += 12;
+      if (ampm === 'AM' && h === 12) h = 0;
+      aptTotalMins = h * 60 + m;
+    }
+
+    if (isToday && aptTotalMins !== -1) {
+      const diffMins = aptTotalMins - currentTotalMins;
+      // If within slot window (-30 mins past start to +45 mins after start)
+      if (diffMins <= 15 && diffMins >= -45) {
+        return {
+          status: 'ongoing',
+          badge: '🟢 Ongoing Now (Join Consultation)',
+          color: 'emerald',
+          isOngoing: true,
+          timeHint: 'Active Consultation Window',
+        };
+      }
+      // If slot has passed by more than 45 mins today and not completed
+      if (diffMins < -45) {
+        return {
+          status: 'missed',
+          badge: '⚠️ Missed Slot - Please Reschedule',
+          color: 'amber',
+          isOverdue: true,
+          timeHint: `Scheduled for ${appointment.time}`,
+        };
+      }
+      // If slot is upcoming today
+      if (diffMins > 15) {
+        const hoursLeft = Math.floor(diffMins / 60);
+        const minsLeft = diffMins % 60;
+        const countdown = hoursLeft > 0 ? `in ${hoursLeft}h ${minsLeft}m` : `in ${minsLeft} mins`;
+        return {
+          status: 'upcoming',
+          badge: `⏳ Upcoming (${countdown})`,
+          color: 'blue',
+          isUpcoming: true,
+          timeHint: `Today at ${appointment.time}`,
+        };
+      }
+    }
+
+    // Default upcoming for tomorrow or future
+    return {
+      status: 'upcoming',
+      badge: `Upcoming (${appointment.date})`,
+      color: 'blue',
+      isUpcoming: true,
+      timeHint: `${appointment.date} · ${appointment.time}`,
+    };
   };
 
   return (
@@ -795,6 +1006,10 @@ export function DemoProvider({ children }) {
         setAppointments,
         prescriptions,
         labReports,
+        setLabReports,
+        bookLabTest,
+        liveClock,
+        getAppointmentLiveStatus,
         activityLog,
         toast,
         showToast,
@@ -810,6 +1025,7 @@ export function DemoProvider({ children }) {
         confirmAppointmentByDoctor,
         declineAppointmentByDoctor,
         cancelAppointment,
+        rescheduleAppointment,
         issuePrescription,
         patientUser: currentUser?.role === 'patient' ? currentUser : (patientsList[0] || {}),
         setPatientUser: (updater) => typeof updater === 'function' ? setCurrentUser(updater) : setCurrentUser(updater),
