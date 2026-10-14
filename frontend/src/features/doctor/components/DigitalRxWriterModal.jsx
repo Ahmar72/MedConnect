@@ -14,17 +14,14 @@ const COMMON_MEDICINES = [
 export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }) {
   const { issuePrescription, showToast } = useDemo();
 
-  const [patientName, setPatientName] = useState(defaultPatient?.patientName || 'Alex Khan');
-  const [diagnosis, setDiagnosis] = useState('Upper Respiratory Tract Infection & Allergic Rhinitis');
-  const [medicines, setMedicines] = useState([
-    { name: 'Tab. Rigix (Cetirizine 10mg)', dosage: '1 tablet once daily at bedtime', duration: '7 days' },
-    { name: 'Tab. Panadol 500mg (Paracetamol)', dosage: '1 tablet thrice daily after food if fever/bodyache', duration: '3 days' },
-  ]);
+  const [patientName, setPatientName] = useState(defaultPatient?.patientName || '');
+  const [diagnosis, setDiagnosis] = useState('');
+  const [medicines, setMedicines] = useState([]);
   const [medName, setMedName] = useState('');
   const [medDosage, setMedDosage] = useState('');
-  const [medDuration, setMedDuration] = useState('5 days');
-  const [instructions, setInstructions] = useState('Warm water gargles twice daily. Keep well hydrated. Return if symptoms worsen.');
-  const [labAdvice, setLabAdvice] = useState('Complete Blood Count (CBC) if fever persists beyond 48 hours.');
+  const [medDuration, setMedDuration] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [labAdvice, setLabAdvice] = useState('');
 
   if (!isOpen) return null;
 
@@ -210,7 +207,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
                   type="text"
                   className="form-input"
                   style={{ padding: '8px 10px', fontSize: '12px' }}
-                  placeholder="Duration..."
+                  placeholder="Duration (e.g. 5 days)..."
                   value={medDuration}
                   onChange={(e) => setMedDuration(e.target.value)}
                 />
@@ -232,6 +229,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
             <input
               type="text"
               className="form-input"
+              placeholder="e.g. Warm water gargles twice daily, increase hydration, return if symptoms worsen"
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
             />

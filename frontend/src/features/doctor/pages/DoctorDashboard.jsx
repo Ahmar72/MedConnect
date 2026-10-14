@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AppShell from '../../shell/AppShell';
 import { useDemo } from '../../../context/DemoContext';
 import DigitalRxWriterModal from '../components/DigitalRxWriterModal';
 import PatientMedicalRecordModal from '../components/PatientMedicalRecordModal';
+import DoctorProfileModal from '../components/DoctorProfileModal';
 import {
   Users,
   Video,
@@ -48,31 +49,60 @@ export default function DoctorDashboard() {
 
   const [selectedPatientForRx, setSelectedPatientForRx] = useState(null);
   const [selectedPatientForRecord, setSelectedPatientForRecord] = useState(null);
+  const [isDoctorProfileModalOpen, setIsDoctorProfileModalOpen] = useState(false);
+
+  // Modal State for Confirming Appointment with Clinical Remarks
+  const [confirmRemarksModal, setConfirmRemarksModal] = useState({
+    isOpen: false,
+    appointment: null,
+    remarks: 'Please bring your previous lab reports and prescription slips. Arrive 15 minutes before your scheduled slot.',
+  });
 
   const doctorTab = searchParams.get('tab') || 'schedule'; // 'schedule' | 'profile'
 
   // Doctor Profile Editor State
   const [isEditingDoctorProfile, setIsEditingDoctorProfile] = useState(false);
   const [doctorForm, setDoctorForm] = useState({
-    name: currentUser?.name || 'Dr. Maya Patel',
-    title: currentUser?.title || 'Senior Consultant Family Physician & Internist',
-    specialty: currentUser?.specialty || 'General Physician',
-    pmdcNumber: currentUser?.pmdcNumber || '39482-P',
-    qualifications: currentUser?.qualifications || 'MBBS, FCPS (Internal Medicine), MRCGP (UK)',
-    experience: currentUser?.experience || '12 years',
-    hospitalName: currentUser?.practices?.[0]?.hospital || 'Central Clinic',
-    address: currentUser?.practices?.[0]?.address || 'Main Boulevard, Gulberg, Lahore',
-    city: currentUser?.city || 'Lahore',
-    inClinicFee: currentUser?.inClinicFee || 2000,
-    videoFee: currentUser?.videoFee || 1500,
-    timing: currentUser?.practices?.[0]?.timing || '4:00 PM - 8:00 PM',
-    days: currentUser?.practices?.[0]?.days || 'Mon - Fri',
-    bio: currentUser?.bio || 'Dr. Maya Patel provides whole-person preventive medicine, chronic disease management, and family healthcare.',
+    name: currentUser?.name || '',
+    title: currentUser?.title || '',
+    specialty: currentUser?.specialty || '',
+    pmdcNumber: currentUser?.pmdcNumber || '',
+    qualifications: currentUser?.qualifications || '',
+    experience: currentUser?.experience || '',
+    hospitalName: currentUser?.practices?.[0]?.hospital || currentUser?.hospitalName || '',
+    address: currentUser?.practices?.[0]?.address || currentUser?.address || '',
+    city: currentUser?.city || '',
+    inClinicFee: currentUser?.inClinicFee || currentUser?.practices?.[0]?.fee || '',
+    videoFee: currentUser?.videoFee || '',
+    timing: currentUser?.practices?.[0]?.timing || currentUser?.timing || '',
+    days: currentUser?.practices?.[0]?.days || currentUser?.days || '',
+    bio: currentUser?.bio || '',
   });
+
+  useEffect(() => {
+    if (currentUser) {
+      setDoctorForm({
+        name: currentUser.name || '',
+        title: currentUser.title || '',
+        specialty: currentUser.specialty || '',
+        pmdcNumber: currentUser.pmdcNumber || '',
+        qualifications: currentUser.qualifications || '',
+        experience: currentUser.experience || '',
+        hospitalName: currentUser.practices?.[0]?.hospital || currentUser.hospitalName || '',
+        address: currentUser.practices?.[0]?.address || currentUser.address || '',
+        city: currentUser.city || '',
+        inClinicFee: currentUser.inClinicFee || currentUser.practices?.[0]?.fee || '',
+        videoFee: currentUser.videoFee || '',
+        timing: currentUser.practices?.[0]?.timing || currentUser.timing || '',
+        days: currentUser.practices?.[0]?.days || currentUser.days || '',
+        bio: currentUser.bio || '',
+      });
+    }
+  }, [currentUser]);
 
   const handleSaveDoctorProfile = (e) => {
     e.preventDefault();
-    editDoctorProfile(currentUser?.id || 'dr-maya-patel', {
+    editDoctorProfile(currentUser?.id || 'dr-amina-shah', {
       ...doctorForm,
       practices: [
         {
@@ -93,9 +123,9 @@ export default function DoctorDashboard() {
   // Check if current doctor is pending PMDC verification
   const isDoctorPending = currentUser?.status === 'pending' || currentUser?.verified === false;
 
-  // Filter appointments for this doctor (or default to Maya Patel if generic demo)
-  const doctorId = currentUser?.id || 'dr-maya-patel';
-  const doctorName = currentUser?.name || 'Dr. Maya Patel';
+  // Filter appointments strictly for this doctor (scoped to doctor's id or name)
+  const doctorId = currentUser?.id || 'dr-amina-shah';
+  const doctorName = currentUser?.name || 'Dr. Amina Shah';
 
   const myAppointments = appointments.filter(
     (a) => a.doctorId === doctorId || a.doctorName === doctorName
@@ -414,6 +444,11 @@ export default function DoctorDashboard() {
                     <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#FEF3C7', color: '#92400E', padding: '2px 8px', borderRadius: '10px' }}>
                       #{req.id}
                     </span>
+                    {req.rescheduled && (
+                      <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#EDE9FE', color: '#6D28D9', padding: '2px 8px', borderRadius: '10px' }}>
+                        Rescheduled by Patient
+                      </span>
+                    )}
                     <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
                       Requested: <b>{req.date} at {req.time}</b>
                     </span>
@@ -430,13 +465,39 @@ export default function DoctorDashboard() {
                   </div>
                 </div>
 
-                {/* Actions: Confirm or Decline */}
-                <div style={{ display: 'flex', gap: '10px' }}>
+                {/* Actions: See Profile, Confirm with Remarks, Decline */}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-white-capsule"
+                    style={{
+                      border: '1.5px solid var(--forest-800)',
+                      color: 'var(--forest-800)',
+                      padding: '8px 16px',
+                      fontSize: '12.5px',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                    onClick={() => setSelectedPatientForRecord(req)}
+                    title="Inspect complete patient health profile & history"
+                  >
+                    <User size={15} />
+                    <span>See Profile</span>
+                  </button>
+
                   <button
                     type="button"
                     className="btn-lime-pill"
-                    style={{ padding: '8px 16px', fontSize: '12.5px' }}
-                    onClick={() => confirmAppointmentByDoctor(req.id)}
+                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800' }}
+                    onClick={() =>
+                      setConfirmRemarksModal({
+                        isOpen: true,
+                        appointment: req,
+                        remarks: '',
+                      })
+                    }
                   >
                     <Check size={15} />
                     <span>Confirm Booking</span>
@@ -458,64 +519,33 @@ export default function DoctorDashboard() {
         </div>
       )}
 
-      {/* Navigation Sub-Tabs */}
-      <div className="dashboard-tabs-bar" style={{ marginBottom: '24px' }}>
-        <button
-          type="button"
-          className={`tab-nav-btn ${doctorTab === 'schedule' ? 'active' : ''}`}
-          onClick={() => setSearchParams({ tab: 'schedule' })}
-        >
-          <Users size={16} />
-          <span>Confirmed Schedule ({confirmedAppointments.length})</span>
-        </button>
-
-        <button
-          type="button"
-          className={`tab-nav-btn ${doctorTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setSearchParams({ tab: 'profile' })}
-        >
-          <User size={16} />
-          <span>My Clinician Profile</span>
-        </button>
-
-        <button
-          type="button"
-          className="tab-nav-btn"
-          onClick={() => navigate('/doctor/schedule')}
-        >
-          <Calendar size={16} />
-          <span>Practice Timetables & Fees</span>
-        </button>
-
-        <button
-          type="button"
-          className="tab-nav-btn"
-          onClick={() => navigate('/doctor/patients')}
-        >
-          <FileText size={16} />
-          <span>Patient Records & History</span>
-        </button>
-
-        <button
-          type="button"
-          className="tab-nav-btn"
-          onClick={() => navigate('/doctor/earnings')}
-        >
-          <TrendingUp size={16} />
-          <span>Earnings & Settlements</span>
-        </button>
-      </div>
+      {/* Profile Back Banner (When Viewing Profile Tab) - Duplicate Horizontal Tabs Bar Removed */}
+      {doctorTab === 'profile' && (
+        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <button
+            type="button"
+            className="btn-white-capsule"
+            style={{ border: '1px solid var(--border-subtle)', padding: '8px 16px', fontSize: '12.5px', color: 'var(--forest-800)', fontWeight: '700' }}
+            onClick={() => setSearchParams({})}
+          >
+            ← Back to Dashboard & Queue
+          </button>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+            Practice credentials & photo are synced live across the patient search directory
+          </span>
+        </div>
+      )}
 
       {doctorTab === 'profile' ? (
         <div className="my-profile-container">
-          {/* Header Profile Summary Card matching Image 2 style */}
+          {/* Header Profile Summary Card */}
           <div className="my-profile-header-card">
             <div className="my-profile-user-info">
-              {currentUser?.image ? (
+              {currentUser?.photoUrl || currentUser?.image ? (
                 <img
-                  src={currentUser.image}
+                  src={currentUser.photoUrl || currentUser.image}
                   alt={doctorForm.name}
-                  style={{ width: '72px', height: '72px', borderRadius: '16px', objectFit: 'cover' }}
+                  style={{ width: '74px', height: '74px', borderRadius: '18px', objectFit: 'cover', border: '2px solid var(--lime-accent)' }}
                 />
               ) : (
                 <div className="my-profile-avatar-large">
@@ -543,15 +573,17 @@ export default function DoctorDashboard() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className={isEditingDoctorProfile ? 'btn-white-capsule' : 'btn-lime-pill'}
-              onClick={() => setIsEditingDoctorProfile(!isEditingDoctorProfile)}
-              style={{ padding: '10px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              <Edit3 size={15} />
-              <span>{isEditingDoctorProfile ? 'Close Editor' : 'Edit Profile'}</span>
-            </button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn-lime-pill"
+                onClick={() => setIsDoctorProfileModalOpen(true)}
+                style={{ padding: '10px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800' }}
+              >
+                <Edit3 size={15} />
+                <span>Update Profile & Photo</span>
+              </button>
+            </div>
           </div>
 
           {/* Profile Form / View */}
@@ -587,6 +619,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.name}
                     onChange={(e) => setDoctorForm({ ...doctorForm, name: e.target.value })}
+                    placeholder="e.g. Dr. Amina Shah"
                     required
                   />
                 </div>
@@ -597,6 +630,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.title}
                     onChange={(e) => setDoctorForm({ ...doctorForm, title: e.target.value })}
+                    placeholder="e.g. Consultant Family Physician & General Practitioner"
                     required
                   />
                 </div>
@@ -607,6 +641,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.specialty}
                     onChange={(e) => setDoctorForm({ ...doctorForm, specialty: e.target.value })}
+                    placeholder="e.g. General Physician"
                     required
                   />
                 </div>
@@ -617,6 +652,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.pmdcNumber}
                     onChange={(e) => setDoctorForm({ ...doctorForm, pmdcNumber: e.target.value })}
+                    placeholder="e.g. 41902-P"
                     required
                   />
                 </div>
@@ -627,6 +663,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.qualifications}
                     onChange={(e) => setDoctorForm({ ...doctorForm, qualifications: e.target.value })}
+                    placeholder="e.g. MBBS, MRCGP (UK), FCPS"
                     required
                   />
                 </div>
@@ -637,6 +674,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.experience}
                     onChange={(e) => setDoctorForm({ ...doctorForm, experience: e.target.value })}
+                    placeholder="e.g. 12 years"
                     required
                   />
                 </div>
@@ -647,6 +685,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.hospitalName}
                     onChange={(e) => setDoctorForm({ ...doctorForm, hospitalName: e.target.value })}
+                    placeholder="e.g. Central Medical Complex"
                     required
                   />
                 </div>
@@ -657,6 +696,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.city}
                     onChange={(e) => setDoctorForm({ ...doctorForm, city: e.target.value })}
+                    placeholder="e.g. Lahore"
                     required
                   />
                 </div>
@@ -667,6 +707,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.address}
                     onChange={(e) => setDoctorForm({ ...doctorForm, address: e.target.value })}
+                    placeholder="e.g. Main Boulevard, Gulberg, Lahore"
                     required
                   />
                 </div>
@@ -677,6 +718,7 @@ export default function DoctorDashboard() {
                     type="number"
                     value={doctorForm.inClinicFee}
                     onChange={(e) => setDoctorForm({ ...doctorForm, inClinicFee: e.target.value })}
+                    placeholder="e.g. 2000"
                     required
                   />
                 </div>
@@ -687,6 +729,7 @@ export default function DoctorDashboard() {
                     type="number"
                     value={doctorForm.videoFee}
                     onChange={(e) => setDoctorForm({ ...doctorForm, videoFee: e.target.value })}
+                    placeholder="e.g. 1500"
                     required
                   />
                 </div>
@@ -708,7 +751,7 @@ export default function DoctorDashboard() {
                     type="text"
                     value={doctorForm.timing}
                     onChange={(e) => setDoctorForm({ ...doctorForm, timing: e.target.value })}
-                    placeholder="e.g. 4:00 PM - 8:00 PM"
+                    placeholder="e.g. 9:00 AM - 1:00 PM"
                     required
                   />
                 </div>
@@ -720,6 +763,7 @@ export default function DoctorDashboard() {
                   rows={3}
                   value={doctorForm.bio}
                   onChange={(e) => setDoctorForm({ ...doctorForm, bio: e.target.value })}
+                  placeholder="Enter your clinical background, areas of expertise, and patient care philosophy..."
                   style={{
                     width: '100%',
                     padding: '12px 14px',
@@ -1004,7 +1048,7 @@ export default function DoctorDashboard() {
         </div>
       )}
 
-      {/* Modals */}
+      {/* Interactive Global Modals */}
       <DigitalRxWriterModal
         isOpen={Boolean(selectedPatientForRx)}
         onClose={() => setSelectedPatientForRx(null)}
@@ -1015,7 +1059,190 @@ export default function DoctorDashboard() {
         isOpen={Boolean(selectedPatientForRecord)}
         onClose={() => setSelectedPatientForRecord(null)}
         patient={selectedPatientForRecord}
+        onOpenConfirmWithRemarks={(apt) => {
+          setConfirmRemarksModal({
+            isOpen: true,
+            appointment: apt,
+            remarks: '',
+          });
+        }}
       />
+
+      {/* Doctor Profile & Photo Update Modal */}
+      <DoctorProfileModal
+        isOpen={isDoctorProfileModalOpen}
+        onClose={() => setIsDoctorProfileModalOpen(false)}
+      />
+
+      {/* Confirm Appointment with Clinical Remarks Modal */}
+      {confirmRemarksModal.isOpen && confirmRemarksModal.appointment && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setConfirmRemarksModal({ isOpen: false, appointment: null, remarks: '' })}
+          style={{ zIndex: 70, padding: '20px' }}
+        >
+          <div
+            className="interactive-modal-card"
+            style={{
+              maxWidth: '640px',
+              width: '100%',
+              borderRadius: '24px',
+              backgroundColor: '#FFFFFF',
+              boxShadow: '0 25px 50px -12px rgba(14, 56, 44, 0.35)',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                padding: '24px 30px',
+                backgroundColor: 'var(--forest-800)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
+                  CLINICAL CONFIRMATION
+                </span>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                  Confirm Booking with Patient Instructions
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon-btn"
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: '#FFFFFF',
+                  display: 'grid',
+                  placeItems: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={() => setConfirmRemarksModal({ isOpen: false, appointment: null, remarks: '' })}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '28px 30px' }}>
+              {/* Patient & Slot Summary Box */}
+              <div
+                style={{
+                  backgroundColor: 'var(--canvas-bg)',
+                  borderRadius: '16px',
+                  padding: '16px 20px',
+                  border: '1px solid var(--border-subtle)',
+                  marginBottom: '22px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                    {confirmRemarksModal.appointment.patientName}
+                  </div>
+                  <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Slot: <b>{confirmRemarksModal.appointment.date} at {confirmRemarksModal.appointment.time}</b> ({confirmRemarksModal.appointment.type})
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Consultation Fee</span>
+                  <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                    Rs. {confirmRemarksModal.appointment.fee}
+                  </span>
+                </div>
+              </div>
+
+              {/* Remarks Textarea */}
+              <div className="form-group" style={{ marginBottom: '18px' }}>
+                <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                  Doctor's Instructions & Clinical Remarks (Sent via SMS & App)
+                </label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="Enter specific instructions or prep advice for the patient..."
+                  value={confirmRemarksModal.remarks}
+                  onChange={(e) => setConfirmRemarksModal({ ...confirmRemarksModal, remarks: e.target.value })}
+                  style={{ borderRadius: '14px', padding: '14px 16px', fontSize: '13.5px', width: '100%' }}
+                />
+              </div>
+
+              {/* Quick Preset Chips */}
+              <div style={{ marginBottom: '26px' }}>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '8px' }}>
+                  QUICK PRESET INSTRUCTIONS:
+                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {[
+                    'Bring previous lab reports & prescriptions',
+                    'Fast for 8-10 hours prior to visit',
+                    'Arrive 15 minutes before scheduled slot',
+                    'Video call room will unlock 10 mins prior',
+                    'Bring current medication strips',
+                  ].map((preset, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        const current = confirmRemarksModal.remarks.trim();
+                        const updated = current ? `${current} · ${preset}` : preset;
+                        setConfirmRemarksModal({ ...confirmRemarksModal, remarks: updated });
+                      }}
+                      style={{
+                        fontSize: '11.5px',
+                        backgroundColor: 'rgba(14, 56, 44, 0.06)',
+                        border: '1px solid rgba(14, 56, 44, 0.15)',
+                        color: 'var(--forest-800)',
+                        padding: '5px 11px',
+                        borderRadius: '20px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                      }}
+                    >
+                      + {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <button
+                  type="button"
+                  className="btn-white-capsule"
+                  style={{ border: '1.5px solid var(--border-strong)', padding: '11px 22px', fontSize: '13.5px' }}
+                  onClick={() => setConfirmRemarksModal({ isOpen: false, appointment: null, remarks: '' })}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn-lime-pill"
+                  style={{ padding: '11px 28px', fontSize: '13.5px', fontWeight: '800' }}
+                  onClick={() => {
+                    confirmAppointmentByDoctor(confirmRemarksModal.appointment.id, confirmRemarksModal.remarks);
+                    setConfirmRemarksModal({ isOpen: false, appointment: null, remarks: '' });
+                  }}
+                >
+                  <Check size={16} />
+                  <span>Confirm & Send to Patient</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }

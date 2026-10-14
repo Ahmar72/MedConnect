@@ -30,12 +30,9 @@ export default function DoctorConsultationRoom() {
   const [cameraOn, setCameraOn] = useState(true);
   const [micOn, setMicOn] = useState(true);
   const [callDuration, setCallDuration] = useState(145); // 02:25
-  const [clinicalNotes, setClinicalNotes] = useState('Patient reports 4 days of nasal congestion, dry throat, and mild frontal headache. Denies high-grade fever. Lungs clear to auscultation bilaterally.');
-  const [diagnosis, setDiagnosis] = useState('Seasonal Allergic Rhinitis & Mild Pharyngitis');
-  const [medicines, setMedicines] = useState([
-    { name: 'Tab. Rigix (Cetirizine 10mg)', dosage: '1 tablet at bedtime', duration: '7 days' },
-    { name: 'Nasal Spray Beclomethasone', dosage: '1 puff in each nostril BD', duration: '10 days' },
-  ]);
+  const [clinicalNotes, setClinicalNotes] = useState('');
+  const [diagnosis, setDiagnosis] = useState('');
+  const [medicines, setMedicines] = useState([]);
   const [newMedName, setNewMedName] = useState('');
   const [newMedDosage, setNewMedDosage] = useState('');
   const [newMedDuration, setNewMedDuration] = useState('5 days');
@@ -216,6 +213,7 @@ export default function DoctorConsultationRoom() {
             <input
               type="text"
               className="form-input"
+              placeholder="e.g. Seasonal Allergic Rhinitis & Mild Pharyngitis"
               value={diagnosis}
               onChange={(e) => setDiagnosis(e.target.value)}
               style={{ fontSize: '13px', padding: '10px' }}
@@ -228,6 +226,7 @@ export default function DoctorConsultationRoom() {
             <textarea
               className="form-textarea"
               rows="3"
+              placeholder="e.g. Patient reports 4 days of nasal congestion, dry throat. Denies fever. Lungs clear."
               value={clinicalNotes}
               onChange={(e) => setClinicalNotes(e.target.value)}
               style={{ fontSize: '12.5px', padding: '10px' }}
