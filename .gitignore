@@ -27,3 +27,12 @@ dist-ssr
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Environment variables & secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+credentials*
+

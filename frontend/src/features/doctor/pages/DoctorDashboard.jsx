@@ -55,7 +55,14 @@ export default function DoctorDashboard() {
   const [confirmRemarksModal, setConfirmRemarksModal] = useState({
     isOpen: false,
     appointment: null,
-    remarks: 'Please bring your previous lab reports and prescription slips. Arrive 15 minutes before your scheduled slot.',
+    remarks: '',
+  });
+
+  // Modal State for Declining Appointment with Clinical Remarks / Reason
+  const [declineRemarksModal, setDeclineRemarksModal] = useState({
+    isOpen: false,
+    appointment: null,
+    reason: '',
   });
 
   const doctorTab = searchParams.get('tab') || 'schedule'; // 'schedule' | 'profile'
@@ -365,22 +372,37 @@ export default function DoctorDashboard() {
         </div>
 
         <div
+          onClick={() => navigate('/doctor/earnings')}
           style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '16px',
             padding: '20px',
             border: '1px solid var(--border-subtle)',
             boxShadow: 'var(--shadow-sm)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--forest-800)';
+            e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-subtle)';
+            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+          }}
+          title="Click to open full Earnings & Financial Analytics"
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
-            Practice Volume
-          </span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+              Practice Earnings
+            </span>
+            <TrendingUp size={14} color="var(--forest-800)" />
+          </div>
           <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '4px 0' }}>
             Rs. {totalRevenue.toLocaleString()}
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            0% platform fee
+          <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '700' }}>
+            View Analytics & Ledger →
           </span>
         </div>
       </div>
@@ -423,94 +445,207 @@ export default function DoctorDashboard() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {pendingRequests.map((req) => (
               <div
                 key={req.id}
+                onClick={() => setSelectedPatientForRecord(req)}
+                className="pending-request-card"
                 style={{
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '14px',
-                  border: '1px solid rgba(245, 158, 11, 0.4)',
-                  padding: '16px 20px',
+                  borderRadius: '16px',
+                  border: '1.5px solid #FCD34D',
+                  padding: '20px 24px',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   flexWrap: 'wrap',
-                  gap: '14px',
+                  gap: '20px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.08)',
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 6px 18px rgba(14, 56, 44, 0.12)';
+                  e.currentTarget.style.borderColor = 'var(--forest-800)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(245, 158, 11, 0.08)';
+                  e.currentTarget.style.borderColor = '#FCD34D';
+                }}
+                title="Click anywhere to inspect patient's medical profile & history"
               >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#FEF3C7', color: '#92400E', padding: '2px 8px', borderRadius: '10px' }}>
-                      #{req.id}
-                    </span>
-                    {req.rescheduled && (
-                      <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#EDE9FE', color: '#6D28D9', padding: '2px 8px', borderRadius: '10px' }}>
-                        Rescheduled by Patient
-                      </span>
-                    )}
-                    <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
-                      Requested: <b>{req.date} at {req.time}</b>
-                    </span>
-                    <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '600' }}>
-                      ({req.type})
-                    </span>
+                {/* Left Side: Clean, Structured & Spacious Patient & Appointment Info */}
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
+                  {/* Patient Avatar Circle */}
+                  <div
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      borderRadius: '14px',
+                      backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                      border: '1.5px solid rgba(14, 56, 44, 0.2)',
+                      color: 'var(--forest-800)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontWeight: '800',
+                      fontSize: '17px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {(req.patientName || 'Patient')
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()}
                   </div>
 
-                  <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-main)' }}>
-                    {req.patientName} <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 'normal' }}>({req.patientPhone})</span>
-                  </div>
-                  <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Reason: <i>"{req.reason || 'General Health Consultation'}"</i> · Fee: <b>Rs. {req.fee}</b>
+                  <div style={{ flex: 1 }}>
+                    {/* Top Badges Row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          backgroundColor: '#FEF3C7',
+                          color: '#92400E',
+                          padding: '2px 8px',
+                          borderRadius: '8px',
+                        }}
+                      >
+                        #{req.id}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '11.5px',
+                          fontWeight: '700',
+                          backgroundColor: req.type.includes('Video') ? 'rgba(197, 225, 165, 0.4)' : '#EFF6FF',
+                          color: req.type.includes('Video') ? 'var(--forest-900)' : '#1D4ED8',
+                          padding: '2px 10px',
+                          borderRadius: '8px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                        }}
+                      >
+                        {req.type.includes('Video') ? <Video size={13} /> : <Building2 size={13} />}
+                        {req.type}
+                      </span>
+                      {req.rescheduled && (
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            backgroundColor: '#EDE9FE',
+                            color: '#6D28D9',
+                            padding: '2px 8px',
+                            borderRadius: '8px',
+                          }}
+                        >
+                          Rescheduled by Patient
+                        </span>
+                      )}
+                      <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '800', marginLeft: 'auto' }}>
+                        Fee: Rs. {req.fee ? req.fee.toLocaleString() : '1,500'}
+                      </span>
+                    </div>
+
+                    {/* Patient Name & Metadata */}
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                      <h4 style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main)', margin: 0 }}>
+                        {req.patientName}
+                      </h4>
+                      <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                        {req.patientAge ? `${req.patientAge} yrs` : ''} {req.patientGender ? `· ${req.patientGender}` : ''} · {req.patientPhone}
+                      </span>
+                    </div>
+
+                    {/* Appointment Slot & Reason */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '6px', flexWrap: 'wrap', fontSize: '13px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--forest-800)', fontWeight: '700' }}>
+                        <Clock size={14} />
+                        <span>{req.date} at {req.time}</span>
+                      </div>
+                      <div style={{ color: '#4B5563', fontSize: '12.5px' }}>
+                        Reason: <i>"{req.reason || 'General Consultation'}"</i>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          color: 'var(--forest-700)',
+                          fontWeight: '600',
+                          backgroundColor: 'var(--canvas-bg)',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <User size={12} />
+                        Click card to see profile
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Actions: See Profile, Confirm with Remarks, Decline */}
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Right Side: ONLY TWO BUTTONS SIDE BY SIDE: Reject (left) and Confirm (right) */}
+                <div
+                  style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     type="button"
                     className="btn-white-capsule"
                     style={{
-                      border: '1.5px solid var(--forest-800)',
-                      color: 'var(--forest-800)',
-                      padding: '8px 16px',
-                      fontSize: '12.5px',
+                      border: '1.5px solid #DC2626',
+                      color: '#DC2626',
+                      backgroundColor: '#FEF2F2',
+                      padding: '9px 20px',
+                      fontSize: '13px',
                       fontWeight: '700',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
+                      cursor: 'pointer',
                     }}
-                    onClick={() => setSelectedPatientForRecord(req)}
-                    title="Inspect complete patient health profile & history"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeclineRemarksModal({
+                        isOpen: true,
+                        appointment: req,
+                        reason: '',
+                      });
+                    }}
                   >
-                    <User size={15} />
-                    <span>See Profile</span>
+                    <X size={15} />
+                    <span>Reject</span>
                   </button>
 
                   <button
                     type="button"
                     className="btn-lime-pill"
-                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800' }}
-                    onClick={() =>
+                    style={{
+                      padding: '9px 24px',
+                      fontSize: '13px',
+                      fontWeight: '800',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setConfirmRemarksModal({
                         isOpen: true,
                         appointment: req,
                         remarks: '',
-                      })
-                    }
+                      });
+                    }}
                   >
-                    <Check size={15} />
-                    <span>Confirm Booking</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="btn-white-capsule"
-                    style={{ border: '1px solid #DC2626', color: '#DC2626', padding: '8px 14px', fontSize: '12.5px' }}
-                    onClick={() => declineAppointmentByDoctor(req.id)}
-                  >
-                    <X size={15} />
-                    <span>Decline</span>
+                    <Check size={16} />
+                    <span>Confirm</span>
                   </button>
                 </div>
               </div>
@@ -1237,6 +1372,192 @@ export default function DoctorDashboard() {
                 >
                   <Check size={16} />
                   <span>Confirm & Send to Patient</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: DECLINE APPOINTMENT WITH CLINICAL REASON / REMARKS */}
+      {declineRemarksModal.isOpen && declineRemarksModal.appointment && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setDeclineRemarksModal({ isOpen: false, appointment: null, reason: '' })}
+          style={{ zIndex: 60, padding: '20px' }}
+        >
+          <div
+            className="interactive-modal-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '560px',
+              width: '100%',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              backgroundColor: '#FFFFFF',
+              boxShadow: '0 25px 50px -12px rgba(220, 38, 38, 0.25)',
+              border: '1.5px solid #FCA5A5',
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: '24px 28px',
+                backgroundColor: '#DC2626',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: '#FEE2E2', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
+                  CLINICAL REJECTION
+                </span>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                  Decline Booking Request
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon-btn"
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  display: 'grid',
+                  placeItems: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={() => setDeclineRemarksModal({ isOpen: false, appointment: null, reason: '' })}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '26px 28px' }}>
+              {/* Patient & Slot Summary Box */}
+              <div
+                style={{
+                  backgroundColor: '#FEF2F2',
+                  borderRadius: '16px',
+                  padding: '16px 20px',
+                  border: '1px solid #FECACA',
+                  marginBottom: '20px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#991B1B' }}>
+                    {declineRemarksModal.appointment.patientName}
+                  </div>
+                  <div style={{ fontSize: '12.5px', color: '#7F1D1D', marginTop: '2px' }}>
+                    Requested: <b>{declineRemarksModal.appointment.date} at {declineRemarksModal.appointment.time}</b> ({declineRemarksModal.appointment.type})
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '11px', color: '#7F1D1D', display: 'block' }}>Fee</span>
+                  <span style={{ fontSize: '15px', fontWeight: '800', color: '#991B1B' }}>
+                    Rs. {declineRemarksModal.appointment.fee ? declineRemarksModal.appointment.fee.toLocaleString() : '1,500'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Remarks Textarea */}
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: '#111827' }}>
+                  Reason for Declining (Sent to Patient via SMS & Notification)
+                </label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="e.g. Doctor unavailable on this day / Slot full / Emergency clinical round..."
+                  value={declineRemarksModal.reason}
+                  onChange={(e) => setDeclineRemarksModal({ ...declineRemarksModal, reason: e.target.value })}
+                  style={{ borderRadius: '14px', padding: '14px 16px', fontSize: '13.5px', width: '100%' }}
+                />
+              </div>
+
+              {/* Quick Preset Chips */}
+              <div style={{ marginBottom: '24px' }}>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '8px' }}>
+                  QUICK PRESET REASONS:
+                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {[
+                    'OPD slot fully booked',
+                    'Emergency surgery / OT call',
+                    'Clinician on official leave',
+                    'Please rebook for tomorrow',
+                    'Slot timing conflict',
+                  ].map((preset, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        const current = declineRemarksModal.reason.trim();
+                        const updated = current ? `${current} · ${preset}` : preset;
+                        setDeclineRemarksModal({ ...declineRemarksModal, reason: updated });
+                      }}
+                      style={{
+                        fontSize: '11.5px',
+                        backgroundColor: '#FEE2E2',
+                        border: '1px solid #FCA5A5',
+                        color: '#991B1B',
+                        padding: '5px 11px',
+                        borderRadius: '20px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                      }}
+                    >
+                      + {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <button
+                  type="button"
+                  className="btn-white-capsule"
+                  style={{ border: '1.5px solid var(--border-strong)', padding: '11px 22px', fontSize: '13.5px' }}
+                  onClick={() => setDeclineRemarksModal({ isOpen: false, appointment: null, reason: '' })}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: '#DC2626',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '9999px',
+                    padding: '11px 26px',
+                    fontSize: '13.5px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                  onClick={() => {
+                    declineAppointmentByDoctor(
+                      declineRemarksModal.appointment.id,
+                      declineRemarksModal.reason || 'Doctor unavailable at this slot'
+                    );
+                    setDeclineRemarksModal({ isOpen: false, appointment: null, reason: '' });
+                  }}
+                >
+                  <X size={16} />
+                  <span>Confirm Rejection</span>
                 </button>
               </div>
             </div>
