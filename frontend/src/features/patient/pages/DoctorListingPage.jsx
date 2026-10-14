@@ -66,9 +66,9 @@ export default function DoctorListingPage() {
 
     // Mode filter
     if (filters.mode === 'video') {
-      list = list.filter((doc) => doc.practices.some((p) => p.isVideo));
+      list = list.filter((doc) => (doc.videoFee && doc.videoFee > 0) || doc.onlineNow || doc.practices?.some((p) => p.isVideo));
     } else if (filters.mode === 'clinic') {
-      list = list.filter((doc) => doc.practices.some((p) => !p.isVideo));
+      list = list.filter((doc) => (doc.inClinicFee && doc.inClinicFee > 0) || (doc.practices && doc.practices.length > 0));
     }
 
     // Availability filter

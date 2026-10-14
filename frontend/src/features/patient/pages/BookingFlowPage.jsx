@@ -70,7 +70,7 @@ export default function BookingFlowPage() {
     phone: patientUser.phone,
     gender: patientUser.gender,
     age: patientUser.age,
-    reason: 'Seasonal cough & routine health review',
+    reason: '',
     fileAttached: false,
   });
   const [paymentMethod, setPaymentMethod] = useState('Pay at Hospital');
