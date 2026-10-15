@@ -659,7 +659,6 @@ export default function DoctorSchedulePage() {
                             </option>
                           ))}
                         </select>
-                        <span style={{ color: '#9CA3AF', fontWeight: '600' }}>to</span>
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>To:</span>
                         <select
                           value={item.eveningEnd !== 'Closed' ? item.eveningEnd : (item.morningEnd !== 'Closed' ? item.morningEnd : '06:00 PM')}

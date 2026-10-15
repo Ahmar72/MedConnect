@@ -37,6 +37,7 @@ export default function DoctorEarningsPage() {
   // Modal State for Digital Receipt
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [hoveredSlipId, setHoveredSlipId] = useState(null);
+  const [hoveredProfileId, setHoveredProfileId] = useState(null);
 
   // Modal State for Official Invoice / Tax Statement
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
@@ -1213,15 +1214,14 @@ export default function DoctorEarningsPage() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13.5px' }}>
               <thead>
-                <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', color: 'var(--forest-900)' }}>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Date & Day</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Patient Name</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Consultation Mode</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Hospital / Location</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Payment Method</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Gross Fee</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', textAlign: 'center' }}>Receipt</th>
+                <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1.5px solid var(--border-subtle)', color: 'var(--forest-900)' }}>
+                  <th style={{ padding: '16px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Patient Profile</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Consultation Mode</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Hospital / Location</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payment Method</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Gross Fee</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status</th>
+                  <th style={{ padding: '16px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>Receipt</th>
                 </tr>
               </thead>
               <tbody>
@@ -1236,38 +1236,71 @@ export default function DoctorEarningsPage() {
                     onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F0FDF4')}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = idx % 2 === 0 ? '#FFFFFF' : '#FAFAFA')}
                   >
-                    {/* Date & Day (No time displayed) */}
-                    <td style={{ padding: '15px 22px', whiteSpace: 'nowrap' }}>
-                      <div style={{ fontWeight: '800', color: 'var(--text-main)' }}>{t.displayDate.split(' · ')[0]}</div>
-                      <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{t.dayName} · #{t.id}</div>
-                    </td>
-
-                    {/* Patient Name (No circle avatar, no contact phone number) */}
-                    <td style={{ padding: '15px 22px' }}>
+                    {/* Patient Profile: Shows Date/Time & Invoice on Hover, click opens full patient profile */}
+                    <td
+                      style={{ padding: '16px 22px', position: 'relative' }}
+                      onMouseEnter={() => setHoveredProfileId(t.id)}
+                      onMouseLeave={() => setHoveredProfileId(null)}
+                    >
                       <div
                         onClick={() => navigate(`/doctor/patients/${t.appointmentId || t.id}`)}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', display: 'inline-block' }}
                         title="Click to view complete patient profile & medical history"
                       >
-                        <span style={{ fontWeight: '800', color: 'var(--forest-800)', textDecoration: 'underline', fontSize: '14px' }}>
+                        <div style={{ fontWeight: '800', color: 'var(--forest-800)', fontSize: '14.5px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
                           {t.patientName}
-                        </span>
-                        <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
                           MRN: {t.patientMrn}
                         </div>
                       </div>
+
+                      {/* Hover Tooltip: Displays consultation date/time, invoice ID, and details */}
+                      {hoveredProfileId === t.id && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 'calc(100% + 6px)',
+                            left: '22px',
+                            backgroundColor: 'var(--forest-900)',
+                            color: '#FFFFFF',
+                            padding: '12px 16px',
+                            borderRadius: '12px',
+                            fontSize: '12px',
+                            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.3)',
+                            zIndex: 60,
+                            pointerEvents: 'none',
+                            whiteSpace: 'nowrap',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            lineHeight: '1.45',
+                          }}
+                        >
+                          <div style={{ fontWeight: '800', color: 'var(--lime-accent)', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>📅 Consultation: {t.displayDate} ({t.dayName})</span>
+                          </div>
+                          <div style={{ color: 'rgba(255, 255, 255, 0.95)', fontSize: '11.5px', marginBottom: '3px' }}>
+                            🧾 Invoice / Receipt: <b>#{t.id}</b> · Ref: {t.refNumber}
+                          </div>
+                          <div style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '11px' }}>
+                            Clinical Reason: {t.reason}
+                          </div>
+                          <div style={{ fontSize: '10.5px', color: '#93C5FD', fontWeight: '700', marginTop: '4px' }}>
+                            Click to open complete patient medical profile →
+                          </div>
+                        </div>
+                      )}
                     </td>
 
                     {/* Consultation Mode (Only Video or In-Clinic) */}
-                    <td style={{ padding: '15px 22px', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       <span
                         style={{
                           fontSize: '11.5px',
                           fontWeight: '800',
                           backgroundColor: t.isVideo ? '#D1FAE5' : '#DBEAFE',
                           color: t.isVideo ? '#065F46' : '#1E40AF',
-                          padding: '3px 9px',
-                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          borderRadius: '8px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '5px',
@@ -1279,27 +1312,27 @@ export default function DoctorEarningsPage() {
                     </td>
 
                     {/* Facility / Location */}
-                    <td style={{ padding: '15px 22px', color: '#374151', fontSize: '13px' }}>
+                    <td style={{ padding: '16px 20px', color: '#374151', fontSize: '13px' }}>
                       {t.hospital}
                     </td>
 
                     {/* Payment Method */}
-                    <td style={{ padding: '15px 22px', color: '#4B5563', fontSize: '12.5px' }}>
+                    <td style={{ padding: '16px 20px', color: '#4B5563', fontSize: '12.5px' }}>
                       {t.paymentChannel}
                     </td>
 
                     {/* Gross Fee */}
-                    <td style={{ padding: '15px 22px', color: 'var(--forest-900)', fontWeight: '800' }}>
+                    <td style={{ padding: '16px 20px', color: 'var(--forest-900)', fontWeight: '800', fontSize: '14px' }}>
                       Rs. {t.grossFee.toLocaleString()}
                     </td>
 
                     {/* Payout Status */}
-                    <td style={{ padding: '15px 22px' }}>
+                    <td style={{ padding: '16px 20px' }}>
                       <span
                         style={{
                           backgroundColor: '#DCFCE7',
                           color: '#166534',
-                          padding: '3px 10px',
+                          padding: '4px 10px',
                           borderRadius: '9999px',
                           fontWeight: '800',
                           fontSize: '11.5px',
@@ -1312,8 +1345,8 @@ export default function DoctorEarningsPage() {
                       </span>
                     </td>
 
-                    {/* Digital Receipt Slip (Hover tooltip + click leads to dedicated page) */}
-                    <td style={{ padding: '15px 22px', textAlign: 'center', position: 'relative' }}>
+                    {/* Digital Receipt Slip (Fixed Tooltip positioning: right: 0 inward, preventing page overflow) */}
+                    <td style={{ padding: '16px 22px', textAlign: 'center' }}>
                       <div
                         style={{ display: 'inline-block', position: 'relative' }}
                         onMouseEnter={() => setHoveredSlipId(t.id)}
@@ -1327,9 +1360,9 @@ export default function DoctorEarningsPage() {
                             border: 'none',
                             color: 'var(--forest-800)',
                             cursor: 'pointer',
-                            padding: '4px 10px',
+                            padding: '5px 12px',
                             borderRadius: '6px',
-                            fontSize: '12.5px',
+                            fontSize: '13px',
                             fontWeight: '800',
                             textDecoration: 'underline',
                           }}
@@ -1337,24 +1370,25 @@ export default function DoctorEarningsPage() {
                           View Slip
                         </button>
 
+                        {/* Slip Tooltip anchored right: 0 so it strictly expands inward towards the left */}
                         {hoveredSlipId === t.id && (
                           <div
                             style={{
                               position: 'absolute',
-                              bottom: '100%',
-                              right: '50%',
-                              transform: 'translateX(50%)',
-                              marginBottom: '8px',
+                              bottom: 'calc(100% + 8px)',
+                              right: 0,
                               backgroundColor: 'var(--forest-900)',
                               color: '#FFFFFF',
-                              padding: '10px 14px',
-                              borderRadius: '10px',
+                              padding: '12px 16px',
+                              borderRadius: '12px',
                               fontSize: '11.5px',
                               whiteSpace: 'nowrap',
-                              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.25)',
-                              zIndex: 50,
+                              boxShadow: '0 12px 28px rgba(0, 0, 0, 0.3)',
+                              zIndex: 60,
                               pointerEvents: 'none',
                               textAlign: 'left',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
+                              lineHeight: '1.4',
                             }}
                           >
                             <div style={{ fontWeight: '800', color: 'var(--lime-accent)', marginBottom: '3px' }}>
@@ -1366,7 +1400,7 @@ export default function DoctorEarningsPage() {
                             <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '10.5px', marginTop: '2px' }}>
                               {t.hospital} · {t.paymentChannel}
                             </div>
-                            <div style={{ fontSize: '10px', color: '#86EFAC', fontWeight: '700', marginTop: '3px' }}>
+                            <div style={{ fontSize: '10.5px', color: '#86EFAC', fontWeight: '700', marginTop: '4px' }}>
                               Click to view, print & download receipt →
                             </div>
                           </div>
