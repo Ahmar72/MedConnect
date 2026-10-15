@@ -639,6 +639,26 @@ export default function DoctorPatientsPage() {
                       >
                         {patient.totalVisits} {patient.totalVisits === 1 ? 'Visit' : 'Visits'}
                       </span>
+
+                      {hasAllergies && (
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            backgroundColor: '#FEF2F2',
+                            color: '#991B1B',
+                            fontWeight: '700',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            border: '1px solid #FCA5A5',
+                            fontSize: '11px',
+                          }}
+                        >
+                          <AlertTriangle size={11} />
+                          <span>Allergies: {patient.allergies}</span>
+                        </span>
+                      )}
                     </div>
 
                     {/* Demographics & Contact */}
@@ -650,7 +670,6 @@ export default function DoctorPatientsPage() {
                         fontSize: '13px',
                         color: 'var(--text-muted)',
                         flexWrap: 'wrap',
-                        marginBottom: '8px',
                       }}
                     >
                       <span>{patient.age} yrs · {patient.gender}</span>
@@ -664,55 +683,6 @@ export default function DoctorPatientsPage() {
                         <MapPin size={13} />
                         {patient.city}
                       </span>
-                    </div>
-
-                    {/* Clinical Details: Latest Diagnosis & Mode */}
-                    <div
-                      style={{
-                        backgroundColor: 'var(--canvas-bg)',
-                        borderRadius: '10px',
-                        padding: '8px 14px',
-                        border: '1px solid var(--border-subtle)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '16px',
-                        flexWrap: 'wrap',
-                        fontSize: '12.5px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Latest Encounter:</span>
-                        <span style={{ fontWeight: '700', color: 'var(--forest-900)' }}>
-                          {patient.latestDiagnosis}
-                        </span>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Date:</span>
-                        <span style={{ color: '#047857', fontWeight: '700' }}>
-                          {patient.latestVisitDate}
-                        </span>
-                      </div>
-
-                      {hasAllergies && (
-                        <div
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            backgroundColor: '#FEF2F2',
-                            color: '#991B1B',
-                            fontWeight: '700',
-                            padding: '2px 8px',
-                            borderRadius: '6px',
-                            border: '1px solid #FCA5A5',
-                            fontSize: '11.5px',
-                          }}
-                        >
-                          <AlertTriangle size={12} />
-                          <span>Allergies: {patient.allergies}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>

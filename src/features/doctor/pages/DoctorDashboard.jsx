@@ -1257,18 +1257,6 @@ export default function DoctorDashboard() {
 
                   {/* Clean Right Actions */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }} onClick={(e) => e.stopPropagation()}>
-                    {isVideo && !isCompleted && (
-                      <button
-                        type="button"
-                        className="btn-lime-pill"
-                        style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-                        onClick={() => handleStartConsultation(apt)}
-                      >
-                        <Video size={15} />
-                        <span>Start Video Call</span>
-                      </button>
-                    )}
-
                     <button
                       type="button"
                       className="btn-white-capsule"
@@ -1278,20 +1266,6 @@ export default function DoctorDashboard() {
                       <FileText size={14} />
                       <span>Medical Record & Rx →</span>
                     </button>
-
-                    {!isCompleted && (
-                      <button
-                        type="button"
-                        className="btn-white-capsule"
-                        style={{ color: '#1B5E20', fontSize: '12px', padding: '8px 12px' }}
-                        onClick={() => {
-                          updateQueueStatus(apt.id, 'Completed');
-                          showToast(`Consultation with ${apt.patientName} marked completed.`, 'success');
-                        }}
-                      >
-                        ✓ Complete
-                      </button>
-                    )}
                   </div>
                 </div>
               );

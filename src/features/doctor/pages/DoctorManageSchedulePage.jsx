@@ -49,12 +49,11 @@ export default function DoctorManageSchedulePage() {
   const doctorId = currentUser?.id || 'dr-amina-shah';
   const doctorName = currentUser?.name || 'Dr. Amina Shah';
 
-  // Filter appointments for this doctor that are upcoming / confirmed
+  // Filter appointments for this doctor that are upcoming / confirmed or completed
   const upcomingAppointments = useMemo(() => {
     return appointments.filter((a) => {
-      // Must be upcoming status (Confirmed or Pending Confirmation or Ongoing)
-      const isStatusUpcoming = a.status === 'Confirmed' || a.status === 'Pending Doctor Confirmation';
-      return isStatusUpcoming;
+      const isRelevant = a.status === 'Confirmed' || a.status === 'Pending Doctor Confirmation' || a.status === 'Completed';
+      return isRelevant;
     });
   }, [appointments]);
 
@@ -359,52 +358,61 @@ export default function DoctorManageSchedulePage() {
                     </div>
                   </div>
 
-                  {/* Right: Clinician Actions (Reschedule, Cancel, View Profile) */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      className="btn-white-capsule"
-                      onClick={() => navigate(`/doctor/patients/${apt.id}`)}
-                      style={{ border: '1px solid var(--border-strong)', fontSize: '12.5px', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: '5px' }}
-                      title="Inspect patient record and write digital prescription"
-                    >
-                      <User size={14} />
-                      <span>View Profile</span>
-                    </button>
+                  {/* Right: Clinician Actions (Reschedule, Cancel - vanished if completed) */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }} onClick={(e) => e.stopPropagation()}>
+                    {apt.status === 'Completed' || apt.isCompleted ? (
+                      <span
+                        style={{
+                          backgroundColor: '#DCFCE7',
+                          color: '#166534',
+                          padding: '6px 14px',
+                          borderRadius: '9999px',
+                          fontWeight: '800',
+                          fontSize: '12.5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        ✓ Consultation Completed
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="btn-white-capsule"
+                          onClick={() => handleOpenReschedule(apt)}
+                          style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', fontWeight: '700', fontSize: '12.5px', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: '5px' }}
+                          title="Reschedule appointment to a different date or time slot"
+                        >
+                          <Calendar size={14} />
+                          <span>Reschedule</span>
+                        </button>
 
-                    <button
-                      type="button"
-                      className="btn-white-capsule"
-                      onClick={() => handleOpenReschedule(apt)}
-                      style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', fontWeight: '700', fontSize: '12.5px', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: '5px' }}
-                      title="Reschedule appointment to a different date or time slot"
-                    >
-                      <Calendar size={14} />
-                      <span>Reschedule</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleOpenCancel(apt)}
-                      style={{
-                        padding: '8px 14px',
-                        borderRadius: '9999px',
-                        border: '1px solid #FCA5A5',
-                        backgroundColor: '#FEF2F2',
-                        color: '#DC2626',
-                        fontSize: '12.5px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        transition: 'all 0.15s ease',
-                      }}
-                      title="Cancel this appointment and notify the patient"
-                    >
-                      <X size={14} />
-                      <span>Cancel</span>
-                    </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenCancel(apt)}
+                          style={{
+                            padding: '8px 14px',
+                            borderRadius: '9999px',
+                            border: '1px solid #FCA5A5',
+                            backgroundColor: '#FEF2F2',
+                            color: '#DC2626',
+                            fontSize: '12.5px',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            transition: 'all 0.15s ease',
+                          }}
+                          title="Cancel this appointment and notify the patient"
+                        >
+                          <X size={14} />
+                          <span>Cancel</span>
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               );

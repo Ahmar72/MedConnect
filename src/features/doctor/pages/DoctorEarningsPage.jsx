@@ -1260,7 +1260,8 @@ export default function DoctorEarningsPage() {
                         <div
                           style={{
                             position: 'absolute',
-                            bottom: 'calc(100% + 6px)',
+                            top: idx < 2 ? 'calc(100% + 6px)' : undefined,
+                            bottom: idx < 2 ? undefined : 'calc(100% + 6px)',
                             left: '22px',
                             backgroundColor: 'var(--forest-900)',
                             color: '#FFFFFF',

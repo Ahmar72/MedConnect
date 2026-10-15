@@ -861,6 +861,25 @@ export function DemoProvider({ children }) {
     return rxItem;
   };
 
+  // Complete Consultation / Patient Visit
+  const completeAppointment = (appointmentId, notes = '') => {
+    setAppointments((prev) =>
+      prev.map((apt) =>
+        apt.id === appointmentId || apt.patientId === appointmentId || apt.patientMrn === appointmentId
+          ? {
+              ...apt,
+              status: 'Completed',
+              isCompleted: true,
+              completedAt: 'Today, Oct 14, 2026',
+              completionNotes: notes || 'Consultation completed and Rx delivered.',
+            }
+          : apt
+      )
+    );
+    addActivity('Doctor', 'Completed Patient Consultation', `Completed appointment #${appointmentId}.`, 'clinical');
+    showToast('Consultation completed successfully. Patient record updated!', 'success');
+  };
+
   // Book Diagnostic Lab Test
   const bookLabTest = (labTestData) => {
     const newReport = {
@@ -1026,6 +1045,7 @@ export function DemoProvider({ children }) {
         declineAppointmentByDoctor,
         cancelAppointment,
         rescheduleAppointment,
+        completeAppointment,
         issuePrescription,
         patientUser: currentUser?.role === 'patient' ? currentUser : (patientsList[0] || {}),
         setPatientUser: (updater) => typeof updater === 'function' ? setCurrentUser(updater) : setCurrentUser(updater),
