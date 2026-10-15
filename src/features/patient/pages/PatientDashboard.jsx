@@ -31,9 +31,7 @@ import {
   CreditCard,
   Sparkles,
 } from 'lucide-react';
-import LabReportViewModal from '../../labs/components/LabReportViewModal';
-import PayLabOrderModal from '../../labs/components/PayLabOrderModal';
-import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
+
 
 export default function PatientDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,10 +60,7 @@ export default function PatientDashboard() {
   const [cancelAptId, setCancelAptId] = useState(null);
   const [viewRx, setViewRx] = useState(null);
 
-  // Patient Lab Modals & Filters
-  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
-  const [selectedOrderForPay, setSelectedOrderForPay] = useState(null);
-  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
+  // Patient Lab Filters
   const [labSubFilter, setLabSubFilter] = useState('all'); // 'all' | 'ready' | 'pending_payment' | 'processing'
 
   const upcomingAppointments = appointments.filter((a) => a.status === 'Confirmed' || a.status === 'Rescheduled' || a.status === 'Pending Doctor Confirmation');
@@ -683,7 +678,7 @@ export default function PatientDashboard() {
                             type="button"
                             className="btn-lime-pill"
                             style={{ padding: '9px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-                            onClick={() => setSelectedOrderForPay(order)}
+                            onClick={() => navigate(`/patient/lab-pay/${order.id}`)}
                           >
                             <CreditCard size={15} />
                             <span>Pay Online (PKR {(order.price || 0).toLocaleString()})</span>
@@ -697,7 +692,7 @@ export default function PatientDashboard() {
                               type="button"
                               className="btn-lime-pill"
                               style={{ padding: '9px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-                              onClick={() => setSelectedOrderForReport(order)}
+                              onClick={() => navigate(`/labs/report/${order.id}`)}
                             >
                               <FileText size={15} />
                               <span>View Report</span>
@@ -734,7 +729,7 @@ export default function PatientDashboard() {
                           type="button"
                           className="btn-white-capsule"
                           style={{ padding: '9px 12px', fontSize: '12.5px' }}
-                          onClick={() => setSelectedOrderForSlip(order)}
+                          onClick={() => navigate(`/labs/slip/${order.id}`)}
                           title="Print Lab Requisition Slip"
                         >
                           <Printer size={15} />
@@ -916,26 +911,7 @@ export default function PatientDashboard() {
           </div>
         )}
 
-        {/* View Official Lab Report Modal */}
-        <LabReportViewModal
-          isOpen={Boolean(selectedOrderForReport)}
-          onClose={() => setSelectedOrderForReport(null)}
-          order={selectedOrderForReport}
-        />
 
-        {/* Pay Lab Order Modal */}
-        <PayLabOrderModal
-          isOpen={Boolean(selectedOrderForPay)}
-          onClose={() => setSelectedOrderForPay(null)}
-          order={selectedOrderForPay}
-        />
-
-        {/* Requisition Slip Modal */}
-        <LabOrderSlipModal
-          isOpen={Boolean(selectedOrderForSlip)}
-          onClose={() => setSelectedOrderForSlip(null)}
-          order={selectedOrderForSlip}
-        />
       </div>
     </AppShell>
   );

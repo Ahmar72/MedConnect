@@ -1,9 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppShell from '../../shell/AppShell';
 import { useDemo } from '../../../context/DemoContext';
-import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
-import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
-import LabReportViewModal from '../../labs/components/LabReportViewModal';
 import {
   TestTube2,
   Search,
@@ -21,13 +19,11 @@ import {
 } from 'lucide-react';
 
 export default function DoctorLabOrdersPage() {
-  const { labOrders = [], currentUser, showToast } = useDemo();
+  const navigate = useNavigate();
+  const { labOrders = [], currentUser } = useDemo();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
-  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
 
   // Filter orders for doctor
   const doctorOrders = useMemo(() => {
@@ -37,7 +33,7 @@ export default function DoctorLabOrdersPage() {
         order.doctorId === currentUser.id ||
         order.doctorName === currentUser.name ||
         currentUser.role === 'admin' ||
-        true; // Allow doctor to view clinical lab requisitions
+        true;
 
       const matchStatus = statusFilter === 'All' || order.status === statusFilter;
       const q = search.toLowerCase().trim();
@@ -64,13 +60,13 @@ export default function DoctorLabOrdersPage() {
         <div className="patient-welcome-banner" style={{ marginBottom: '24px' }}>
           <div>
             <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
-              CLINICAL PATHOLOGY &amp; DIAGNOSTIC REQUISITIONS
+              CLINICAL PATHOLOGY &amp; DIAGNOSTICS
             </div>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '4px 0 6px 0' }}>
-              Lab Orders &amp; Verified Reports
+              Lab Orders &amp; Reports
             </h1>
             <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
-              Prescribe diagnostic investigations, monitor real-time laboratory processing, and review published patient findings.
+              Prescribe diagnostic investigations, review real-time processing, and view verified patient reports.
             </div>
           </div>
 
@@ -78,7 +74,7 @@ export default function DoctorLabOrdersPage() {
             <button
               type="button"
               className="btn-lime-pill"
-              onClick={() => setIsOrderModalOpen(true)}
+              onClick={() => navigate('/doctor/lab-orders/new')}
               style={{ padding: '11px 22px', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Plus size={16} />
@@ -88,7 +84,7 @@ export default function DoctorLabOrdersPage() {
         </div>
 
         {/* Stats Summary */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginBottom: '24px' }}>
           <div
             style={{
               backgroundColor: '#FFFFFF',
@@ -99,13 +95,13 @@ export default function DoctorLabOrdersPage() {
             }}
           >
             <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
-              Reports Ready for Review
+              Reports Ready
             </span>
             <div style={{ fontSize: '26px', fontWeight: '900', color: 'var(--forest-800)', marginTop: '2px' }}>
               {publishedCount} Reports
             </div>
             <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '700' }}>
-              ● Verified by Consulting Pathologist
+              ● Verified by Pathologist
             </span>
           </div>
 
@@ -125,7 +121,7 @@ export default function DoctorLabOrdersPage() {
               {inProgressCount} Processing
             </div>
             <span style={{ fontSize: '11.5px', color: '#2563EB', fontWeight: '700' }}>
-              Specimens running on automated analyzers
+              Specimens running on analyzers
             </span>
           </div>
 
@@ -145,7 +141,7 @@ export default function DoctorLabOrdersPage() {
               {receivedCount} Orders
             </div>
             <span style={{ fontSize: '11.5px', color: '#B45309', fontWeight: '700' }}>
-              Requisition acknowledged by partner lab
+              Requisition placed at partner lab
             </span>
           </div>
         </div>
@@ -158,32 +154,40 @@ export default function DoctorLabOrdersPage() {
             padding: '16px 20px',
             border: '1px solid var(--border-subtle)',
             boxShadow: 'var(--shadow-sm)',
-            marginBottom: '18px',
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
+            justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '12px',
+            marginBottom: '20px',
           }}
         >
-          <div style={{ position: 'relative', width: '380px', maxWidth: '100%' }}>
-            <Search size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: 'var(--text-muted)' }} />
+          <div style={{ position: 'relative', flex: 1, minWidth: '260px' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
             <input
               type="text"
-              className="form-input"
-              placeholder="Search by patient, MRN, test, or order ID..."
+              placeholder="Search by patient, MRN, order #, test name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ paddingLeft: '36px', fontSize: '13px', borderRadius: '10px', height: '38px' }}
+              style={{
+                width: '100%',
+                padding: '9px 12px 9px 36px',
+                borderRadius: '10px',
+                border: '1px solid var(--border-subtle)',
+                fontSize: '13px',
+                backgroundColor: 'var(--canvas-bg)',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {[
-              { id: 'All', label: 'All Orders' },
-              { id: 'Published', label: 'Reports Ready' },
+              { id: 'All', label: 'All Status' },
+              { id: 'Published', label: 'Published' },
               { id: 'In Progress', label: 'In Progress' },
-              { id: 'Received', label: 'Received' },
+              { id: 'Received', label: 'Pending Sample' },
             ].map((f) => (
               <button
                 key={f.id}
@@ -191,13 +195,13 @@ export default function DoctorLabOrdersPage() {
                 onClick={() => setStatusFilter(f.id)}
                 style={{
                   padding: '7px 14px',
-                  borderRadius: '9999px',
+                  borderRadius: '8px',
                   fontSize: '12px',
                   fontWeight: statusFilter === f.id ? '800' : '600',
-                  cursor: 'pointer',
                   border: statusFilter === f.id ? '1px solid var(--forest-800)' : '1px solid var(--border-subtle)',
-                  backgroundColor: statusFilter === f.id ? 'var(--forest-800)' : 'var(--canvas-bg)',
+                  backgroundColor: statusFilter === f.id ? 'var(--forest-800)' : 'transparent',
                   color: statusFilter === f.id ? '#FFFFFF' : 'var(--text-muted)',
+                  cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -224,12 +228,12 @@ export default function DoctorLabOrdersPage() {
                 No Lab Orders Found
               </h3>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', maxWidth: '400px', margin: '0 auto 16px auto' }}>
-                Order diagnostic blood work, pathology tests, or imaging scans during patient consultations.
+                Order diagnostic blood work, pathology tests, or imaging scans for patients.
               </p>
               <button
                 type="button"
                 className="btn-lime-pill"
-                onClick={() => setIsOrderModalOpen(true)}
+                onClick={() => navigate('/doctor/lab-orders/new')}
                 style={{ padding: '8px 18px', fontSize: '12.5px' }}
               >
                 Order Tests Now
@@ -292,9 +296,9 @@ export default function DoctorLabOrdersPage() {
                       {(order.tests || []).join(' + ')}
                     </h3>
 
-                    {/* Patient & Doctor */}
+                    {/* Patient */}
                     <div style={{ fontSize: '12.5px', color: 'var(--text-body)', marginBottom: '8px' }}>
-                      Patient: <b style={{ color: 'var(--forest-900)' }}>{order.patientName}</b> (MRN: {order.patientMrn}) · Age/Gender: {order.patientAge}y / {order.patientGender}
+                      Patient: <b style={{ color: 'var(--forest-900)' }}>{order.patientName}</b> (MRN: {order.patientMrn}) · {order.patientAge}y / {order.patientGender}
                     </div>
 
                     {/* Clinical Instructions / Fasting */}
@@ -311,14 +315,14 @@ export default function DoctorLabOrdersPage() {
                     )}
                   </div>
 
-                  {/* Actions */}
+                  {/* Direct Actions: Separate Pages */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <button
                       type="button"
                       className="btn-white-capsule"
-                      onClick={() => setSelectedOrderForSlip(order)}
+                      onClick={() => navigate(`/labs/slip/${order.id}`)}
                       style={{ padding: '8px 14px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
-                      title="Print A4 Lab Requisition Slip"
+                      title="View Requisition Slip"
                     >
                       <Printer size={14} />
                       <span>Order Slip</span>
@@ -328,7 +332,7 @@ export default function DoctorLabOrdersPage() {
                       <button
                         type="button"
                         className="btn-lime-pill"
-                        onClick={() => setSelectedOrderForReport(order)}
+                        onClick={() => navigate(`/labs/report/${order.id}`)}
                         style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
                       >
                         <FileText size={14} />
@@ -341,26 +345,6 @@ export default function DoctorLabOrdersPage() {
             })
           )}
         </div>
-
-        {/* Order Tests Modal */}
-        <OrderLabTestModal
-          isOpen={isOrderModalOpen}
-          onClose={() => setIsOrderModalOpen(false)}
-        />
-
-        {/* Printable Order Slip Modal */}
-        <LabOrderSlipModal
-          isOpen={Boolean(selectedOrderForSlip)}
-          onClose={() => setSelectedOrderForSlip(null)}
-          order={selectedOrderForSlip}
-        />
-
-        {/* View Official Lab Report Modal */}
-        <LabReportViewModal
-          isOpen={Boolean(selectedOrderForReport)}
-          onClose={() => setSelectedOrderForReport(null)}
-          order={selectedOrderForReport}
-        />
       </div>
     </AppShell>
   );

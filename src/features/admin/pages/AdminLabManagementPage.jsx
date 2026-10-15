@@ -1,11 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppShell from '../../shell/AppShell';
 import { useDemo } from '../../../context/DemoContext';
-import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
-import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
-import LabReportViewModal from '../../labs/components/LabReportViewModal';
-import UploadReportModal from '../../labs/components/UploadReportModal';
-import PayLabOrderModal from '../../labs/components/PayLabOrderModal';
 import {
   TestTube2,
   Search,
@@ -47,16 +43,13 @@ export default function AdminLabManagementPage() {
     showToast,
   } = useDemo();
 
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'payments' | 'partners' | 'catalog' | 'audit'
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [labFilter, setLabFilter] = useState('All');
 
   // Modals state
-  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
-  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
-  const [selectedOrderForUpload, setSelectedOrderForUpload] = useState(null);
-  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState(null);
   const [isAddPartnerModalOpen, setIsAddPartnerModalOpen] = useState(false);
   const [isAddTestModalOpen, setIsAddTestModalOpen] = useState(false);
   const [editingPriceOrder, setEditingPriceOrder] = useState(null);
@@ -165,6 +158,15 @@ export default function AdminLabManagementPage() {
             <button
               type="button"
               className="btn-lime-pill"
+              onClick={() => navigate('/doctor/lab-orders/new')}
+              style={{ padding: '10px 18px', fontSize: '12.5px', fontWeight: '800' }}
+            >
+              <Plus size={15} />
+              <span>New Lab Order</span>
+            </button>
+            <button
+              type="button"
+              className="btn-white-capsule"
               onClick={() => setIsAddPartnerModalOpen(true)}
               style={{ padding: '10px 18px', fontSize: '12.5px' }}
             >
@@ -527,7 +529,7 @@ export default function AdminLabManagementPage() {
                                 <button
                                   type="button"
                                   className="btn-lime-pill"
-                                  onClick={() => setSelectedOrderForUpload(order)}
+                                  onClick={() => navigate(`/admin/labs/upload/${order.id}`)}
                                   style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '800' }}
                                 >
                                   <Upload size={12} />
@@ -539,7 +541,7 @@ export default function AdminLabManagementPage() {
                                 <button
                                   type="button"
                                   className="btn-lime-pill"
-                                  onClick={() => setSelectedOrderForReport(order)}
+                                  onClick={() => navigate(`/labs/report/${order.id}`)}
                                   style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '800' }}
                                 >
                                   <FileText size={12} />
@@ -551,7 +553,7 @@ export default function AdminLabManagementPage() {
                               <button
                                 type="button"
                                 className="btn-white-capsule"
-                                onClick={() => setSelectedOrderForSlip(order)}
+                                onClick={() => navigate(`/labs/slip/${order.id}`)}
                                 style={{ padding: '5px 10px', fontSize: '11.5px' }}
                                 title="Print A4 Lab Requisition Slip"
                               >
@@ -563,7 +565,7 @@ export default function AdminLabManagementPage() {
                                 <button
                                   type="button"
                                   className="btn-white-capsule"
-                                  onClick={() => setSelectedOrderForPayment(order)}
+                                  onClick={() => navigate(`/admin/labs/pay/${order.id}`)}
                                   style={{ padding: '5px 10px', fontSize: '11.5px', color: '#059669', fontWeight: '700' }}
                                   title="Collect cash or card payment"
                                 >
@@ -659,7 +661,7 @@ export default function AdminLabManagementPage() {
                               <button
                                 type="button"
                                 className="btn-lime-pill"
-                                onClick={() => setSelectedOrderForPayment(order)}
+                                onClick={() => navigate(`/admin/labs/pay/${order.id}`)}
                                 style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '800' }}
                               >
                                 Collect Payment
@@ -1180,34 +1182,6 @@ export default function AdminLabManagementPage() {
           </div>
         )}
 
-        {/* Requisition Slip Modal */}
-        <LabOrderSlipModal
-          isOpen={Boolean(selectedOrderForSlip)}
-          onClose={() => setSelectedOrderForSlip(null)}
-          order={selectedOrderForSlip}
-        />
-
-        {/* View Official Report Modal */}
-        <LabReportViewModal
-          isOpen={Boolean(selectedOrderForReport)}
-          onClose={() => setSelectedOrderForReport(null)}
-          order={selectedOrderForReport}
-        />
-
-        {/* Upload & Publish Results Modal */}
-        <UploadReportModal
-          isOpen={Boolean(selectedOrderForUpload)}
-          onClose={() => setSelectedOrderForUpload(null)}
-          order={selectedOrderForUpload}
-        />
-
-        {/* Collect Payment Modal */}
-        <PayLabOrderModal
-          isOpen={Boolean(selectedOrderForPayment)}
-          onClose={() => setSelectedOrderForPayment(null)}
-          order={selectedOrderForPayment}
-          isAdminMode={true}
-        />
       </div>
     </AppShell>
   );

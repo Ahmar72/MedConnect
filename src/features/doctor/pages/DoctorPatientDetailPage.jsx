@@ -23,9 +23,6 @@ import {
   UserCheck,
   TestTube2,
 } from 'lucide-react';
-import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
-import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
-import LabReportViewModal from '../../labs/components/LabReportViewModal';
 
 const COMMON_MEDICINES = [
   { name: 'Tab. Rigix 10mg (Cetirizine)', dosage: '1 tab once daily at bedtime', duration: '7 days', timing: 'After meals' },
@@ -49,9 +46,7 @@ export default function DoctorPatientDetailPage() {
     showToast,
   } = useDemo();
 
-  const [isLabModalOpen, setIsLabModalOpen] = useState(false);
-  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
-  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
+
 
   // Find appointment and patient records
   const aptMatch = appointments.find((a) => a.id === id || a.patientId === id || a.patientMrn === id);
@@ -519,7 +514,7 @@ export default function DoctorPatientDetailPage() {
               <button
                 type="button"
                 className="btn-white-capsule"
-                onClick={() => setIsLabModalOpen(true)}
+                onClick={() => navigate(`/doctor/lab-orders/new/${patientMatch?.id || id}`)}
                 style={{ padding: '6px 16px', fontSize: '12px', fontWeight: '700' }}
               >
                 + Order Diagnostic Tests
@@ -587,7 +582,7 @@ export default function DoctorPatientDetailPage() {
                       <button
                         type="button"
                         className="btn-white-capsule"
-                        onClick={() => setSelectedOrderForSlip(order)}
+                        onClick={() => navigate(`/labs/slip/${order.id}`)}
                         style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
                         <Printer size={13} />
@@ -598,7 +593,7 @@ export default function DoctorPatientDetailPage() {
                         <button
                           type="button"
                           className="btn-lime-pill"
-                          onClick={() => setSelectedOrderForReport(order)}
+                          onClick={() => navigate(`/labs/report/${order.id}`)}
                           style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}
                         >
                           <FileText size={13} />
@@ -979,34 +974,7 @@ export default function DoctorPatientDetailPage() {
             </div>
           </form>
         </div>
-        {/* Order Tests Modal */}
-        <OrderLabTestModal
-          isOpen={isLabModalOpen}
-          onClose={() => setIsLabModalOpen(false)}
-          defaultPatient={{
-            id: patientMatch?.id || id,
-            name: patientName,
-            mrn,
-            phone,
-            age,
-            gender,
-            city,
-          }}
-        />
 
-        {/* Printable Order Slip Modal */}
-        <LabOrderSlipModal
-          isOpen={Boolean(selectedOrderForSlip)}
-          onClose={() => setSelectedOrderForSlip(null)}
-          order={selectedOrderForSlip}
-        />
-
-        {/* View Official Lab Report Modal */}
-        <LabReportViewModal
-          isOpen={Boolean(selectedOrderForReport)}
-          onClose={() => setSelectedOrderForReport(null)}
-          order={selectedOrderForReport}
-        />
       </div>
     </AppShell>
   );
