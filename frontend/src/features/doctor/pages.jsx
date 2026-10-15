@@ -4,3 +4,7 @@ export { default as DoctorSchedulePage } from './pages/DoctorSchedulePage';
 export { default as DoctorPatientsPage } from './pages/DoctorPatientsPage';
 export { default as DoctorEarningsPage } from './pages/DoctorEarningsPage';
 export { default as DoctorProfileSettingsPage } from './pages/DoctorProfileSettingsPage';
+export { default as DoctorPatientDetailPage } from './pages/DoctorPatientDetailPage';
+export { default as DoctorReceiptSlipPage } from './pages/DoctorReceiptSlipPage';
+export { default as DoctorInvoiceStatementPage } from './pages/DoctorInvoiceStatementPage';
+export { default as DoctorManageSchedulePage } from './pages/DoctorManageSchedulePage';

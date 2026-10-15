@@ -285,6 +285,15 @@ export default function AppShell({ children }) {
               </NavLink>
 
               <NavLink
+                to="/doctor/manage-schedule"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Clock size={17} />
+                <span>Manage Patients & Schedule</span>
+              </NavLink>
+
+              <NavLink
                 to="/doctor/schedule"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}

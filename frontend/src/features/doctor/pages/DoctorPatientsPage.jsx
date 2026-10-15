@@ -540,7 +540,7 @@ export default function DoctorPatientsPage() {
             return (
               <div
                 key={patient.id}
-                onClick={() => setSelectedPatientForRecord(patient)}
+                onClick={() => navigate(`/doctor/patients/${patient.id}`)}
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderRadius: '18px',
@@ -595,7 +595,7 @@ export default function DoctorPatientsPage() {
                           margin: 0,
                           cursor: 'pointer',
                         }}
-                        onClick={() => setSelectedPatientForRecord(patient)}
+                        onClick={() => navigate(`/doctor/patients/${patient.id}`)}
                       >
                         {patient.patientName}
                       </h3>
@@ -725,9 +725,9 @@ export default function DoctorPatientsPage() {
                     style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedPatientForRecord(patient);
+                      navigate(`/doctor/patients/${patient.id}`);
                     }}
-                    title="Inspect complete electronic medical record, lab results, and history"
+                    title="Inspect complete electronic medical record, lab results, and history on dedicated page"
                   >
                     <FileText size={14} />
                     <span>Inspect Record</span>

@@ -17,6 +17,10 @@ import {
   DoctorPatientsPage,
   DoctorEarningsPage,
   DoctorProfileSettingsPage,
+  DoctorPatientDetailPage,
+  DoctorReceiptSlipPage,
+  DoctorInvoiceStatementPage,
+  DoctorManageSchedulePage,
 } from './features/doctor/pages';
 import {
   AdminDashboard,
@@ -155,10 +159,50 @@ export default function App() {
           }
         />
         <Route
+          path="/doctor/patients/:id"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorPatientDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/patient-record/:id"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorPatientDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/manage-schedule"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorManageSchedulePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/doctor/earnings"
           element={
             <ProtectedRoute allowedRoles={['doctor']}>
               <DoctorEarningsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/receipt/:id"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorReceiptSlipPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/invoice"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorInvoiceStatementPage />
             </ProtectedRoute>
           }
         />

@@ -65,6 +65,9 @@ export default function DoctorDashboard() {
     reason: '',
   });
 
+  // Turn Called Notification State
+  const [calledPatientAlert, setCalledPatientAlert] = useState(null);
+
   const doctorTab = searchParams.get('tab') || 'schedule'; // 'schedule' | 'profile'
 
   useEffect(() => {
@@ -172,11 +175,18 @@ export default function DoctorDashboard() {
     const slotInfo = targetApt.time ? `${targetApt.date || 'Today'} at ${targetApt.time}` : 'upcoming slot';
     const isVideo = targetApt.type && targetApt.type.toLowerCase().includes('video');
 
+    setCalledPatientAlert({
+      patientName: pName,
+      slotInfo,
+      isVideo,
+      id: targetApt.id,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    });
+
     if (isVideo) {
-      showToast(`Notified ${pName} for ${slotInfo}! Calling patient into Video Consultation Session...`, 'success');
-      navigate(`/doctor/consultation/${targetApt.id}`);
+      showToast(`Notified ${pName} about their turn! Patient alerted to join Telehealth Room.`, 'success');
     } else {
-      showToast(`Notified ${pName} for ${slotInfo}! Patient alerted via SMS to proceed to OPD Room.`, 'success');
+      showToast(`Notified ${pName} about their turn! Patient alerted via SMS to proceed to OPD Room.`, 'success');
     }
   };
 
@@ -318,6 +328,79 @@ export default function DoctorDashboard() {
           </button>
         </div>
       </div>
+
+      {/* Patient Turn Notification Alert Banner */}
+      {calledPatientAlert && (
+        <div
+          style={{
+            backgroundColor: '#ECFDF5',
+            borderRadius: '16px',
+            border: '1.5px solid #10B981',
+            padding: '16px 22px',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--shadow-sm)',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                backgroundColor: '#D1FAE5',
+                color: '#065F46',
+                display: 'grid',
+                placeItems: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <CheckCircle2 size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#065F46' }}>
+                Turn Alert Sent: {calledPatientAlert.patientName} has been notified!
+              </div>
+              <div style={{ fontSize: '12px', color: '#047857', marginTop: '2px' }}>
+                Notified at {calledPatientAlert.timestamp} for slot {calledPatientAlert.slotInfo}. Patient has received the push alert to proceed to consultation.
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {calledPatientAlert.isVideo && (
+              <button
+                type="button"
+                className="btn-lime-pill"
+                onClick={() => navigate(`/doctor/consultation/${calledPatientAlert.id}`)}
+                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '800' }}
+              >
+                Join Video Session
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-white-capsule"
+              onClick={() => navigate(`/doctor/patients/${calledPatientAlert.id}`)}
+              style={{ border: '1px solid #10B981', color: '#065F46', fontSize: '12px', padding: '7px 14px', fontWeight: '700' }}
+            >
+              View Record & Rx
+            </button>
+            <button
+              type="button"
+              onClick={() => setCalledPatientAlert(null)}
+              style={{ background: 'none', border: 'none', color: '#065F46', cursor: 'pointer', padding: '4px' }}
+              title="Dismiss"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* KPI Stats Row matching Canva Style */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
@@ -1088,40 +1171,54 @@ export default function DoctorDashboard() {
           ) : (
             confirmedAppointments.map((apt) => {
               const isCompleted = apt.status === 'Completed';
+              const isVideo = apt.type && apt.type.includes('Video');
 
               return (
                 <div
                   key={apt.id}
+                  onClick={() => navigate(`/doctor/patients/${apt.id}`)}
                   style={{
                     backgroundColor: '#FFFFFF',
-                    borderRadius: 'var(--radius-card)',
-                    border: '1px solid var(--border-subtle)',
-                    padding: '24px 28px',
+                    borderRadius: '16px',
+                    border: '1.5px solid var(--border-subtle)',
+                    padding: '20px 24px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
                     gap: '16px',
                     boxShadow: 'var(--shadow-sm)',
+                    cursor: 'pointer',
+                    transition: 'all 0.18s ease',
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--forest-800)';
+                    e.currentTarget.style.boxShadow = '0 6px 18px rgba(14, 56, 44, 0.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  }}
+                  title="Click to view full medical record & write digital prescription on dedicated page"
                 >
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div
                       style={{
-                        width: '48px',
-                        height: '48px',
-                        borderRadius: '14px',
-                        backgroundColor: apt.type.includes('Video') ? 'rgba(197, 225, 165, 0.4)' : 'var(--canvas-bg)',
+                        width: '46px',
+                        height: '46px',
+                        borderRadius: '12px',
+                        backgroundColor: isVideo ? 'rgba(197, 225, 165, 0.45)' : 'var(--canvas-bg)',
                         color: 'var(--forest-800)',
                         display: 'grid',
                         placeItems: 'center',
+                        flexShrink: 0,
                       }}
                     >
-                      {apt.type.includes('Video') ? <Video size={22} /> : <Building2 size={22} />}
+                      {isVideo ? <Video size={22} /> : <Building2 size={22} />}
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
                         <span
                           style={{
                             fontSize: '11px',
@@ -1134,31 +1231,37 @@ export default function DoctorDashboard() {
                         >
                           {apt.status}
                         </span>
-                        <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                          Booking #{apt.id}
-                        </span>
-                        <span style={{ fontSize: '11.5px', color: 'var(--forest-700)', fontWeight: '600' }}>
-                          {apt.paymentMethod}
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            backgroundColor: isVideo ? '#DCFCE7' : '#EFF6FF',
+                            color: isVideo ? '#166534' : '#1D4ED8',
+                          }}
+                        >
+                          {isVideo ? 'Video' : 'In-Clinic'}
                         </span>
                       </div>
 
-                      <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '2px 0 4px 0' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '2px 0 3px 0', color: 'var(--forest-900)' }}>
                         {apt.patientName}
                       </h3>
 
                       <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>
-                        ⏰ <b>{apt.date} at {apt.time}</b> · {apt.type} · Reason: <i>{apt.reason}</i>
+                        ⏰ <b>{apt.date} at {apt.time}</b>
                       </div>
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    {apt.type.includes('Video') && !isCompleted && (
+                  {/* Clean Right Actions */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }} onClick={(e) => e.stopPropagation()}>
+                    {isVideo && !isCompleted && (
                       <button
                         type="button"
                         className="btn-lime-pill"
-                        style={{ padding: '9px 18px', fontSize: '12.5px' }}
+                        style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
                         onClick={() => handleStartConsultation(apt)}
                       >
                         <Video size={15} />
@@ -1169,21 +1272,11 @@ export default function DoctorDashboard() {
                     <button
                       type="button"
                       className="btn-white-capsule"
-                      style={{ border: '1px solid var(--border-strong)', fontSize: '12px', padding: '8px 14px' }}
-                      onClick={() => setSelectedPatientForRecord(apt)}
+                      style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', fontSize: '12.5px', padding: '8px 16px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      onClick={() => navigate(`/doctor/patients/${apt.id}`)}
                     >
                       <FileText size={14} />
-                      <span>Medical Record</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="btn-white-capsule"
-                      style={{ border: '1px solid var(--border-strong)', fontSize: '12px', padding: '8px 14px' }}
-                      onClick={() => setSelectedPatientForRx(apt)}
-                    >
-                      <Stethoscope size={14} />
-                      <span>Write Rx</span>
+                      <span>Medical Record & Rx →</span>
                     </button>
 
                     {!isCompleted && (

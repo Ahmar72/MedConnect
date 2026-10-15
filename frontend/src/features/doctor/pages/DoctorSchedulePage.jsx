@@ -361,18 +361,6 @@ export default function DoctorSchedulePage() {
               Practice Timetable & Consultation Fees
             </h1>
           </div>
-
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <button
-              type="button"
-              className="btn-lime-pill"
-              onClick={() => setIsAddPracticeModalOpen(true)}
-              style={{ padding: '10px 22px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800' }}
-            >
-              <Plus size={16} />
-              <span>Add Hospital Branch</span>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -577,17 +565,6 @@ export default function DoctorSchedulePage() {
 
             <button
               type="button"
-              className="btn-white-capsule"
-              onClick={handleCopyMondayToWeekdays}
-              style={{ border: '1px solid var(--border-strong)', padding: '8px 16px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}
-              title="Apply Monday hours across Tue - Fri"
-            >
-              <Copy size={14} />
-              <span>Copy Mon Hours to Weekdays</span>
-            </button>
-
-            <button
-              type="button"
               className="btn-lime-pill"
               onClick={handleSaveWeeklySchedule}
               style={{ padding: '8px 20px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
@@ -605,10 +582,8 @@ export default function DoctorSchedulePage() {
               <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', color: 'var(--forest-900)' }}>
                 <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Day</th>
                 <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Status</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Morning Shift</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Evening Shift</th>
+                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Shift / Availability</th>
                 <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Slot Interval</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Max Patients</th>
                 <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Consultation Mode</th>
               </tr>
             </thead>
@@ -634,7 +609,7 @@ export default function DoctorSchedulePage() {
                     </div>
                   </td>
 
-                  {/* Toggle Active / Day Off Status (Enable / Disable Button - No ticks or checks) */}
+                  {/* Toggle Active / Day Off Status */}
                   <td style={{ padding: '14px 16px' }}>
                     <button
                       type="button"
@@ -659,102 +634,60 @@ export default function DoctorSchedulePage() {
                     </button>
                   </td>
 
-                  {/* Morning Shift (Time Slot Dropdowns - No crosses) */}
+                  {/* Shift / Availability From & To Dropdowns */}
                   <td style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <select
-                        value={item.active ? item.morningStart : 'Closed'}
-                        disabled={!item.active}
-                        onChange={(e) => handleScheduleChange(idx, 'morningStart', e.target.value)}
-                        style={{
-                          padding: '6px 10px',
-                          borderRadius: '8px',
-                          border: '1px solid #D1D5DB',
-                          fontSize: '12px',
-                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
-                          color: item.active && item.morningStart !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
-                          fontWeight: item.active && item.morningStart !== 'Closed' ? '700' : '500',
-                          cursor: item.active ? 'pointer' : 'not-allowed',
-                        }}
-                      >
-                        {TIME_OPTIONS.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                      <span style={{ color: '#9CA3AF' }}>-</span>
-                      <select
-                        value={item.active ? item.morningEnd : 'Closed'}
-                        disabled={!item.active}
-                        onChange={(e) => handleScheduleChange(idx, 'morningEnd', e.target.value)}
-                        style={{
-                          padding: '6px 10px',
-                          borderRadius: '8px',
-                          border: '1px solid #D1D5DB',
-                          fontSize: '12px',
-                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
-                          color: item.active && item.morningEnd !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
-                          fontWeight: item.active && item.morningEnd !== 'Closed' ? '700' : '500',
-                          cursor: item.active ? 'pointer' : 'not-allowed',
-                        }}
-                      >
-                        {TIME_OPTIONS.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </td>
-
-                  {/* Evening Shift (Time Slot Dropdowns - No crosses) */}
-                  <td style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <select
-                        value={item.active ? item.eveningStart : 'Closed'}
-                        disabled={!item.active}
-                        onChange={(e) => handleScheduleChange(idx, 'eveningStart', e.target.value)}
-                        style={{
-                          padding: '6px 10px',
-                          borderRadius: '8px',
-                          border: '1px solid #D1D5DB',
-                          fontSize: '12px',
-                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
-                          color: item.active && item.eveningStart !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
-                          fontWeight: item.active && item.eveningStart !== 'Closed' ? '700' : '500',
-                          cursor: item.active ? 'pointer' : 'not-allowed',
-                        }}
-                      >
-                        {TIME_OPTIONS.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                      <span style={{ color: '#9CA3AF' }}>-</span>
-                      <select
-                        value={item.active ? item.eveningEnd : 'Closed'}
-                        disabled={!item.active}
-                        onChange={(e) => handleScheduleChange(idx, 'eveningEnd', e.target.value)}
-                        style={{
-                          padding: '6px 10px',
-                          borderRadius: '8px',
-                          border: '1px solid #D1D5DB',
-                          fontSize: '12px',
-                          backgroundColor: item.active ? '#FFFFFF' : '#F3F4F6',
-                          color: item.active && item.eveningEnd !== 'Closed' ? 'var(--forest-900)' : '#9CA3AF',
-                          fontWeight: item.active && item.eveningEnd !== 'Closed' ? '700' : '500',
-                          cursor: item.active ? 'pointer' : 'not-allowed',
-                        }}
-                      >
-                        {TIME_OPTIONS.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {item.active ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>From:</span>
+                        <select
+                          value={item.morningStart !== 'Closed' ? item.morningStart : '10:00 AM'}
+                          onChange={(e) => handleScheduleChange(idx, 'morningStart', e.target.value)}
+                          style={{
+                            padding: '6px 10px',
+                            borderRadius: '8px',
+                            border: '1px solid #D1D5DB',
+                            fontSize: '12px',
+                            backgroundColor: '#FFFFFF',
+                            color: 'var(--forest-900)',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {TIME_OPTIONS.filter((t) => t !== 'Closed').map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                        <span style={{ color: '#9CA3AF', fontWeight: '600' }}>to</span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>To:</span>
+                        <select
+                          value={item.eveningEnd !== 'Closed' ? item.eveningEnd : (item.morningEnd !== 'Closed' ? item.morningEnd : '06:00 PM')}
+                          onChange={(e) => {
+                            handleScheduleChange(idx, 'eveningEnd', e.target.value);
+                            handleScheduleChange(idx, 'morningEnd', e.target.value);
+                          }}
+                          style={{
+                            padding: '6px 10px',
+                            borderRadius: '8px',
+                            border: '1px solid #D1D5DB',
+                            fontSize: '12px',
+                            backgroundColor: '#FFFFFF',
+                            color: 'var(--forest-900)',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {TIME_OPTIONS.filter((t) => t !== 'Closed').map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : (
+                      <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Closed (Day Off)</span>
+                    )}
                   </td>
 
                   {/* Slot Duration */}
@@ -771,22 +704,6 @@ export default function DoctorSchedulePage() {
                         <option value={45}>45 mins</option>
                         <option value={60}>60 mins</option>
                       </select>
-                    ) : (
-                      <span style={{ color: '#9CA3AF' }}>-</span>
-                    )}
-                  </td>
-
-                  {/* Max Quota */}
-                  <td style={{ padding: '14px 16px' }}>
-                    {item.active ? (
-                      <input
-                        type="number"
-                        min="1"
-                        max="60"
-                        value={item.maxQuota}
-                        onChange={(e) => handleScheduleChange(idx, 'maxQuota', Number(e.target.value))}
-                        style={{ width: '60px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '12px', textAlign: 'center', backgroundColor: '#FFFFFF' }}
-                      />
                     ) : (
                       <span style={{ color: '#9CA3AF' }}>-</span>
                     )}

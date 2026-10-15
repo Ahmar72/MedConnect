@@ -36,6 +36,7 @@ export default function DoctorEarningsPage() {
 
   // Modal State for Digital Receipt
   const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const [hoveredSlipId, setHoveredSlipId] = useState(null);
 
   // Modal State for Official Invoice / Tax Statement
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
@@ -601,7 +602,7 @@ export default function DoctorEarningsPage() {
             <button
               type="button"
               className="btn-white-capsule"
-              onClick={() => setIsInvoiceModalOpen(true)}
+              onClick={() => navigate('/doctor/invoice')}
               style={{
                 border: '1.5px solid var(--forest-800)',
                 color: 'var(--forest-800)',
@@ -1219,7 +1220,6 @@ export default function DoctorEarningsPage() {
                   <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Hospital / Location</th>
                   <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Payment Method</th>
                   <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Gross Fee</th>
-                  <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Net Payout</th>
                   <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase' }}>Status</th>
                   <th style={{ padding: '15px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', textAlign: 'center' }}>Receipt</th>
                 </tr>
@@ -1236,69 +1236,45 @@ export default function DoctorEarningsPage() {
                     onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F0FDF4')}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = idx % 2 === 0 ? '#FFFFFF' : '#FAFAFA')}
                   >
-                    {/* Date & Day */}
+                    {/* Date & Day (No time displayed) */}
                     <td style={{ padding: '15px 22px', whiteSpace: 'nowrap' }}>
-                      <div style={{ fontWeight: '800', color: 'var(--text-main)' }}>{t.displayDate}</div>
+                      <div style={{ fontWeight: '800', color: 'var(--text-main)' }}>{t.displayDate.split(' · ')[0]}</div>
                       <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{t.dayName} · #{t.id}</div>
                     </td>
 
-                    {/* Patient Name (Clickable to open profile!) */}
+                    {/* Patient Name (No circle avatar, no contact phone number) */}
                     <td style={{ padding: '15px 22px' }}>
                       <div
-                        onClick={() => setSelectedPatientForRecord(t)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          cursor: 'pointer',
-                        }}
-                        title="Click to view complete patient medical profile & history"
+                        onClick={() => navigate(`/doctor/patients/${t.appointmentId || t.id}`)}
+                        style={{ cursor: 'pointer' }}
+                        title="Click to view complete patient profile & medical history"
                       >
-                        <div
-                          style={{
-                            width: '36px',
-                            height: '36px',
-                            borderRadius: '50%',
-                            backgroundColor: 'rgba(14, 56, 44, 0.08)',
-                            color: 'var(--forest-800)',
-                            display: 'grid',
-                            placeItems: 'center',
-                            fontWeight: '800',
-                            fontSize: '13px',
-                            flexShrink: 0,
-                            border: '1.5px solid rgba(14, 56, 44, 0.2)',
-                          }}
-                        >
-                          {t.patientName.slice(0, 2).toUpperCase()}
-                        </div>
-                        <div>
-                          <span style={{ fontWeight: '800', color: 'var(--forest-800)', textDecoration: 'underline' }}>
-                            {t.patientName}
-                          </span>
-                          <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                            {t.patientMrn} · {t.patientPhone}
-                          </div>
+                        <span style={{ fontWeight: '800', color: 'var(--forest-800)', textDecoration: 'underline', fontSize: '14px' }}>
+                          {t.patientName}
+                        </span>
+                        <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          MRN: {t.patientMrn}
                         </div>
                       </div>
                     </td>
 
-                    {/* Consultation Mode */}
+                    {/* Consultation Mode (Only Video or In-Clinic) */}
                     <td style={{ padding: '15px 22px', whiteSpace: 'nowrap' }}>
                       <span
                         style={{
-                          fontSize: '12px',
+                          fontSize: '11.5px',
                           fontWeight: '800',
                           backgroundColor: t.isVideo ? '#D1FAE5' : '#DBEAFE',
                           color: t.isVideo ? '#065F46' : '#1E40AF',
-                          padding: '4px 10px',
-                          borderRadius: '8px',
+                          padding: '3px 9px',
+                          borderRadius: '6px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '5px',
                         }}
                       >
                         {t.isVideo ? <Video size={13} /> : <Building2 size={13} />}
-                        {t.type}
+                        {t.isVideo ? 'Video' : 'In-Clinic'}
                       </span>
                     </td>
 
@@ -1313,13 +1289,8 @@ export default function DoctorEarningsPage() {
                     </td>
 
                     {/* Gross Fee */}
-                    <td style={{ padding: '15px 22px', color: '#6B7280' }}>
+                    <td style={{ padding: '15px 22px', color: 'var(--forest-900)', fontWeight: '800' }}>
                       Rs. {t.grossFee.toLocaleString()}
-                    </td>
-
-                    {/* Net Payout */}
-                    <td style={{ padding: '15px 22px', fontWeight: '800', color: 'var(--forest-800)', fontSize: '15px' }}>
-                      Rs. {t.netPayout.toLocaleString()}
                     </td>
 
                     {/* Payout Status */}
@@ -1341,25 +1312,66 @@ export default function DoctorEarningsPage() {
                       </span>
                     </td>
 
-                    {/* Digital Receipt Slip */}
-                    <td style={{ padding: '15px 22px', textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedReceipt(t)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: 'var(--forest-800)',
-                          cursor: 'pointer',
-                          padding: '4px 10px',
-                          borderRadius: '6px',
-                          fontSize: '12.5px',
-                          fontWeight: '800',
-                          textDecoration: 'underline',
-                        }}
+                    {/* Digital Receipt Slip (Hover tooltip + click leads to dedicated page) */}
+                    <td style={{ padding: '15px 22px', textAlign: 'center', position: 'relative' }}>
+                      <div
+                        style={{ display: 'inline-block', position: 'relative' }}
+                        onMouseEnter={() => setHoveredSlipId(t.id)}
+                        onMouseLeave={() => setHoveredSlipId(null)}
                       >
-                        View Slip
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/doctor/receipt/${t.id}`)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--forest-800)',
+                            cursor: 'pointer',
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            fontSize: '12.5px',
+                            fontWeight: '800',
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          View Slip
+                        </button>
+
+                        {hoveredSlipId === t.id && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              bottom: '100%',
+                              right: '50%',
+                              transform: 'translateX(50%)',
+                              marginBottom: '8px',
+                              backgroundColor: 'var(--forest-900)',
+                              color: '#FFFFFF',
+                              padding: '10px 14px',
+                              borderRadius: '10px',
+                              fontSize: '11.5px',
+                              whiteSpace: 'nowrap',
+                              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.25)',
+                              zIndex: 50,
+                              pointerEvents: 'none',
+                              textAlign: 'left',
+                            }}
+                          >
+                            <div style={{ fontWeight: '800', color: 'var(--lime-accent)', marginBottom: '3px' }}>
+                              Receipt #{t.id} · Rs. {t.grossFee.toLocaleString()}
+                            </div>
+                            <div style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+                              {t.patientName} · {t.isVideo ? 'Video' : 'In-Clinic'}
+                            </div>
+                            <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '10.5px', marginTop: '2px' }}>
+                              {t.hospital} · {t.paymentChannel}
+                            </div>
+                            <div style={{ fontSize: '10px', color: '#86EFAC', fontWeight: '700', marginTop: '3px' }}>
+                              Click to view, print & download receipt →
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
