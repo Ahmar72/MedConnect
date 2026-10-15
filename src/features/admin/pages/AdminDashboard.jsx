@@ -19,11 +19,12 @@ import {
   Activity,
   FileText,
   UserCheck,
+  TestTube2,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { doctorsList, patientsList, branchesList, appointments, activityLog, showToast } = useDemo();
+  const { doctorsList, patientsList, branchesList, appointments, labOrders = [], activityLog, showToast } = useDemo();
 
   const pendingDoctorsCount = doctorsList.filter((d) => d.status === 'pending').length;
   const pendingAppointmentsCount = appointments.filter((a) => a.status === 'Pending Doctor Confirmation').length;
@@ -63,6 +64,16 @@ export default function AdminDashboard() {
           >
             <Users size={16} />
             <span>Manage Patients ({patientsList.length})</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn-white-capsule"
+            onClick={() => navigate('/admin/labs')}
+            style={{ padding: '12px 18px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <TestTube2 size={16} />
+            <span>Lab Operations ({labOrders.length})</span>
           </button>
         </div>
       </div>

@@ -127,29 +127,12 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/patient/lab-reports"
-          element={
-            <ProtectedRoute allowedRoles={['patient']}>
-              <Navigate to="/appointments?tab=labs" replace />
-            </ProtectedRoute>
-          }
-        />
-
         {/* Doctor Role (Strictly Protected: Only Verified Clinicians) */}
         <Route
           path="/doctor"
           element={
             <ProtectedRoute allowedRoles={['doctor']}>
               <DoctorDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/doctor/lab-orders"
-          element={
-            <ProtectedRoute allowedRoles={['doctor']}>
-              <DoctorLabOrdersPage />
             </ProtectedRoute>
           }
         />
@@ -233,6 +216,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/doctor/lab-orders"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorLabOrdersPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Admin Role (Strictly Protected: Only Operations & Hospital Administrators) */}
         <Route
@@ -293,14 +284,6 @@ export default function App() {
         />
         <Route
           path="/admin/labs"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminLabManagementPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/lab-orders"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminLabManagementPage />

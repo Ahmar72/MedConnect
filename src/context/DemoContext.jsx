@@ -334,74 +334,32 @@ const INITIAL_PRESCRIPTIONS = [
   },
 ];
 
-export const INITIAL_LAB_PARTNERS = [
-  {
-    id: 'lab-chughtai',
-    name: 'Chughtai Lab',
-    type: 'External Partner',
-    city: 'Lahore (Main Jail Road)',
-    branches: 185,
-    helpline: '+92 42 111 255 255',
-    discount: '15% MedConnect Network Rate',
-    status: 'Active',
-    rating: 4.9,
-    accreditation: 'ISO 15189 / CAP Certified',
-  },
-  {
-    id: 'lab-idc',
-    name: 'Islamabad Diagnostic Center (IDC)',
-    type: 'External Partner',
-    city: 'Islamabad / Lahore / Rawalpindi',
-    branches: 115,
-    helpline: '+92 51 111 000 432',
-    discount: '10% MedConnect Network Rate',
-    status: 'Active',
-    rating: 4.8,
-    accreditation: 'ISO 15189 Certified',
-  },
-  {
-    id: 'lab-essa',
-    name: 'Dr. Essa Laboratory & Diagnostic Centre',
-    type: 'External Partner',
-    city: 'Karachi / Nationwide',
-    branches: 92,
-    helpline: '+92 21 111 786 986',
-    discount: '12% MedConnect Network Rate',
-    status: 'Active',
-    rating: 4.75,
-    accreditation: 'PMDC & Sindh Healthcare Commission',
-  },
-  {
-    id: 'lab-internal',
-    name: 'MedConnect In-House Hospital Pathology',
-    type: 'Internal Facility',
-    city: 'MedConnect Hospital Clinics (Lahore/Karachi)',
-    branches: 6,
-    helpline: '+92 42 111 633 266',
-    discount: '20% In-Clinic / OPD Direct',
-    status: 'Active',
-    rating: 4.95,
-    accreditation: 'Internal Reference Standard',
-  },
+const INITIAL_TEST_CATALOG = [
+  { id: 't-cbc', code: 'CBC-01', name: 'Complete Blood Count (CBC)', category: 'Hematology', sampleType: 'Whole Blood (EDTA)', turnaround: '4-6 Hours', defaultPrice: 1200, fastingHours: 0, description: 'RBC, WBC, Platelet count, Hemoglobin, Hematocrit & Erythrocyte indices.' },
+  { id: 't-lipid', code: 'LPD-02', name: 'Lipid Profile & Serum Cholesterol', category: 'Biochemistry', sampleType: 'Serum', turnaround: '8-12 Hours', defaultPrice: 2400, fastingHours: 12, description: 'Total Cholesterol, HDL, LDL, VLDL, and Triglycerides.' },
+  { id: 't-hba1c', code: 'A1C-03', name: 'HbA1c (Glycated Hemoglobin)', category: 'Diabetes', sampleType: 'Whole Blood (EDTA)', turnaround: '4 Hours', defaultPrice: 1800, fastingHours: 0, description: 'Estimated 3-month average plasma glucose concentration.' },
+  { id: 't-lft', code: 'LFT-04', name: 'Liver Function Test (LFT)', category: 'Biochemistry', sampleType: 'Serum', turnaround: '6 Hours', defaultPrice: 2200, fastingHours: 8, description: 'Bilirubin, SGPT/ALT, SGOT/AST, Alkaline Phosphatase, Total Protein, Albumin.' },
+  { id: 't-rft', code: 'RFT-05', name: 'Renal Function Test (RFT / Creatinine & Urea)', category: 'Biochemistry', sampleType: 'Serum', turnaround: '6 Hours', defaultPrice: 1600, fastingHours: 0, description: 'Serum Creatinine, Blood Urea Nitrogen (BUN), Uric Acid, eGFR.' },
+  { id: 't-vitd', code: 'VIT-06', name: 'Vitamin D (25-OH Total)', category: 'Endocrinology', sampleType: 'Serum', turnaround: '12 Hours', defaultPrice: 3500, fastingHours: 0, description: 'Total 25-hydroxyvitamin D status for bone health and fatigue.' },
+  { id: 't-xray-chest', code: 'RAD-07', name: 'Chest X-Ray (PA View)', category: 'Radiology & Imaging', sampleType: 'Digital Radiograph', turnaround: '2 Hours', defaultPrice: 1500, fastingHours: 0, description: 'High-resolution digital chest radiograph for lung and heart visualization.' },
+  { id: 't-mri-brain', code: 'RAD-08', name: 'MRI Brain (1.5 Tesla Scan)', category: 'Radiology & Imaging', sampleType: 'MRI Scan', turnaround: '24 Hours', defaultPrice: 14000, fastingHours: 0, description: 'Multi-planar diagnostic magnetic resonance imaging of brain parenchyma.' },
+  { id: 't-usg-abdo', code: 'RAD-09', name: 'Ultrasound Whole Abdomen & Pelvis', category: 'Radiology & Imaging', sampleType: 'Sonography', turnaround: '1 Hour', defaultPrice: 2800, fastingHours: 6, description: 'High-frequency real-time sonography of liver, gallbladder, kidneys, spleen & bladder.' },
+  { id: 't-tsh', code: 'THY-10', name: 'Thyroid Function Test (TSH, FT3, FT4)', category: 'Endocrinology', sampleType: 'Serum', turnaround: '8 Hours', defaultPrice: 2500, fastingHours: 0, description: 'Evaluation of hyperthyroidism, hypothyroidism, and anterior pituitary function.' },
+  { id: 't-urine-re', code: 'URN-11', name: 'Urine Routine Examination (Urine R/E)', category: 'Clinical Pathology', sampleType: 'Midstream Urine', turnaround: '2 Hours', defaultPrice: 600, fastingHours: 0, description: 'Physical, chemical, and microscopic examination for proteinuria, pyuria, and hematuria.' },
 ];
 
-export const INITIAL_TEST_CATALOG = [
-  { id: 't-cbc', code: 'HEM-01', name: 'Complete Blood Count (CBC) with ESR', category: 'Hematology', price: 1200, fasting: 'No fasting required', turnaround: '4-6 Hours' },
-  { id: 't-lipid', code: 'BIO-04', name: 'Fasting Lipid Profile (Cholesterol, HDL, LDL, Triglycerides)', category: 'Biochemistry', price: 2200, fasting: '10-12 hours fasting required', turnaround: '6-8 Hours' },
-  { id: 't-vitd', code: 'IMM-09', name: 'Vitamin D3 (25-Hydroxy)', category: 'Immunoassay', price: 3500, fasting: 'No fasting required', turnaround: '12 Hours' },
-  { id: 't-lft', code: 'BIO-02', name: 'Liver Function Tests (LFT Complete)', category: 'Biochemistry', price: 1800, fasting: 'No fasting required', turnaround: '6 Hours' },
-  { id: 't-rft', code: 'BIO-03', name: 'Renal Function Tests (RFT: Urea, Creatinine, Electrolytes)', category: 'Biochemistry', price: 1600, fasting: 'No fasting required', turnaround: '6 Hours' },
-  { id: 't-tsh', code: 'END-01', name: 'Thyroid Stimulating Hormone (TSH Ultrasensitive)', category: 'Endocrinology', price: 1900, fasting: 'Early morning sample preferred', turnaround: '8 Hours' },
-  { id: 't-hba1c', code: 'DIA-01', name: 'HbA1c (Glycated Hemoglobin for Diabetes)', category: 'Diabetes Monitoring', price: 1750, fasting: 'No fasting required', turnaround: '4 Hours' },
-  { id: 't-xray', code: 'RAD-01', name: 'Digital Chest X-Ray (PA View)', category: 'Radiology & Imaging', price: 1500, fasting: 'No fasting required', turnaround: '2 Hours' },
-  { id: 't-usg', code: 'RAD-03', name: 'Ultrasound Whole Abdomen & Pelvis', category: 'Radiology & Imaging', price: 2800, fasting: '6 hours fasting + full bladder', turnaround: 'Same Day' },
-  { id: 't-mri', code: 'RAD-08', name: 'MRI Brain with Contrast', category: 'Advanced Imaging', price: 16500, fasting: '4 hours fasting', turnaround: '24 Hours' },
+const INITIAL_LAB_PARTNERS = [
+  { id: 'lab-chughtai', name: 'Chughtai Lab', city: 'Lahore & Nationwide', accreditation: 'CAP & ISO-15189 Certified', phone: '+92 311 1456789', turnaroundRating: '4.9 ★', homeCollection: true, status: 'Active' },
+  { id: 'lab-idc', name: 'Islamabad Diagnostic Center (IDC)', city: 'Islamabad & Rawalpindi', accreditation: 'ISO-15189 Accredited', phone: '+92 51 111 000 432', turnaroundRating: '4.8 ★', homeCollection: true, status: 'Active' },
+  { id: 'lab-skmh', name: 'Shaukat Khanum Pathology Lab', city: 'Lahore & Karachi', accreditation: 'Joint Commission Int. (JCI)', phone: '+92 42 35905000', turnaroundRating: '5.0 ★', homeCollection: false, status: 'Active' },
+  { id: 'lab-essa', name: 'Dr. Essa Laboratory & Diagnostic Centre', city: 'Karachi & Sindh', accreditation: 'ISO-9001 Certified', phone: '+92 21 111 786 986', turnaroundRating: '4.7 ★', homeCollection: true, status: 'Active' },
+  { id: 'lab-akuh', name: 'Aga Khan University Clinical Laboratories', city: 'Karachi & Nationwide', accreditation: 'CAP Accredited', phone: '+92 21 111 911 911', turnaroundRating: '4.9 ★', homeCollection: true, status: 'Active' },
 ];
 
-export const INITIAL_LAB_ORDERS = [
+const INITIAL_LAB_ORDERS = [
   {
-    id: 'LBO-701',
-    orderNumber: 'LBO-701',
+    id: 'LBO-1001',
+    orderNumber: 'LBO-1001',
     patientId: 'patient-alex',
     patientName: 'Alex Khan',
     patientMrn: 'MC-89241',
@@ -409,50 +367,46 @@ export const INITIAL_LAB_ORDERS = [
     patientAge: 29,
     patientGender: 'Male',
     patientCity: 'Lahore',
+    doctorId: 'dr-amina-shah',
     doctorName: 'Dr. Amina Shah',
     doctorSpecialty: 'General Physician',
-    doctorPmdc: '39482-P',
-    date: 'Oct 14, 2026',
-    time: '4:45 PM',
-    tests: [
-      { id: 't-cbc', code: 'HEM-01', name: 'Complete Blood Count (CBC) with ESR', category: 'Hematology', price: 1200 },
-      { id: 't-vitd', code: 'IMM-09', name: 'Vitamin D3 (25-Hydroxy)', category: 'Immunoassay', price: 3500 },
+    date: 'Today, Oct 15, 2026',
+    time: '10:30 AM',
+    tests: ['Complete Blood Count (CBC)', 'Lipid Profile & Serum Cholesterol'],
+    instructions: '12 hours overnight fasting mandatory. Screen for chronic fatigue and lipid balance.',
+    fastingRequired: true,
+    fastingHours: 12,
+    urgency: 'Routine',
+    assignedLab: 'Chughtai Lab',
+    status: 'Published', // Order Placed -> Received -> In Progress -> Completed -> Published
+    price: 3600,
+    paymentStatus: 'Paid', // Pending -> Paid -> Refunded
+    paymentMethod: 'JazzCash (Prepaid Online)',
+    invoiceNumber: 'INV-LB-8021',
+    technicianNotes: 'Blood sample received at Gulberg central pathology unit. Vacuum tube sealed, no hemolysis.',
+    publishedAt: 'Today, 11:30 AM',
+    pathologistName: 'Dr. Zulfiqar Ali, MBBS, FCPS (Pathology)',
+    reportSummary: 'Mild hypercholesterolemia noted (Cholesterol 215 mg/dL). CBC indices within normal physiological ranges.',
+    resultValues: [
+      { parameter: 'Hemoglobin', value: '14.8', unit: 'g/dL', normalRange: '13.5 - 17.5', status: 'Normal' },
+      { parameter: 'Total Leukocyte Count (TLC)', value: '7,400', unit: '/uL', normalRange: '4,000 - 11,000', status: 'Normal' },
+      { parameter: 'Platelet Count', value: '255,000', unit: '/uL', normalRange: '150,000 - 450,000', status: 'Normal' },
+      { parameter: 'Total Serum Cholesterol', value: '215', unit: 'mg/dL', normalRange: '< 200', status: 'High' },
+      { parameter: 'Triglycerides', value: '160', unit: 'mg/dL', normalRange: '< 150', status: 'High' },
+      { parameter: 'HDL Cholesterol (Good)', value: '46', unit: 'mg/dL', normalRange: '> 40', status: 'Normal' },
+      { parameter: 'LDL Cholesterol (Bad)', value: '137', unit: 'mg/dL', normalRange: '< 100', status: 'High' },
     ],
-    instructions: {
-      fasting: true,
-      urgency: 'Routine',
-      notes: 'Investigate seasonal allergy history and mild post-viral fatigue.',
-    },
-    labPartnerId: 'lab-chughtai',
-    labPartnerName: 'Chughtai Lab',
-    labBranch: 'Jail Road Central Reference Facility',
-    orderStatus: 'Published',
-    paymentStatus: 'Paid',
-    price: 4700,
-    paidAmount: 4700,
-    paymentMethod: 'JazzCash Mobile Wallet',
-    invoiceNumber: 'INV-LAB-8901',
-    invoiceDate: 'Oct 14, 2026',
-    report: {
-      publishedAt: 'Oct 14, 2026 · 6:15 PM',
-      technicianName: 'Muhammad Farhan (Medical Technologist MLT)',
-      pathologistName: 'Dr. A. S. Hashmi, MBBS, M.Phil (Histopathology)',
-      technicianNotes: 'All calibrations within 2SD. Automated analyzer Sysmex XN-1000. Roche Cobas e411.',
-      parameters: [
-        { param: 'Hemoglobin (Hb)', value: '14.8', unit: 'g/dL', normalRange: '13.5 - 17.5', status: 'Normal' },
-        { param: 'Total Leukocyte Count (TLC)', value: '7,200', unit: '/uL', normalRange: '4,000 - 11,000', status: 'Normal' },
-        { param: 'Platelet Count', value: '245,000', unit: '/uL', normalRange: '150,000 - 450,000', status: 'Normal' },
-        { param: 'Erythrocyte Sedimentation Rate (ESR)', value: '8', unit: 'mm/1st hr', normalRange: '0 - 15', status: 'Normal' },
-        { param: 'Serum 25-OH Vitamin D', value: '18.4', unit: 'ng/mL', normalRange: '30.0 - 100.0', status: 'Low' },
-      ],
-      summary: 'Normal baseline hemogram. Moderate Vitamin D insufficiency detected. Dietary supplementation recommended as per clinician advice.',
-      qrCodeRef: 'QC-701-CHUG-2026-MED',
-      verified: true,
-    },
+    auditTrail: [
+      { time: '10:30 AM', actor: 'Dr. Amina Shah', event: 'Order Created', note: 'Prescribed CBC + Lipid Profile' },
+      { time: '10:35 AM', actor: 'Operations Admin', event: 'Invoice Generated', note: 'Set package price PKR 3,600' },
+      { time: '10:45 AM', actor: 'Alex Khan', event: 'Payment Received', note: 'Paid PKR 3,600 via JazzCash' },
+      { time: '11:00 AM', actor: 'Chughtai Lab Tech', event: 'Specimen Received', note: 'Sample processing started' },
+      { time: '11:30 AM', actor: 'Chughtai Lab Pathologist', event: 'Report Published', note: 'Verified by Dr. Zulfiqar Ali' }
+    ]
   },
   {
-    id: 'LBO-702',
-    orderNumber: 'LBO-702',
+    id: 'LBO-1002',
+    orderNumber: 'LBO-1002',
     patientId: 'patient-madiha',
     patientName: 'Madiha Tariq',
     patientMrn: 'MC-77190',
@@ -460,71 +414,37 @@ export const INITIAL_LAB_ORDERS = [
     patientAge: 32,
     patientGender: 'Female',
     patientCity: 'Lahore',
-    doctorName: 'Dr. Amina Shah',
+    doctorId: 'dr-maya-patel',
+    doctorName: 'Dr. Maya Patel',
     doctorSpecialty: 'General Physician',
-    doctorPmdc: '39482-P',
     date: 'Oct 14, 2026',
-    time: '5:30 PM',
-    tests: [
-      { id: 't-lipid', code: 'BIO-04', name: 'Fasting Lipid Profile', category: 'Biochemistry', price: 2200 },
-      { id: 't-lft', code: 'BIO-02', name: 'Liver Function Tests (LFT Complete)', category: 'Biochemistry', price: 1800 },
-    ],
-    instructions: {
-      fasting: true,
-      urgency: 'Routine',
-      notes: 'Evaluate lipid levels and baseline hepatic profile.',
-    },
-    labPartnerId: 'lab-idc',
-    labPartnerName: 'Islamabad Diagnostic Center (IDC)',
-    labBranch: 'Gulberg 3 Branch, Lahore',
-    orderStatus: 'In Progress',
-    paymentStatus: 'Paid',
-    price: 4000,
-    paidAmount: 4000,
-    paymentMethod: 'Visa Debit Card',
-    invoiceNumber: 'INV-LAB-8902',
-    invoiceDate: 'Oct 14, 2026',
-    report: null,
-  },
-  {
-    id: 'LBO-703',
-    orderNumber: 'LBO-703',
-    patientId: 'patient-tariq',
-    patientName: 'Tariq Mehmood',
-    patientMrn: 'MC-65412',
-    patientPhone: '+92 300 8899112',
-    patientAge: 51,
-    patientGender: 'Male',
-    patientCity: 'Lahore',
-    doctorName: 'Dr. Amina Shah',
-    doctorSpecialty: 'General Physician',
-    doctorPmdc: '39482-P',
-    date: 'Today, Oct 14, 2026',
-    time: '11:15 AM',
-    tests: [
-      { id: 't-xray', code: 'RAD-01', name: 'Digital Chest X-Ray (PA View)', category: 'Radiology & Imaging', price: 1500 },
-      { id: 't-hba1c', code: 'DIA-01', name: 'HbA1c (Glycated Hemoglobin)', category: 'Diabetes Monitoring', price: 1750 },
-    ],
-    instructions: {
-      fasting: false,
-      urgency: 'Urgent',
-      notes: 'Persistent dry cough and 3-month glycemic check.',
-    },
-    labPartnerId: 'lab-internal',
-    labPartnerName: 'MedConnect In-House Hospital Pathology',
-    labBranch: 'Downtown Hospital Wing OPD Lab',
-    orderStatus: 'Ordered',
+    time: '04:15 PM',
+    tests: ['Vitamin D (25-OH Total)', 'Renal Function Test (RFT / Creatinine & Urea)'],
+    instructions: 'Severe post-viral lethargy. Check renal clearance & 25-OH levels.',
+    fastingRequired: false,
+    fastingHours: 0,
+    urgency: 'Urgent',
+    assignedLab: 'Islamabad Diagnostic Center (IDC)',
+    status: 'In Progress',
+    price: 5100,
     paymentStatus: 'Pending',
-    price: 3250,
-    paidAmount: 0,
-    paymentMethod: 'Pending Payment',
-    invoiceNumber: 'INV-LAB-8903',
-    invoiceDate: 'Oct 14, 2026',
-    report: null,
+    paymentMethod: 'Pending Online / Clinic Desk',
+    invoiceNumber: 'INV-LB-8022',
+    technicianNotes: 'Serum separated and running on automated chemiluminescence analyzer.',
+    publishedAt: null,
+    pathologistName: 'Dr. Farooq Qureshi, FCPS',
+    reportSummary: 'Test processing underway in central biochemistry laboratory.',
+    resultValues: [],
+    auditTrail: [
+      { time: 'Yesterday 04:15 PM', actor: 'Dr. Maya Patel', event: 'Order Created', note: 'Urgent Vitamin D & RFT requisition' },
+      { time: 'Yesterday 04:20 PM', actor: 'Operations Admin', event: 'Invoice Generated', note: 'Requisition total: PKR 5,100' },
+      { time: 'Today 09:10 AM', actor: 'IDC Lab Desk', event: 'Specimen Received', note: 'Phlebotomy completed at clinic branch' },
+      { time: 'Today 10:00 AM', actor: 'IDC Chemistry Tech', event: 'Analysis In Progress', note: 'Batch run queued on Abbott Architect' }
+    ]
   },
   {
-    id: 'LBO-704',
-    orderNumber: 'LBO-704',
+    id: 'LBO-1003',
+    orderNumber: 'LBO-1003',
     patientId: 'patient-zainab',
     patientName: 'Zainab Bibi',
     patientMrn: 'MC-65239',
@@ -532,83 +452,110 @@ export const INITIAL_LAB_ORDERS = [
     patientAge: 45,
     patientGender: 'Female',
     patientCity: 'Karachi',
-    doctorName: 'Dr. Maya Patel',
-    doctorSpecialty: 'General Physician',
-    doctorPmdc: '39482-P',
-    date: 'Oct 13, 2026',
-    time: '2:20 PM',
-    tests: [
-      { id: 't-tsh', code: 'END-01', name: 'Thyroid Stimulating Hormone (TSH Ultrasensitive)', category: 'Endocrinology', price: 1900 },
-    ],
-    instructions: {
-      fasting: false,
-      urgency: 'Routine',
-      notes: 'Hypothyroidism maintenance check.',
-    },
-    labPartnerId: 'lab-essa',
-    labPartnerName: 'Dr. Essa Laboratory & Diagnostic Centre',
-    labBranch: 'Clifton Central Lab Karachi',
-    orderStatus: 'Published',
+    doctorId: 'dr-tariq-mehmood',
+    doctorName: 'Dr. Tariq Mehmood',
+    doctorSpecialty: 'Cardiologist',
+    date: 'Oct 15, 2026',
+    time: '11:15 AM',
+    tests: ['Chest X-Ray (PA View)', 'HbA1c (Glycated Hemoglobin)'],
+    instructions: 'Suspected reactive airway wheeze. Fasting not required.',
+    fastingRequired: false,
+    fastingHours: 0,
+    urgency: 'STAT',
+    assignedLab: 'Shaukat Khanum Pathology Lab',
+    status: 'Received',
+    price: 3300,
     paymentStatus: 'Paid',
-    price: 1900,
-    paidAmount: 1900,
-    paymentMethod: 'EasyPaisa Merchant',
-    invoiceNumber: 'INV-LAB-8904',
-    invoiceDate: 'Oct 13, 2026',
-    report: {
-      publishedAt: 'Oct 13, 2026 · 7:30 PM',
-      technicianName: 'Sajjad Haider (Senior Technologist)',
-      pathologistName: 'Prof. Dr. Farooq Essa, FRCPath',
-      technicianNotes: 'Analyzed on Abbott Architect i2000SR.',
-      parameters: [
-        { param: 'TSH (Thyrotropin)', value: '2.84', unit: 'uIU/mL', normalRange: '0.40 - 4.20', status: 'Normal' },
-      ],
-      summary: 'Euthyroid state maintained. Levothyroxine dosage adequate.',
-      qrCodeRef: 'QC-704-ESSA-2026-MED',
-      verified: true,
-    },
+    paymentMethod: 'Cash at Hospital Desk',
+    invoiceNumber: 'INV-LB-8023',
+    technicianNotes: 'Patient checked in at hospital radiology and blood draw reception.',
+    publishedAt: null,
+    pathologistName: 'Dr. Asim Mumtaz, FCPS',
+    reportSummary: 'Requisition acknowledged by emergency triage.',
+    resultValues: [],
+    auditTrail: [
+      { time: '11:15 AM', actor: 'Dr. Tariq Mehmood', event: 'STAT Order Created', note: 'Priority requisition issued' },
+      { time: '11:20 AM', actor: 'Hospital Cashier', event: 'Payment Received', note: 'PKR 3,300 collected in Cash' },
+      { time: '11:25 AM', actor: 'SKMH Reception', event: 'Order Received', note: 'Tokens generated for X-Ray & Phlebotomy' }
+    ]
   },
+  {
+    id: 'LBO-1004',
+    orderNumber: 'LBO-1004',
+    patientId: 'patient-alex',
+    patientName: 'Alex Khan',
+    patientMrn: 'MC-89241',
+    patientPhone: '+92 300 1234567',
+    patientAge: 29,
+    patientGender: 'Male',
+    patientCity: 'Lahore',
+    doctorId: 'dr-amina-shah',
+    doctorName: 'Dr. Amina Shah',
+    doctorSpecialty: 'General Physician',
+    date: 'Today, Oct 15, 2026',
+    time: '12:00 PM',
+    tests: ['Liver Function Test (LFT)'],
+    instructions: '8 hours fasting required. Hepatic baseline assessment.',
+    fastingRequired: true,
+    fastingHours: 8,
+    urgency: 'Routine',
+    assignedLab: 'Dr. Essa Laboratory & Diagnostic Centre',
+    status: 'Received',
+    price: 2200,
+    paymentStatus: 'Pending',
+    paymentMethod: 'Pending Online / Clinic Desk',
+    invoiceNumber: 'INV-LB-8024',
+    technicianNotes: 'Order received. Awaiting patient sample collection.',
+    publishedAt: null,
+    pathologistName: 'Dr. Farhan Essa, M.D.',
+    reportSummary: 'Order acknowledged by Dr. Essa Diagnostic Centre.',
+    resultValues: [],
+    auditTrail: [
+      { time: '12:00 PM', actor: 'Dr. Amina Shah', event: 'Order Created', note: 'Prescribed Liver Function Test (LFT)' },
+      { time: '12:05 PM', actor: 'Operations Admin', event: 'Invoice Generated', note: 'Invoice #INV-LB-8024 generated (PKR 2,200)' }
+    ]
+  }
 ];
 
 const INITIAL_LAB_REPORTS = [
   {
     id: 'lab-301',
-    orderId: 'LBO-701',
-    testName: 'Complete Blood Count (CBC) with ESR & Vitamin D3',
+    orderId: 'LBO-1001',
+    testName: 'Complete Blood Count (CBC) & Lipid Profile',
     lab: 'Chughtai Lab',
-    date: 'Oct 14, 2026',
+    date: 'Oct 15, 2026',
     status: 'Ready',
-    sampleType: 'In-Lab Collection (Jail Road Reference)',
-    price: 4700,
-    paymentStatus: 'Paid',
+    sampleType: 'Whole Blood & Serum',
+    patientName: 'Alex Khan',
+    patientMrn: 'MC-89241',
     pdfUrl: '#',
-    summary: 'Hemoglobin: 14.8 g/dL (Normal), TLC: 7,200 /uL (Normal), Vitamin D: 18.4 ng/mL (Low).',
+    summary: 'Hemoglobin: 14.8 g/dL (Normal), TLC: 7,400 /uL (Normal), Total Cholesterol: 215 mg/dL (High).',
   },
   {
     id: 'lab-302',
-    orderId: 'LBO-702',
-    testName: 'Lipid Profile & Liver Function Tests',
-    lab: 'Islamabad Diagnostic Center (IDC)',
-    date: 'Oct 14, 2026',
-    status: 'In Progress',
+    orderId: 'LBO-1001',
+    testName: 'Lipid Profile & Serum Cholesterol',
+    lab: 'Chughtai Lab',
+    date: 'Oct 15, 2026',
+    status: 'Ready',
     sampleType: 'In-Lab Collection (Gulberg Branch)',
-    price: 4000,
-    paymentStatus: 'Paid',
+    patientName: 'Alex Khan',
+    patientMrn: 'MC-89241',
     pdfUrl: '#',
-    summary: 'Sample received at reference lab. Automated enzymatic assays running.',
+    summary: 'Total Cholesterol: 215 mg/dL (High), HDL: 46 mg/dL, LDL: 137 mg/dL, Triglycerides: 160 mg/dL.',
   },
   {
     id: 'lab-303',
-    orderId: 'LBO-703',
-    testName: 'Digital Chest X-Ray & HbA1c Glycated Hemoglobin',
-    lab: 'MedConnect In-House Hospital Pathology',
-    date: 'Today, Oct 14, 2026',
+    orderId: 'LBO-1004',
+    testName: 'Liver Function Test (LFT)',
+    lab: 'Dr. Essa Laboratory & Diagnostic Centre',
+    date: 'Pending',
     status: 'Processing',
-    sampleType: 'Hospital OPD Collection',
-    price: 3250,
-    paymentStatus: 'Pending',
+    sampleType: 'Home Sample Scheduled for Tomorrow 8:00 AM',
+    patientName: 'Alex Khan',
+    patientMrn: 'MC-89241',
     pdfUrl: '#',
-    summary: 'Order dispatched by Dr. Amina Shah. Awaiting sample collection and cashier settlement.',
+    summary: 'Phlebotomist assigned: Muhammad Farhan (+92 312 9876543).',
   },
 ];
 
@@ -672,10 +619,10 @@ export function DemoProvider({ children }) {
   const [branchesList, setBranchesList] = useState(INITIAL_BRANCHES);
   const [appointments, setAppointments] = useState(INITIAL_APPOINTMENTS);
   const [prescriptions, setPrescriptions] = useState(INITIAL_PRESCRIPTIONS);
-  const [labReports, setLabReports] = useState(INITIAL_LAB_REPORTS);
-  const [labOrders, setLabOrders] = useState(INITIAL_LAB_ORDERS);
-  const [labPartners, setLabPartners] = useState(INITIAL_LAB_PARTNERS);
   const [testCatalog, setTestCatalog] = useState(INITIAL_TEST_CATALOG);
+  const [labPartners, setLabPartners] = useState(INITIAL_LAB_PARTNERS);
+  const [labOrders, setLabOrders] = useState(INITIAL_LAB_ORDERS);
+  const [labReports, setLabReports] = useState(INITIAL_LAB_REPORTS);
   const [activityLog, setActivityLog] = useState(INITIAL_ACTIVITIES);
 
   const [toast, setToast] = useState(null);
@@ -1128,13 +1075,13 @@ export function DemoProvider({ children }) {
     showToast('Consultation completed successfully. Patient record updated!', 'success');
   };
 
-  // Book Diagnostic Lab Test
+  // Book Diagnostic Lab Test (Legacy Patient Self-Booking)
   const bookLabTest = (labTestData) => {
     const newReport = {
       id: `lab-${Date.now().toString().slice(-4)}`,
       testName: labTestData.testName || 'Diagnostic Lab Test',
       lab: labTestData.lab || 'Chughtai Lab',
-      date: labTestData.date || 'Today, Oct 13',
+      date: labTestData.date || 'Today, Oct 15',
       status: 'Processing', // Live pending report
       sampleType: labTestData.collectionType === 'home' ? 'Home Sample Collection' : 'In-Lab Collection',
       patientName: labTestData.patientName || currentUser?.name || 'Alex Khan',
@@ -1154,18 +1101,23 @@ export function DemoProvider({ children }) {
     return newReport;
   };
 
-  // Lab Report Module — Complete Flow methods
+  // 1. DOCTOR SIDE: Order Lab Tests during consultation
   const createLabOrder = (orderData) => {
-    const newId = `LBO-${Math.floor(710 + Math.random() * 890)}`;
-    const calcPrice = (orderData.tests || []).reduce((sum, t) => sum + (Number(t.price) || 0), 0);
-    const invoiceNum = `INV-LAB-${Math.floor(8900 + Math.random() * 1000)}`;
-    const now = new Date();
-    const dateFormatted = 'Today, ' + now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const timeFormatted = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const orderNum = `LBO-${Math.floor(1000 + Math.random() * 9000)}`;
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    let calculatedPrice = orderData.price;
+    if (!calculatedPrice && orderData.tests) {
+      calculatedPrice = orderData.tests.reduce((total, testName) => {
+        const item = testCatalog.find((t) => t.name === testName || t.code === testName);
+        return total + (item ? item.defaultPrice : 1500);
+      }, 0);
+    }
+    if (!calculatedPrice) calculatedPrice = 2500;
 
     const newOrder = {
-      id: newId,
-      orderNumber: newId,
+      id: orderNum,
+      orderNumber: orderNum,
       patientId: orderData.patientId || 'patient-alex',
       patientName: orderData.patientName || 'Alex Khan',
       patientMrn: orderData.patientMrn || 'MC-89241',
@@ -1173,202 +1125,327 @@ export function DemoProvider({ children }) {
       patientAge: orderData.patientAge || 29,
       patientGender: orderData.patientGender || 'Male',
       patientCity: orderData.patientCity || 'Lahore',
+      doctorId: orderData.doctorId || currentUser?.id || 'dr-amina-shah',
       doctorName: orderData.doctorName || currentUser?.name || 'Dr. Amina Shah',
       doctorSpecialty: orderData.doctorSpecialty || currentUser?.specialty || 'General Physician',
-      doctorPmdc: orderData.doctorPmdc || currentUser?.pmdcNumber || '39482-P',
-      date: dateFormatted,
-      time: timeFormatted,
-      tests: orderData.tests || [],
-      instructions: {
-        fasting: !!orderData.instructions?.fasting,
-        urgency: orderData.instructions?.urgency || 'Routine',
-        notes: orderData.instructions?.notes || '',
-      },
-      labPartnerId: orderData.labPartnerId || 'lab-chughtai',
-      labPartnerName: orderData.labPartnerName || 'Chughtai Lab',
-      labBranch: orderData.labBranch || 'Central Diagnostic Facility',
-      orderStatus: 'Ordered',
-      paymentStatus: 'Pending',
-      price: calcPrice > 0 ? calcPrice : 2500,
-      paidAmount: 0,
-      paymentMethod: 'Pending Payment',
-      invoiceNumber: invoiceNum,
-      invoiceDate: dateFormatted,
-      report: null,
+      date: 'Today, Oct 15, 2026',
+      time: nowTime,
+      tests: orderData.tests && orderData.tests.length > 0 ? orderData.tests : ['Complete Blood Count (CBC)'],
+      instructions: orderData.instructions || 'Routine diagnostic investigation.',
+      fastingRequired: Boolean(orderData.fastingRequired),
+      fastingHours: orderData.fastingHours || (orderData.fastingRequired ? 10 : 0),
+      urgency: orderData.urgency || 'Routine', // Routine | Urgent | STAT
+      assignedLab: orderData.assignedLab || 'Chughtai Lab',
+      status: 'Received', // Order Placed / Received -> In Progress -> Completed -> Published
+      price: calculatedPrice,
+      paymentStatus: 'Pending', // Pending -> Paid -> Refunded
+      paymentMethod: 'Pending Online / Clinic Desk',
+      invoiceNumber: `INV-LB-${Math.floor(8000 + Math.random() * 1999)}`,
+      technicianNotes: 'Order transmitted from clinician consultation. Laboratory notified.',
+      publishedAt: null,
+      pathologistName: 'Chief Pathologist on Duty',
+      reportSummary: 'Awaiting specimen intake and laboratory batch processing.',
+      resultValues: [],
+      auditTrail: [
+        {
+          time: nowTime,
+          actor: `${orderData.doctorName || currentUser?.name || 'Doctor'} (Clinician)`,
+          event: 'Order Created',
+          note: `Prescribed: ${(orderData.tests || []).join(', ')}. Assigned to ${orderData.assignedLab || 'Chughtai Lab'}.`
+        },
+        {
+          time: nowTime,
+          actor: 'System Notifier',
+          event: 'Notifications Dispatched',
+          note: `Notified ${orderData.assignedLab || 'Lab'}, Patient (${orderData.patientName}), and Admin.`
+        }
+      ],
+      ...orderData,
     };
 
     setLabOrders((prev) => [newOrder, ...prev]);
 
-    const syncedPatientReport = {
+    // Also update legacy labReports array so any legacy components see it
+    const legacyReport = {
       id: `lab-${Date.now().toString().slice(-4)}`,
       orderId: newOrder.id,
-      testName: newOrder.tests.map((t) => t.name).join(' + ') || 'Diagnostic Panel',
-      lab: newOrder.labPartnerName,
+      testName: newOrder.tests.join(', '),
+      lab: newOrder.assignedLab,
       date: newOrder.date,
       status: 'Processing',
-      sampleType: newOrder.instructions.fasting ? 'Fasting Sample Required' : 'Routine Diagnostic',
-      price: newOrder.price,
-      paymentStatus: newOrder.paymentStatus,
+      sampleType: newOrder.fastingRequired ? `${newOrder.fastingHours}h Fasting Specimen` : 'Routine Collection',
+      patientName: newOrder.patientName,
+      patientMrn: newOrder.patientMrn,
       pdfUrl: '#',
-      summary: `Order initiated by ${newOrder.doctorName}. Instructions: ${newOrder.instructions.notes || 'None'}.`,
+      summary: `Order #${newOrder.orderNumber} placed by ${newOrder.doctorName}. Processing at ${newOrder.assignedLab}.`,
     };
-    setLabReports((prev) => [syncedPatientReport, ...prev]);
+    setLabReports((prev) => [legacyReport, ...prev]);
 
     addActivity(
-      newOrder.doctorName,
-      'Created Lab Order',
-      `Order #${newOrder.id} (${newOrder.tests.length} tests) assigned to ${newOrder.labPartnerName} for ${newOrder.patientName}.`,
+      `${newOrder.doctorName} (Doctor)`,
+      'Ordered Lab Investigation',
+      `Requisition #${newOrder.orderNumber} for ${newOrder.patientName} (${newOrder.tests.join(', ')}). Assigned to ${newOrder.assignedLab}.`,
       'clinical'
     );
 
-    showToast(`Lab Order #${newOrder.id} dispatched to ${newOrder.labPartnerName}! Lab, Patient & Admin notified.`, 'success');
+    showToast(`Lab Order #${newOrder.orderNumber} created! Lab, Patient & Admin notified.`, 'success');
     return newOrder;
   };
 
-  const updateLabOrderStatus = (orderId, newStatus, reportPayload = null) => {
+  // 2. LAB & ADMIN SIDE: Update order status (Received -> In Progress -> Completed)
+  const updateLabOrderStatus = (orderId, nextStatus, technicianNotes = '') => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setLabOrders((prev) =>
       prev.map((order) => {
-        if (order.id !== orderId) return order;
-        const updated = {
-          ...order,
-          orderStatus: newStatus,
-        };
-        if (reportPayload) {
-          updated.report = {
-            publishedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-            technicianName: reportPayload.technicianName || 'Muhammad Farhan (Senior MLT)',
-            pathologistName: reportPayload.pathologistName || 'Prof. Dr. Farooq Essa, FRCPath',
-            technicianNotes: reportPayload.technicianNotes || 'Sample analyzed on automated calibrated analyzers. QC cleared.',
-            parameters: reportPayload.parameters || [],
-            summary: reportPayload.summary || 'Laboratory evaluation completed successfully.',
-            qrCodeRef: `QC-${order.id}-${Math.floor(1000 + Math.random() * 9000)}-VERIFIED`,
-            verified: true,
-            fileAttachment: reportPayload.fileAttachment || null,
+        if (order.id === orderId || order.orderNumber === orderId) {
+          const updatedTrail = [
+            ...order.auditTrail,
+            {
+              time: nowTime,
+              actor: 'Laboratory Operations',
+              event: `Status: ${nextStatus}`,
+              note: technicianNotes || `Marked order as ${nextStatus}.`
+            }
+          ];
+          return {
+            ...order,
+            status: nextStatus,
+            technicianNotes: technicianNotes || order.technicianNotes,
+            auditTrail: updatedTrail,
           };
         }
-        return updated;
+        return order;
       })
     );
 
-    setLabReports((prev) =>
-      prev.map((lr) => {
-        if (lr.orderId !== orderId) return lr;
-        return {
-          ...lr,
-          status: newStatus === 'Published' ? 'Ready' : newStatus === 'In Progress' ? 'In Progress' : 'Processing',
-          summary: reportPayload?.summary || lr.summary,
+    addActivity(
+      'Laboratory Desk',
+      `Updated Lab Order Status: ${nextStatus}`,
+      `Order #${orderId} moved to "${nextStatus}". ${technicianNotes ? `Notes: ${technicianNotes}` : ''}`,
+      'clinical'
+    );
+    showToast(`Order #${orderId} status updated to ${nextStatus}.`, 'info');
+  };
+
+  // 3. LAB & ADMIN SIDE: Publish Lab Report with Parameters and Technician Notes
+  const publishLabReport = (orderId, { technicianNotes, reportSummary, resultValues, pathologistName, pdfUrl }) => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let updatedOrderRef = null;
+
+    setLabOrders((prev) =>
+      prev.map((order) => {
+        if (order.id === orderId || order.orderNumber === orderId) {
+          const finalValues = resultValues && resultValues.length > 0
+            ? resultValues
+            : (order.resultValues && order.resultValues.length > 0
+                ? order.resultValues
+                : [
+                    { parameter: 'Observation / Result', value: 'Complete / Verified', unit: 'Standard', normalRange: 'Normal', status: 'Normal' },
+                    { parameter: 'Clinical Conclusion', value: 'No critical acute abnormality detected', unit: 'N/A', normalRange: 'Normal', status: 'Normal' }
+                  ]);
+
+          const updated = {
+            ...order,
+            status: 'Published',
+            technicianNotes: technicianNotes || order.technicianNotes || 'Verified on automated analyzers.',
+            reportSummary: reportSummary || order.reportSummary || 'Verified by clinical pathologist.',
+            pathologistName: pathologistName || order.pathologistName || 'Dr. Zulfiqar Ali, MBBS, FCPS',
+            resultValues: finalValues,
+            publishedAt: `Today, ${nowTime}`,
+            auditTrail: [
+              ...order.auditTrail,
+              {
+                time: nowTime,
+                actor: pathologistName || 'Laboratory Pathologist',
+                event: 'Report Published',
+                note: `Official results published and verified. Linked to patient record #${order.patientMrn}.`
+              }
+            ]
+          };
+          updatedOrderRef = updated;
+          return updated;
+        }
+        return order;
+      })
+    );
+
+    // Keep legacy labReports list in sync
+    if (updatedOrderRef) {
+      setLabReports((prev) => {
+        const existingIdx = prev.findIndex((r) => r.orderId === updatedOrderRef.id);
+        const reportObj = {
+          id: existingIdx !== -1 ? prev[existingIdx].id : `lab-${Date.now().toString().slice(-4)}`,
+          orderId: updatedOrderRef.id,
+          testName: updatedOrderRef.tests.join(', '),
+          lab: updatedOrderRef.assignedLab,
+          date: updatedOrderRef.date,
+          status: 'Ready',
+          sampleType: 'Verified Sample',
+          patientName: updatedOrderRef.patientName,
+          patientMrn: updatedOrderRef.patientMrn,
+          pdfUrl: '#',
+          summary: updatedOrderRef.reportSummary,
         };
-      })
-    );
-
-    if (newStatus === 'Published') {
-      addActivity(
-        'Lab Pathology Desk',
-        'Published Certified Lab Report',
-        `Official digital report for Order #${orderId} is now verified and accessible to Doctor & Patient.`,
-        'clinical'
-      );
-      showToast(`Report for Order #${orderId} published! Patient & Doctor notified.`, 'success');
-    } else {
-      addActivity(
-        'Lab Processing Team',
-        'Updated Lab Order Status',
-        `Order #${orderId} marked as ${newStatus}.`,
-        'system'
-      );
-      showToast(`Order #${orderId} status changed to ${newStatus}.`, 'info');
+        if (existingIdx !== -1) {
+          const clone = [...prev];
+          clone[existingIdx] = reportObj;
+          return clone;
+        }
+        return [reportObj, ...prev];
+      });
     }
+
+    addActivity(
+      'Laboratory Desk',
+      'Published Verified Lab Report',
+      `Official report for Order #${orderId} published. Available across Patient, Doctor, and Admin dashboards.`,
+      'clinical'
+    );
+    showToast(`Report #${orderId} published! Available in Patient, Doctor & Admin portals.`, 'success');
   };
 
-  const setLabOrderPriceAndInvoice = (orderId, newPrice, invoiceNotes = '') => {
-    const numPrice = Number(newPrice) || 0;
+  // 4. ADMIN SIDE: Set Test Price & Update Invoice
+  const setLabOrderPrice = (orderId, newPrice) => {
+    const numericPrice = Number(newPrice) || 0;
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setLabOrders((prev) =>
-      prev.map((ord) => {
-        if (ord.id !== orderId) return ord;
-        return {
-          ...ord,
-          price: numPrice,
-          invoiceNotes: invoiceNotes || ord.invoiceNotes,
-        };
+      prev.map((order) => {
+        if (order.id === orderId || order.orderNumber === orderId) {
+          return {
+            ...order,
+            price: numericPrice,
+            auditTrail: [
+              ...order.auditTrail,
+              {
+                time: nowTime,
+                actor: 'Operations Admin',
+                event: 'Price Configured',
+                note: `Adjusted test invoice fee to PKR ${numericPrice.toLocaleString()}.`
+              }
+            ]
+          };
+        }
+        return order;
       })
     );
-    setLabReports((prev) =>
-      prev.map((lr) => (lr.orderId === orderId ? { ...lr, price: numPrice } : lr))
-    );
-    addActivity(
-      'Admin Billing Desk',
-      'Configured Lab Test Price',
-      `Order #${orderId} invoice price set to PKR ${numPrice.toLocaleString()}.`,
-      'payment'
-    );
-    showToast(`Order #${orderId} invoice updated to PKR ${numPrice.toLocaleString()}.`, 'success');
+    showToast(`Invoice price updated to PKR ${numericPrice.toLocaleString()} for #${orderId}.`, 'success');
   };
 
-  const payLabOrder = (orderId, paymentMethod = 'JazzCash Mobile Wallet', txnRef = '') => {
-    let orderPaid = null;
+  // 5. PATIENT & ADMIN SIDE: Collect / Record Payment (Online, Cash, Card)
+  const recordLabOrderPayment = (orderId, paymentMethod = 'Online Portal (Prepaid)') => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let paidOrder = null;
+
     setLabOrders((prev) =>
-      prev.map((ord) => {
-        if (ord.id !== orderId) return ord;
-        orderPaid = {
-          ...ord,
-          paymentStatus: 'Paid',
-          paidAmount: ord.price,
-          paymentMethod,
-          paymentDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          transactionRef: txnRef || `TXN-LAB-${Math.floor(100000 + Math.random() * 900000)}`,
-        };
-        return orderPaid;
+      prev.map((order) => {
+        if (order.id === orderId || order.orderNumber === orderId) {
+          paidOrder = { ...order, paymentStatus: 'Paid', paymentMethod };
+          return {
+            ...order,
+            paymentStatus: 'Paid',
+            paymentMethod,
+            auditTrail: [
+              ...order.auditTrail,
+              {
+                time: nowTime,
+                actor: 'Billing Cashier / Online Gateway',
+                event: 'Payment Received',
+                note: `Collected PKR ${order.price.toLocaleString()} via ${paymentMethod}.`
+              }
+            ]
+          };
+        }
+        return order;
       })
     );
-    setLabReports((prev) =>
-      prev.map((lr) => (lr.orderId === orderId ? { ...lr, paymentStatus: 'Paid' } : lr))
-    );
-    addActivity(
-      orderPaid?.patientName || 'Patient',
-      'Settled Lab Order Invoice',
-      `Payment of PKR ${(orderPaid?.price || 0).toLocaleString()} received via ${paymentMethod} for Order #${orderId}.`,
-      'payment'
-    );
-    showToast(`Payment of PKR ${(orderPaid?.price || 0).toLocaleString()} recorded via ${paymentMethod}.`, 'success');
+
+    if (paidOrder) {
+      addActivity(
+        `${paidOrder.patientName} (Payment)`,
+        'Settled Lab Order Payment',
+        `Paid PKR ${paidOrder.price.toLocaleString()} for Order #${paidOrder.orderNumber} via ${paymentMethod}.`,
+        'payment'
+      );
+    }
+    showToast(`Payment of PKR ${paidOrder?.price?.toLocaleString() || ''} recorded successfully!`, 'success');
   };
 
-  const addLabPartner = (partner) => {
+  // 6. ADMIN SIDE: Refund Payment
+  const refundLabOrderPayment = (orderId, reason = 'Patient Cancellation / Overcharge') => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setLabOrders((prev) =>
+      prev.map((order) => {
+        if (order.id === orderId || order.orderNumber === orderId) {
+          return {
+            ...order,
+            paymentStatus: 'Refunded',
+            auditTrail: [
+              ...order.auditTrail,
+              {
+                time: nowTime,
+                actor: 'Operations Admin',
+                event: 'Payment Refunded',
+                note: `Refund issued. Reason: ${reason}`
+              }
+            ]
+          };
+        }
+        return order;
+      })
+    );
+    showToast(`Payment refunded for Order #${orderId}.`, 'info');
+  };
+
+  // 7. ADMIN CONTROLS: Manage Lab Partners
+  const addLabPartner = (partnerData) => {
     const newPartner = {
-      id: `lab-${Date.now().toString().slice(-4)}`,
+      id: `lab-${Date.now()}`,
       status: 'Active',
-      rating: 4.8,
-      ...partner,
+      turnaroundRating: '4.8 ★',
+      homeCollection: true,
+      accreditation: 'Accredited Partner Lab',
+      ...partnerData,
     };
-    setLabPartners((prev) => [newPartner, ...prev]);
-    showToast(`Added new lab partner "${newPartner.name}".`, 'success');
+    setLabPartners((prev) => [...prev, newPartner]);
+    showToast(`Registered ${newPartner.name} as certified lab partner.`, 'success');
+    return newPartner;
   };
 
-  const toggleLabPartnerStatus = (partnerId) => {
+  const toggleLabPartner = (partnerId) => {
     setLabPartners((prev) =>
-      prev.map((p) => (p.id === partnerId ? { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' } : p))
+      prev.map((p) =>
+        p.id === partnerId
+          ? { ...p, status: p.status === 'Active' ? 'Deactivated' : 'Active' }
+          : p
+      )
     );
     showToast('Lab partner status updated.', 'info');
   };
 
-  const addTestCatalogItem = (testItem) => {
-    const newItem = {
-      id: `t-${Date.now().toString().slice(-4)}`,
-      code: testItem.code || `TST-${Math.floor(10 + Math.random() * 90)}`,
-      name: testItem.name,
-      category: testItem.category || 'General Diagnostics',
-      price: Number(testItem.price) || 1500,
-      fasting: testItem.fasting || 'No fasting required',
-      turnaround: testItem.turnaround || '24 Hours',
+  // 8. ADMIN CONTROLS: Configure Test Catalog
+  const addTestToCatalog = (testData) => {
+    const newTest = {
+      id: `t-${Date.now()}`,
+      code: `TST-${Math.floor(10 + Math.random() * 90)}`,
+      category: 'Diagnostic',
+      sampleType: 'Routine Sample',
+      turnaround: '12 Hours',
+      defaultPrice: 1500,
+      fastingHours: 0,
+      description: 'Standard clinical diagnostic investigation.',
+      ...testData,
     };
-    setTestCatalog((prev) => [...prev, newItem]);
-    showToast(`Test "${newItem.name}" added to catalog.`, 'success');
+    setTestCatalog((prev) => [...prev, newTest]);
+    showToast(`Added ${newTest.name} to test catalog.`, 'success');
+    return newTest;
   };
 
-  const updateTestCatalogItem = (testId, updates) => {
+  const updateTestPrice = (testId, newPrice) => {
+    const numPrice = Number(newPrice) || 0;
     setTestCatalog((prev) =>
-      prev.map((t) => (t.id === testId ? { ...t, ...updates, price: Number(updates.price ?? t.price) } : t))
+      prev.map((t) => (t.id === testId ? { ...t, defaultPrice: numPrice } : t))
     );
-    showToast('Test catalog entry updated.', 'success');
+    showToast('Test catalog price updated.', 'success');
   };
 
   // Live timer tick every 15 seconds to sync appointment ongoing/upcoming/missed status
@@ -1493,18 +1570,20 @@ export function DemoProvider({ children }) {
         setLabReports,
         labOrders,
         setLabOrders,
-        labPartners,
-        setLabPartners,
         testCatalog,
         setTestCatalog,
+        labPartners,
+        setLabPartners,
         createLabOrder,
         updateLabOrderStatus,
-        setLabOrderPriceAndInvoice,
-        payLabOrder,
+        publishLabReport,
+        setLabOrderPrice,
+        recordLabOrderPayment,
+        refundLabOrderPayment,
         addLabPartner,
-        toggleLabPartnerStatus,
-        addTestCatalogItem,
-        updateTestCatalogItem,
+        toggleLabPartner,
+        addTestToCatalog,
+        updateTestPrice,
         bookLabTest,
         liveClock,
         getAppointmentLiveStatus,

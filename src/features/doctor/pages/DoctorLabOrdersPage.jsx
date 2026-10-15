@@ -1,530 +1,367 @@
 import React, { useState, useMemo } from 'react';
+import AppShell from '../../shell/AppShell';
+import { useDemo } from '../../../context/DemoContext';
+import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
+import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
+import LabReportViewModal from '../../labs/components/LabReportViewModal';
 import {
-  FileText,
+  TestTube2,
   Search,
   Filter,
   Plus,
-  Printer,
-  Eye,
-  CheckCircle,
+  CheckCircle2,
   Clock,
-  AlertCircle,
-  Building,
-  User,
-  ArrowRight,
+  Printer,
+  FileText,
+  Building2,
+  Users,
   ShieldCheck,
-  Download,
+  ChevronRight,
+  ExternalLink,
 } from 'lucide-react';
-import { useDemo } from '../../../context/DemoContext';
-import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
-import PrintableLabOrderSlip from '../../labs/components/PrintableLabOrderSlip';
-import PrintableLabReport from '../../labs/components/PrintableLabReport';
 
 export default function DoctorLabOrdersPage() {
-  const { labOrders = [], currentUser, patientsList = [] } = useDemo();
+  const { labOrders = [], currentUser, showToast } = useDemo();
 
-  const [activeTab, setActiveTab] = useState('All'); // 'All' | 'Ordered' | 'In Progress' | 'Published'
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [selectedSlipOrder, setSelectedSlipOrder] = useState(null);
-  const [selectedReportOrder, setSelectedReportOrder] = useState(null);
+  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
+  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
 
-  // Filter orders
-  const filteredOrders = useMemo(() => {
+  // Filter orders for doctor
+  const doctorOrders = useMemo(() => {
     return labOrders.filter((order) => {
+      const matchDoctor =
+        !currentUser?.id ||
+        order.doctorId === currentUser.id ||
+        order.doctorName === currentUser.name ||
+        currentUser.role === 'admin' ||
+        true; // Allow doctor to view clinical lab requisitions
+
+      const matchStatus = statusFilter === 'All' || order.status === statusFilter;
+      const q = search.toLowerCase().trim();
       const matchSearch =
-        order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.labPartnerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (order.tests || []).some((t) => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        !q ||
+        order.orderNumber.toLowerCase().includes(q) ||
+        order.patientName.toLowerCase().includes(q) ||
+        order.patientMrn.toLowerCase().includes(q) ||
+        order.assignedLab.toLowerCase().includes(q) ||
+        order.tests.some((t) => t.toLowerCase().includes(q));
 
-      const matchTab =
-        activeTab === 'All' ||
-        (activeTab === 'Ordered' && order.orderStatus === 'Ordered') ||
-        (activeTab === 'In Progress' && (order.orderStatus === 'In Progress' || order.orderStatus === 'Received')) ||
-        (activeTab === 'Published' && (order.orderStatus === 'Published' || order.orderStatus === 'Completed'));
-
-      return matchSearch && matchTab;
+      return matchDoctor && matchStatus && matchSearch;
     });
-  }, [labOrders, searchTerm, activeTab]);
+  }, [labOrders, currentUser, statusFilter, search]);
 
-  // Summary counts
-  const stats = useMemo(() => {
-    const total = labOrders.length;
-    const ordered = labOrders.filter((o) => o.orderStatus === 'Ordered').length;
-    const inProgress = labOrders.filter((o) => o.orderStatus === 'In Progress' || o.orderStatus === 'Received').length;
-    const published = labOrders.filter((o) => o.orderStatus === 'Published' || o.orderStatus === 'Completed').length;
-    return { total, ordered, inProgress, published };
-  }, [labOrders]);
+  const publishedCount = doctorOrders.filter((o) => o.status === 'Published').length;
+  const inProgressCount = doctorOrders.filter((o) => o.status === 'In Progress').length;
+  const receivedCount = doctorOrders.filter((o) => o.status === 'Received').length;
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: '1280px', margin: '0 auto' }}>
-      {/* Top Header & Action */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
-              Lab Diagnostic Orders & Requisitions
+    <AppShell>
+      <div style={{ maxWidth: '1160px', margin: '0 auto', paddingBottom: '70px' }}>
+        {/* Top Clinical Header */}
+        <div className="patient-welcome-banner" style={{ marginBottom: '24px' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
+              CLINICAL PATHOLOGY &amp; DIAGNOSTIC REQUISITIONS
+            </div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '4px 0 6px 0' }}>
+              Lab Orders &amp; Verified Reports
             </h1>
-            <span
-              style={{
-                backgroundColor: '#DCFCE7',
-                color: '#166534',
-                fontSize: '11px',
-                fontWeight: '800',
-                padding: '2px 8px',
-                borderRadius: '6px',
-              }}
+            <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
+              Prescribe diagnostic investigations, monitor real-time laboratory processing, and review published patient findings.
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              className="btn-lime-pill"
+              onClick={() => setIsOrderModalOpen(true)}
+              style={{ padding: '11px 22px', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              Doctor Order Flow
+              <Plus size={16} />
+              <span>Order Lab Tests</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Summary */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '24px' }}>
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '18px 20px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              Reports Ready for Review
+            </span>
+            <div style={{ fontSize: '26px', fontWeight: '900', color: 'var(--forest-800)', marginTop: '2px' }}>
+              {publishedCount} Reports
+            </div>
+            <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '700' }}>
+              ● Verified by Consulting Pathologist
             </span>
           </div>
-          <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-body)' }}>
-            Track patient pathology investigations, order new diagnostic tests, and inspect verified lab reports.
-          </p>
+
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '18px 20px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              In Laboratory Analysis
+            </span>
+            <div style={{ fontSize: '26px', fontWeight: '900', color: '#1D4ED8', marginTop: '2px' }}>
+              {inProgressCount} Processing
+            </div>
+            <span style={{ fontSize: '11.5px', color: '#2563EB', fontWeight: '700' }}>
+              Specimens running on automated analyzers
+            </span>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '18px 20px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              Awaiting Sample Intake
+            </span>
+            <div style={{ fontSize: '26px', fontWeight: '900', color: '#D97706', marginTop: '2px' }}>
+              {receivedCount} Orders
+            </div>
+            <span style={{ fontSize: '11.5px', color: '#B45309', fontWeight: '700' }}>
+              Requisition acknowledged by partner lab
+            </span>
+          </div>
         </div>
 
-        <button
-          onClick={() => setIsOrderModalOpen(true)}
-          className="btn-lime-pill"
+        {/* Toolbar: Search & Filter */}
+        <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '10px 22px',
-            fontSize: '13px',
-            fontWeight: '800',
-            backgroundColor: 'var(--lime-accent)',
-            color: 'var(--forest-900)',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '16px',
+            padding: '16px 20px',
+            border: '1px solid var(--border-subtle)',
             boxShadow: 'var(--shadow-sm)',
-            cursor: 'pointer',
+            marginBottom: '18px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
           }}
         >
-          <Plus size={16} />
-          <span>Order New Lab Tests</span>
-        </button>
-      </div>
+          <div style={{ position: 'relative', width: '380px', maxWidth: '100%' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Search by patient, MRN, test, or order ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ paddingLeft: '36px', fontSize: '13px', borderRadius: '10px', height: '38px' }}
+            />
+          </div>
 
-      {/* KPI Stats Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px',
-          marginBottom: '24px',
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Total Lab Orders
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--forest-900)' }}>
-            {stats.total}
-          </div>
-          <div style={{ fontSize: '11px', color: '#16A34A', marginTop: '4px', fontWeight: '600' }}>
-            Synchronized with All Labs
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[
+              { id: 'All', label: 'All Orders' },
+              { id: 'Published', label: 'Reports Ready' },
+              { id: 'In Progress', label: 'In Progress' },
+              { id: 'Received', label: 'Received' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setStatusFilter(f.id)}
+                style={{
+                  padding: '7px 14px',
+                  borderRadius: '9999px',
+                  fontSize: '12px',
+                  fontWeight: statusFilter === f.id ? '800' : '600',
+                  cursor: 'pointer',
+                  border: statusFilter === f.id ? '1px solid var(--forest-800)' : '1px solid var(--border-subtle)',
+                  backgroundColor: statusFilter === f.id ? 'var(--forest-800)' : 'var(--canvas-bg)',
+                  color: statusFilter === f.id ? '#FFFFFF' : 'var(--text-muted)',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Awaiting Sample / Ordered
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#D97706' }}>
-            {stats.ordered}
-          </div>
-          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>
-            Dispatched to Partner Labs
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            In Progress / Analyzing
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#2563EB' }}>
-            {stats.inProgress}
-          </div>
-          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>
-            Automated Assays Running
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Published Reports Ready
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#0F5132' }}>
-            {stats.published}
-          </div>
-          <div style={{ fontSize: '11px', color: '#16A34A', marginTop: '4px', fontWeight: '700' }}>
-            ✓ Certified with QR & Findings
-          </div>
-        </div>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '14px',
-          border: '1px solid var(--border-subtle)',
-          padding: '16px 20px',
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '14px',
-        }}
-      >
-        {/* Status Tabs */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {['All', 'Ordered', 'In Progress', 'Published'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+        {/* Orders Card Roster */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {doctorOrders.length === 0 ? (
+            <div
               style={{
-                padding: '7px 16px',
-                borderRadius: '8px',
-                fontSize: '12px',
-                fontWeight: '700',
-                border: 'none',
-                cursor: 'pointer',
-                backgroundColor: activeTab === tab ? 'var(--forest-900)' : '#F1F5F9',
-                color: activeTab === tab ? 'var(--lime-accent)' : '#475569',
-                transition: 'all 0.15s ease',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '18px',
+                padding: '60px 24px',
+                textAlign: 'center',
+                border: '1px dashed var(--border-strong)',
               }}
             >
-              {tab}
-            </button>
-          ))}
-        </div>
+              <TestTube2 size={42} color="var(--forest-800)" style={{ margin: '0 auto 12px auto', opacity: 0.6 }} />
+              <h3 style={{ fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
+                No Lab Orders Found
+              </h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', maxWidth: '400px', margin: '0 auto 16px auto' }}>
+                Order diagnostic blood work, pathology tests, or imaging scans during patient consultations.
+              </p>
+              <button
+                type="button"
+                className="btn-lime-pill"
+                onClick={() => setIsOrderModalOpen(true)}
+                style={{ padding: '8px 18px', fontSize: '12.5px' }}
+              >
+                Order Tests Now
+              </button>
+            </div>
+          ) : (
+            doctorOrders.map((order) => {
+              const isPublished = order.status === 'Published';
+              const isInProgress = order.status === 'In Progress';
 
-        {/* Search Input */}
-        <div style={{ position: 'relative', minWidth: '280px' }}>
-          <Search
-            size={16}
-            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }}
-          />
-          <input
-            type="text"
-            placeholder="Search order #, patient name, lab, test..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 14px 8px 36px',
-              borderRadius: '8px',
-              border: '1px solid #CBD5E1',
-              fontSize: '13px',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
-      </div>
+              return (
+                <div
+                  key={order.id}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: '1px solid var(--border-subtle)',
+                    padding: '20px 24px',
+                    boxShadow: 'var(--shadow-sm)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: '300px' }}>
+                    {/* Status & Lab Partner header */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          backgroundColor: isPublished ? '#DCFCE7' : isInProgress ? '#EFF6FF' : '#FEF3C7',
+                          color: isPublished ? '#166534' : isInProgress ? '#1E40AF' : '#92400E',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        {isPublished && <CheckCircle2 size={12} />}
+                        {isInProgress && <Clock size={12} />}
+                        {order.status}
+                      </span>
 
-      {/* Lab Orders Table */}
-      <div
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '14px',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-sm)',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--border-subtle)', color: '#475569' }}>
-                <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Requisition / Date</th>
-                <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Patient Details</th>
-                <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Tests Ordered</th>
-                <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Assigned Lab Partner</th>
-                <th style={{ textAlign: 'center', padding: '12px 18px', fontWeight: '800' }}>Status</th>
-                <th style={{ textAlign: 'center', padding: '12px 18px', fontWeight: '800' }}>Payment</th>
-                <th style={{ textAlign: 'right', padding: '12px 18px', fontWeight: '800' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.length === 0 ? (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>
-                    No lab orders match the selected criteria. Click "Order New Lab Tests" to create one.
-                  </td>
-                </tr>
-              ) : (
-                filteredOrders.map((order) => {
-                  const isPublished = order.orderStatus === 'Published' || order.orderStatus === 'Completed';
-                  const isInProgress = order.orderStatus === 'In Progress' || order.orderStatus === 'Received';
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                        {order.assignedLab}
+                      </span>
 
-                  return (
-                    <tr
-                      key={order.id}
-                      style={{
-                        borderBottom: '1px solid #F1F5F9',
-                        transition: 'background-color 0.1s ease',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#FAFAFA')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        · Requisition #{order.orderNumber} · {order.date}
+                      </span>
+                    </div>
+
+                    {/* Test Title */}
+                    <h3 style={{ fontSize: '16.5px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--forest-900)' }}>
+                      {(order.tests || []).join(' + ')}
+                    </h3>
+
+                    {/* Patient & Doctor */}
+                    <div style={{ fontSize: '12.5px', color: 'var(--text-body)', marginBottom: '8px' }}>
+                      Patient: <b style={{ color: 'var(--forest-900)' }}>{order.patientName}</b> (MRN: {order.patientMrn}) · Age/Gender: {order.patientAge}y / {order.patientGender}
+                    </div>
+
+                    {/* Clinical Instructions / Fasting */}
+                    <div style={{ fontSize: '12px', color: '#4B5563', backgroundColor: 'var(--canvas-bg)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                      <b>Clinical Indication:</b> {order.instructions || 'Routine workup'}
+                      {order.fastingRequired && <span style={{ color: '#B45309', fontWeight: '700', marginLeft: '8px' }}>⚠️ Fasting Required ({order.fastingHours}h)</span>}
+                    </div>
+
+                    {/* Summary Findings if Published */}
+                    {isPublished && order.reportSummary && (
+                      <div style={{ fontSize: '12px', color: '#065F46', marginTop: '6px', fontWeight: '600' }}>
+                        ✓ <b>Report Findings:</b> {order.reportSummary}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      className="btn-white-capsule"
+                      onClick={() => setSelectedOrderForSlip(order)}
+                      style={{ padding: '8px 14px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      title="Print A4 Lab Requisition Slip"
                     >
-                      {/* Order ID & Date */}
-                      <td style={{ padding: '14px 18px' }}>
-                        <div style={{ fontWeight: '800', color: 'var(--forest-900)' }}>
-                          {order.orderNumber || order.id}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
-                          {order.date} · {order.time || '11:00 AM'}
-                        </div>
-                        {order.instructions?.urgency && order.instructions.urgency !== 'Routine' && (
-                          <span
-                            style={{
-                              display: 'inline-block',
-                              marginTop: '4px',
-                              fontSize: '10px',
-                              fontWeight: '800',
-                              color: '#DC2626',
-                              backgroundColor: '#FEF2F2',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            ⚡ {order.instructions.urgency}
-                          </span>
-                        )}
-                      </td>
+                      <Printer size={14} />
+                      <span>Order Slip</span>
+                    </button>
 
-                      {/* Patient Name & MRN */}
-                      <td style={{ padding: '14px 18px' }}>
-                        <div style={{ fontWeight: '800', color: '#0F172A' }}>
-                          {order.patientName}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
-                          MRN #{order.patientMrn || 'MC-89241'} • {order.patientAge || '29'}y / {order.patientGender || 'Male'}
-                        </div>
-                      </td>
-
-                      {/* Tests Ordered */}
-                      <td style={{ padding: '14px 18px', maxWidth: '240px' }}>
-                        <div style={{ fontWeight: '700', color: '#0F172A', whiteSpace: 'normal', lineHeight: '1.4' }}>
-                          {(order.tests || []).map((t) => t.name).join(', ') || 'Diagnostic Panel'}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '3px' }}>
-                          {order.instructions?.fasting ? '⚠️ Fasting sample' : '✓ No fasting'}
-                          {order.instructions?.notes && ` • "${order.instructions.notes.slice(0, 30)}..."`}
-                        </div>
-                      </td>
-
-                      {/* Assigned Lab */}
-                      <td style={{ padding: '14px 18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Building size={14} color="#0F5132" />
-                          <span style={{ fontWeight: '700', color: '#0F172A' }}>
-                            {order.labPartnerName}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
-                          {order.labBranch || 'Central Diagnostic Branch'}
-                        </div>
-                      </td>
-
-                      {/* Order Status */}
-                      <td style={{ padding: '14px 18px', textAlign: 'center' }}>
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '4px 10px',
-                            borderRadius: '20px',
-                            fontSize: '11px',
-                            fontWeight: '800',
-                            backgroundColor: isPublished
-                              ? '#DCFCE7'
-                              : isInProgress
-                              ? '#DBEAFE'
-                              : '#FEF3C7',
-                            color: isPublished
-                              ? '#166534'
-                              : isInProgress
-                              ? '#1E40AF'
-                              : '#92400E',
-                          }}
-                        >
-                          {isPublished ? (
-                            <>
-                              <CheckCircle size={12} />
-                              <span>Report Ready</span>
-                            </>
-                          ) : isInProgress ? (
-                            <>
-                              <Clock size={12} />
-                              <span>In Progress</span>
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle size={12} />
-                              <span>Ordered</span>
-                            </>
-                          )}
-                        </span>
-                      </td>
-
-                      {/* Payment Status */}
-                      <td style={{ padding: '14px 18px', textAlign: 'center' }}>
-                        <span
-                          style={{
-                            display: 'inline-block',
-                            padding: '3px 8px',
-                            borderRadius: '6px',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            backgroundColor: order.paymentStatus === 'Paid' ? '#DCFCE7' : '#FEF3C7',
-                            color: order.paymentStatus === 'Paid' ? '#166534' : '#B45309',
-                          }}
-                        >
-                          {order.paymentStatus === 'Paid' ? 'Paid' : 'Pending'}
-                        </span>
-                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A', marginTop: '2px' }}>
-                          PKR {(order.price || 0).toLocaleString()}
-                        </div>
-                      </td>
-
-                      {/* Actions */}
-                      <td style={{ padding: '14px 18px', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                          {/* Print Requisition Slip */}
-                          <button
-                            onClick={() => setSelectedSlipOrder(order)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              padding: '6px 10px',
-                              borderRadius: '6px',
-                              border: '1px solid #CBD5E1',
-                              backgroundColor: '#FFFFFF',
-                              color: '#334155',
-                              fontSize: '11px',
-                              fontWeight: '700',
-                              cursor: 'pointer',
-                            }}
-                            title="Print official A4 lab requisition slip"
-                          >
-                            <Printer size={13} />
-                            <span>Slip</span>
-                          </button>
-
-                          {/* View Official Report (if ready) */}
-                          {isPublished ? (
-                            <button
-                              onClick={() => setSelectedReportOrder(order)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '6px 12px',
-                                borderRadius: '6px',
-                                border: 'none',
-                                backgroundColor: 'var(--forest-900)',
-                                color: 'var(--lime-accent)',
-                                fontSize: '11px',
-                                fontWeight: '800',
-                                cursor: 'pointer',
-                              }}
-                              title="Inspect official signed diagnostic report with findings & QR"
-                            >
-                              <Eye size={13} />
-                              <span>View Report</span>
-                            </button>
-                          ) : (
-                            <span
-                              style={{
-                                fontSize: '11px',
-                                color: '#94A3B8',
-                                padding: '6px 8px',
-                                fontStyle: 'italic',
-                              }}
-                            >
-                              Pending Upload
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                    {isPublished && (
+                      <button
+                        type="button"
+                        className="btn-lime-pill"
+                        onClick={() => setSelectedOrderForReport(order)}
+                        style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <FileText size={14} />
+                        <span>View Official Report</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
+
+        {/* Order Tests Modal */}
+        <OrderLabTestModal
+          isOpen={isOrderModalOpen}
+          onClose={() => setIsOrderModalOpen(false)}
+        />
+
+        {/* Printable Order Slip Modal */}
+        <LabOrderSlipModal
+          isOpen={Boolean(selectedOrderForSlip)}
+          onClose={() => setSelectedOrderForSlip(null)}
+          order={selectedOrderForSlip}
+        />
+
+        {/* View Official Lab Report Modal */}
+        <LabReportViewModal
+          isOpen={Boolean(selectedOrderForReport)}
+          onClose={() => setSelectedOrderForReport(null)}
+          order={selectedOrderForReport}
+        />
       </div>
-
-      {/* Order Lab Tests Modal */}
-      <OrderLabTestModal
-        isOpen={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
-        patientData={patientsList[0]}
-      />
-
-      {/* Print Slip Modal */}
-      {selectedSlipOrder && (
-        <PrintableLabOrderSlip
-          order={selectedSlipOrder}
-          onClose={() => setSelectedSlipOrder(null)}
-        />
-      )}
-
-      {/* Printable Report Modal */}
-      {selectedReportOrder && (
-        <PrintableLabReport
-          order={selectedReportOrder}
-          onClose={() => setSelectedReportOrder(null)}
-        />
-      )}
-    </div>
+    </AppShell>
   );
 }

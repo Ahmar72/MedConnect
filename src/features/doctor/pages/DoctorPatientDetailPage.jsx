@@ -21,11 +21,11 @@ import {
   Share2,
   Clock,
   UserCheck,
+  TestTube2,
 } from 'lucide-react';
-
 import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
-import PrintableLabOrderSlip from '../../labs/components/PrintableLabOrderSlip';
-import PrintableLabReport from '../../labs/components/PrintableLabReport';
+import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
+import LabReportViewModal from '../../labs/components/LabReportViewModal';
 
 const COMMON_MEDICINES = [
   { name: 'Tab. Rigix 10mg (Cetirizine)', dosage: '1 tab once daily at bedtime', duration: '7 days', timing: 'After meals' },
@@ -49,6 +49,10 @@ export default function DoctorPatientDetailPage() {
     showToast,
   } = useDemo();
 
+  const [isLabModalOpen, setIsLabModalOpen] = useState(false);
+  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
+  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
+
   // Find appointment and patient records
   const aptMatch = appointments.find((a) => a.id === id || a.patientId === id || a.patientMrn === id);
   const patientMatch = patientsList.find(
@@ -63,6 +67,14 @@ export default function DoctorPatientDetailPage() {
   const city = patientMatch?.city || 'Lahore';
   const phone = patientMatch?.phone || '+92 300 1234567';
   const reason = aptMatch?.reason || 'Routine Health Review & Seasonal Allergy Advice';
+
+  // Filter patient's lab orders
+  const patientLabOrders = labOrders.filter(
+    (o) =>
+      o.patientId === patientMatch?.id ||
+      o.patientMrn === mrn ||
+      o.patientName?.toLowerCase() === patientName?.toLowerCase()
+  );
 
   // Completion State
   const [isCompleted, setIsCompleted] = useState(
@@ -79,23 +91,12 @@ export default function DoctorPatientDetailPage() {
   const [medDosage, setMedDosage] = useState('');
   const [medDuration, setMedDuration] = useState('5 days');
   const [medTiming, setMedTiming] = useState('After meals');
+  const [instructions, setInstructions] = useState('Drink plenty of warm fluids. Avoid cold beverage exposure and dust. Follow up in 7 days if symptoms persist.');
   const [isPrescriptionSaved, setIsPrescriptionSaved] = useState(false);
-
-  // Diagnostic Lab Order States
-  const [isOrderLabModalOpen, setIsOrderLabModalOpen] = useState(false);
-  const [selectedSlipOrder, setSelectedSlipOrder] = useState(null);
-  const [selectedReportOrder, setSelectedReportOrder] = useState(null);
 
   const doctorName = currentUser?.name || 'Dr. Amina Shah';
   const doctorSpecialty = currentUser?.specialty || 'General Physician';
   const pmdcNumber = currentUser?.pmdcNumber || '39482-P';
-
-  // Filter lab orders for this patient
-  const patientLabOrders = labOrders.filter(
-    (o) =>
-      o.patientName?.toLowerCase() === patientName?.toLowerCase() ||
-      (o.patientMrn && mrn && o.patientMrn.toLowerCase() === mrn.toLowerCase())
-  );
 
   const handleAddQuickMed = (med) => {
     // Avoid exact duplicate
@@ -337,11 +338,12 @@ export default function DoctorPatientDetailPage() {
               </div>
             </div>
 
-            {/* Doctor Consultation Actions: Order Lab Tests & Complete Visit */}
-            <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Top banner CTAs: Order Lab Tests & Complete Consultation */}
+            <div className="no-print" style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
-                onClick={() => setIsOrderLabModalOpen(true)}
+                className="btn-white-capsule"
+                onClick={() => setIsLabModalOpen(true)}
                 style={{
                   padding: '9px 18px',
                   fontSize: '13px',
@@ -351,14 +353,11 @@ export default function DoctorPatientDetailPage() {
                   gap: '6px',
                   backgroundColor: '#FFFFFF',
                   color: 'var(--forest-900)',
-                  border: '1.5px solid var(--forest-900)',
-                  borderRadius: '9999px',
-                  cursor: 'pointer',
-                  boxShadow: 'var(--shadow-xs)',
+                  border: '1.5px solid var(--forest-800)',
+                  boxShadow: 'var(--shadow-sm)',
                 }}
-                title="Order diagnostic tests, select tests, and assign to partner lab"
               >
-                <Activity size={15} color="var(--forest-900)" />
+                <TestTube2 size={16} color="var(--forest-800)" />
                 <span>Order Lab Tests</span>
               </button>
 
@@ -468,6 +467,150 @@ export default function DoctorPatientDetailPage() {
             <AlertTriangle size={15} color="#DC2626" />
             <span><b>Known Drug Allergies:</b> Penicillin (mild rash), Dust Mites</span>
           </div>
+        </div>
+
+        {/* DIAGNOSTIC LAB TESTS & INVESTIGATIONS SECTION */}
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '16px',
+            border: '1px solid var(--border-subtle)',
+            padding: '20px 24px',
+            marginBottom: '20px',
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <TestTube2 size={18} color="var(--forest-800)" />
+              <h3 style={{ fontSize: '15px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+                Diagnostic Lab Investigations &amp; Requisitions
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              className="btn-lime-pill"
+              onClick={() => setIsLabModalOpen(true)}
+              style={{ padding: '7px 16px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <Plus size={14} />
+              <span>Order Lab Tests</span>
+            </button>
+          </div>
+
+          {patientLabOrders.length === 0 ? (
+            <div
+              style={{
+                backgroundColor: 'var(--canvas-bg)',
+                borderRadius: '12px',
+                padding: '24px',
+                textAlign: 'center',
+                border: '1px dashed var(--border-subtle)',
+              }}
+            >
+              <TestTube2 size={28} color="var(--forest-800)" style={{ margin: '0 auto 8px auto', opacity: 0.5 }} />
+              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--forest-900)', marginBottom: '4px' }}>
+                No Lab Tests Ordered Yet for this Patient
+              </div>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                Prescribe CBC, Lipid Profile, X-Ray, or MRI and assign to partner laboratories during this visit.
+              </p>
+              <button
+                type="button"
+                className="btn-white-capsule"
+                onClick={() => setIsLabModalOpen(true)}
+                style={{ padding: '6px 16px', fontSize: '12px', fontWeight: '700' }}
+              >
+                + Order Diagnostic Tests
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {patientLabOrders.map((order) => {
+                const isPublished = order.status === 'Published';
+                const isInProgress = order.status === 'In Progress';
+
+                return (
+                  <div
+                    key={order.id}
+                    style={{
+                      backgroundColor: 'var(--canvas-bg)',
+                      borderRadius: '12px',
+                      padding: '14px 18px',
+                      border: '1px solid var(--border-subtle)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '12px',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            backgroundColor: isPublished ? '#DCFCE7' : isInProgress ? '#EFF6FF' : '#FEF3C7',
+                            color: isPublished ? '#166534' : isInProgress ? '#1E40AF' : '#92400E',
+                          }}
+                        >
+                          {order.status}
+                        </span>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                          {order.assignedLab}
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          · #{order.orderNumber} ({order.date})
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                        {(order.tests || []).join(' + ')}
+                      </div>
+
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        Priority: <b>{order.urgency}</b> {order.fastingRequired ? `· ⚠️ ${order.fastingHours}h Fasting` : ''} · {order.instructions}
+                      </div>
+
+                      {isPublished && order.reportSummary && (
+                        <div style={{ fontSize: '11.5px', color: '#065F46', marginTop: '4px', fontWeight: '600' }}>
+                          ✓ Findings: {order.reportSummary}
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        className="btn-white-capsule"
+                        onClick={() => setSelectedOrderForSlip(order)}
+                        style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Printer size={13} />
+                        <span>Order Slip</span>
+                      </button>
+
+                      {isPublished && (
+                        <button
+                          type="button"
+                          className="btn-lime-pill"
+                          onClick={() => setSelectedOrderForReport(order)}
+                          style={{ padding: '6px 14px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <FileText size={13} />
+                          <span>View Report</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* HIGHLY INTUITIVE DIGITAL PRESCRIPTION (Rx) WRITER */}
@@ -836,199 +979,35 @@ export default function DoctorPatientDetailPage() {
             </div>
           </form>
         </div>
-
-        {/* DIAGNOSTIC LAB ORDERS FOR THIS PATIENT (Hidden on print) */}
-        <div
-          className="no-print"
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            border: '1.5px solid var(--border-subtle)',
-            padding: '24px 28px',
-            boxShadow: 'var(--shadow-sm)',
-            marginTop: '24px',
+        {/* Order Tests Modal */}
+        <OrderLabTestModal
+          isOpen={isLabModalOpen}
+          onClose={() => setIsLabModalOpen(false)}
+          defaultPatient={{
+            id: patientMatch?.id || id,
+            name: patientName,
+            mrn,
+            phone,
+            age,
+            gender,
+            city,
           }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '16px',
-              flexWrap: 'wrap',
-              gap: '12px',
-            }}
-          >
-            <div>
-              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)' }}>
-                Diagnostic Pathology & Radiology Investigations ({patientLabOrders.length})
-              </h3>
-              <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748B' }}>
-                Requisitions dispatched for {patientName}. Automatically synchronized with partner labs.
-              </p>
-            </div>
+        />
 
-            <button
-              type="button"
-              onClick={() => setIsOrderLabModalOpen(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 16px',
-                backgroundColor: 'var(--forest-900)',
-                color: 'var(--lime-accent)',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '12px',
-                fontWeight: '800',
-                cursor: 'pointer',
-              }}
-            >
-              <Plus size={14} />
-              <span>Order Another Test</span>
-            </button>
-          </div>
+        {/* Printable Order Slip Modal */}
+        <LabOrderSlipModal
+          isOpen={Boolean(selectedOrderForSlip)}
+          onClose={() => setSelectedOrderForSlip(null)}
+          order={selectedOrderForSlip}
+        />
 
-          {patientLabOrders.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: '#F8FAFC',
-                borderRadius: '10px',
-                padding: '24px',
-                textAlign: 'center',
-                border: '1px dashed #CBD5E1',
-                color: '#64748B',
-                fontSize: '13px',
-              }}
-            >
-              No active laboratory investigations ordered for this patient yet. Click "Order Lab Tests" above to request tests.
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {patientLabOrders.map((ord) => {
-                const isPublished = ord.orderStatus === 'Published';
-                return (
-                  <div
-                    key={ord.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      backgroundColor: '#F8FAFC',
-                      borderRadius: '10px',
-                      border: '1px solid #E2E8F0',
-                      flexWrap: 'wrap',
-                      gap: '12px',
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: '800', color: 'var(--forest-900)', fontSize: '13px' }}>
-                          {ord.orderNumber || ord.id}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: '10px',
-                            fontWeight: '800',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            backgroundColor: isPublished ? '#DCFCE7' : '#FEF3C7',
-                            color: isPublished ? '#166534' : '#92400E',
-                          }}
-                        >
-                          {ord.orderStatus}
-                        </span>
-                        <span style={{ fontSize: '11px', color: '#64748B' }}>{ord.date}</span>
-                      </div>
-                      <div style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A', marginTop: '3px' }}>
-                        {(ord.tests || []).map((t) => t.name).join(', ')}
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>
-                        Lab: <b>{ord.labPartnerName}</b> • Fasting: {ord.instructions?.fasting ? 'Required' : 'No'} • Urgency: {ord.instructions?.urgency || 'Routine'}
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedSlipOrder(ord)}
-                        style={{
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          border: '1px solid #CBD5E1',
-                          backgroundColor: '#FFFFFF',
-                          color: '#334155',
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Print Slip
-                      </button>
-
-                      {isPublished ? (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedReportOrder(ord)}
-                          style={{
-                            padding: '6px 14px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            backgroundColor: 'var(--forest-900)',
-                            color: 'var(--lime-accent)',
-                            fontSize: '11px',
-                            fontWeight: '800',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          View Official Report
-                        </button>
-                      ) : (
-                        <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic', padding: '6px' }}>
-                          Report in analysis
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        {/* View Official Lab Report Modal */}
+        <LabReportViewModal
+          isOpen={Boolean(selectedOrderForReport)}
+          onClose={() => setSelectedOrderForReport(null)}
+          order={selectedOrderForReport}
+        />
       </div>
-
-      {/* Order Lab Tests Modal */}
-      <OrderLabTestModal
-        isOpen={isOrderLabModalOpen}
-        onClose={() => setIsOrderLabModalOpen(false)}
-        patientData={{
-          id: patientMatch?.id || id,
-          name: patientName,
-          mrn,
-          age,
-          gender,
-          phone,
-          city,
-        }}
-      />
-
-      {/* Requisition Slip Modal */}
-      {selectedSlipOrder && (
-        <PrintableLabOrderSlip
-          order={selectedSlipOrder}
-          onClose={() => setSelectedSlipOrder(null)}
-        />
-      )}
-
-      {/* Official Certified Report Modal */}
-      {selectedReportOrder && (
-        <PrintableLabReport
-          order={selectedReportOrder}
-          onClose={() => setSelectedReportOrder(null)}
-        />
-      )}
     </AppShell>
   );
 }

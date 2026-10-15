@@ -1,32 +1,36 @@
 import React, { useState, useMemo } from 'react';
+import AppShell from '../../shell/AppShell';
+import { useDemo } from '../../../context/DemoContext';
+import OrderLabTestModal from '../../labs/components/OrderLabTestModal';
+import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
+import LabReportViewModal from '../../labs/components/LabReportViewModal';
+import UploadReportModal from '../../labs/components/UploadReportModal';
+import PayLabOrderModal from '../../labs/components/PayLabOrderModal';
 import {
-  FileText,
+  TestTube2,
   Search,
   Filter,
   Plus,
-  Printer,
-  DollarSign,
-  CheckCircle,
+  CheckCircle2,
   Clock,
-  AlertCircle,
-  Building,
+  AlertTriangle,
+  DollarSign,
+  TrendingUp,
+  FileText,
+  Printer,
   Upload,
+  Building2,
+  Users,
+  ShieldCheck,
   CreditCard,
-  Edit,
-  Trash2,
+  History,
+  RotateCcw,
+  Sparkles,
+  Edit2,
   Check,
   X,
-  Receipt,
-  FileCheck,
-  ShieldCheck,
-  Eye,
-  Activity,
-  ArrowRight,
+  ExternalLink,
 } from 'lucide-react';
-import { useDemo } from '../../../context/DemoContext';
-import PrintableLabOrderSlip from '../../labs/components/PrintableLabOrderSlip';
-import PrintableLabReport from '../../labs/components/PrintableLabReport';
-import LabPaymentModal from '../../labs/components/LabPaymentModal';
 
 export default function AdminLabManagementPage() {
   const {
@@ -34,695 +38,536 @@ export default function AdminLabManagementPage() {
     labPartners = [],
     testCatalog = [],
     updateLabOrderStatus,
-    setLabOrderPriceAndInvoice,
+    setLabOrderPrice,
+    refundLabOrderPayment,
     addLabPartner,
-    toggleLabPartnerStatus,
-    addTestCatalogItem,
-    updateTestCatalogItem,
-    activityLog = [],
+    toggleLabPartner,
+    addTestToCatalog,
+    updateTestPrice,
     showToast,
   } = useDemo();
 
-  // Active top-level management tab
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'operations' | 'partners' | 'catalog'
-
-  // Orders Table states
-  const [orderSearch, setOrderSearch] = useState('');
+  const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'payments' | 'partners' | 'catalog' | 'audit'
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [labFilter, setLabFilter] = useState('All');
 
   // Modals state
-  const [selectedSlipOrder, setSelectedSlipOrder] = useState(null);
-  const [selectedReportOrder, setSelectedReportOrder] = useState(null);
-  const [paymentModalOrder, setPaymentModalOrder] = useState(null);
-
-  // Price Edit Inline Modal state
+  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
+  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
+  const [selectedOrderForUpload, setSelectedOrderForUpload] = useState(null);
+  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState(null);
+  const [isAddPartnerModalOpen, setIsAddPartnerModalOpen] = useState(false);
+  const [isAddTestModalOpen, setIsAddTestModalOpen] = useState(false);
   const [editingPriceOrder, setEditingPriceOrder] = useState(null);
-  const [customPriceInput, setCustomPriceInput] = useState('');
-  const [customNotesInput, setCustomNotesInput] = useState('');
+  const [newPriceValue, setNewPriceValue] = useState('');
 
-  // Lab Operations: Report Upload state
-  const [uploadingOrder, setUploadingOrder] = useState(null);
-  const [techNotes, setTechNotes] = useState('');
-  const [pathologistName, setPathologistName] = useState('Prof. Dr. Farooq Essa, FRCPath');
-  const [clinicalSummary, setClinicalSummary] = useState('');
-  const [parameterRows, setParameterRows] = useState([
-    { param: 'Hemoglobin (Hb)', value: '14.2', unit: 'g/dL', normalRange: '13.5 - 17.5', status: 'Normal' },
-    { param: 'Total Leukocyte Count (TLC)', value: '6,800', unit: '/uL', normalRange: '4,000 - 11,000', status: 'Normal' },
-    { param: 'Platelet Count', value: '260,000', unit: '/uL', normalRange: '150,000 - 450,000', status: 'Normal' },
-  ]);
-
-  // Partner Management state
-  const [isAddPartnerOpen, setIsAddPartnerOpen] = useState(false);
+  // New Partner Form State
   const [newPartnerName, setNewPartnerName] = useState('');
-  const [newPartnerBranch, setNewPartnerBranch] = useState('');
-  const [newPartnerHelpline, setNewPartnerHelpline] = useState('+92 42 111 000 000');
-  const [newPartnerAccreditation, setNewPartnerAccreditation] = useState('ISO 15189 Certified');
+  const [newPartnerCity, setNewPartnerCity] = useState('Lahore');
+  const [newPartnerAccreditation, setNewPartnerAccreditation] = useState('ISO-15189 Certified');
+  const [newPartnerPhone, setNewPartnerPhone] = useState('+92 42 111 222 333');
 
-  // Catalog Management state
-  const [isAddTestOpen, setIsAddTestOpen] = useState(false);
+  // New Test Form State
   const [newTestName, setNewTestName] = useState('');
-  const [newTestCategory, setNewTestCategory] = useState('Hematology');
-  const [newTestPrice, setNewTestPrice] = useState(1500);
-  const [newTestFasting, setNewTestFasting] = useState('No fasting required');
-  const [newTestTurnaround, setNewTestTurnaround] = useState('6-8 Hours');
+  const [newTestCategory, setNewTestCategory] = useState('Biochemistry');
+  const [newTestPrice, setNewTestPrice] = useState('2000');
+  const [newTestTurnaround, setNewTestTurnaround] = useState('6 Hours');
+  const [newTestFasting, setNewTestFasting] = useState('0');
 
-  // Filtered Orders
-  const filteredOrders = useMemo(() => {
-    return labOrders.filter((order) => {
-      const matchSearch =
-        order.orderNumber?.toLowerCase().includes(orderSearch.toLowerCase()) ||
-        order.patientName?.toLowerCase().includes(orderSearch.toLowerCase()) ||
-        order.doctorName?.toLowerCase().includes(orderSearch.toLowerCase()) ||
-        (order.tests || []).some((t) => t.name.toLowerCase().includes(orderSearch.toLowerCase()));
-
-      const matchStatus =
-        statusFilter === 'All' ||
-        order.orderStatus === statusFilter ||
-        (statusFilter === 'In Progress' && (order.orderStatus === 'In Progress' || order.orderStatus === 'Received'));
-
-      const matchLab = labFilter === 'All' || order.labPartnerId === labFilter;
-
-      return matchSearch && matchStatus && matchLab;
-    });
-  }, [labOrders, orderSearch, statusFilter, labFilter]);
-
-  // Overall Financial & Operational Stats
-  const stats = useMemo(() => {
-    const totalOrders = labOrders.length;
-    const paidOrders = labOrders.filter((o) => o.paymentStatus === 'Paid');
-    const totalRevenue = paidOrders.reduce((sum, o) => sum + (o.price || 0), 0);
-    const pendingPayment = labOrders.filter((o) => o.paymentStatus === 'Pending').length;
-    const publishedReports = labOrders.filter((o) => o.orderStatus === 'Published').length;
-    return { totalOrders, totalRevenue, pendingPayment, publishedReports };
+  // Financial calculations
+  const totalLabRevenue = useMemo(() => {
+    return labOrders
+      .filter((o) => o.paymentStatus === 'Paid')
+      .reduce((sum, o) => sum + (Number(o.price) || 0), 0);
   }, [labOrders]);
 
-  // Handler for saving customized price
+  const pendingReceivables = useMemo(() => {
+    return labOrders
+      .filter((o) => o.paymentStatus === 'Pending')
+      .reduce((sum, o) => sum + (Number(o.price) || 0), 0);
+  }, [labOrders]);
+
+  const paidCount = useMemo(() => labOrders.filter((o) => o.paymentStatus === 'Paid').length, [labOrders]);
+  const pendingCount = useMemo(() => labOrders.filter((o) => o.paymentStatus === 'Pending').length, [labOrders]);
+  const publishedCount = useMemo(() => labOrders.filter((o) => o.status === 'Published').length, [labOrders]);
+
+  // Filtered orders
+  const filteredOrders = useMemo(() => {
+    return labOrders.filter((o) => {
+      const matchStatus = statusFilter === 'All' || o.status === statusFilter || (statusFilter === 'Pending Payment' && o.paymentStatus === 'Pending');
+      const matchLab = labFilter === 'All' || o.assignedLab === labFilter;
+      const q = search.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        o.orderNumber.toLowerCase().includes(q) ||
+        o.patientName.toLowerCase().includes(q) ||
+        o.patientMrn.toLowerCase().includes(q) ||
+        o.doctorName.toLowerCase().includes(q) ||
+        o.tests.some((t) => t.toLowerCase().includes(q));
+      return matchStatus && matchLab && matchSearch;
+    });
+  }, [labOrders, statusFilter, labFilter, search]);
+
   const handleSavePrice = (e) => {
     e.preventDefault();
-    if (!editingPriceOrder) return;
-    setLabOrderPriceAndInvoice(editingPriceOrder.id, customPriceInput, customNotesInput);
+    if (!editingPriceOrder || !newPriceValue) return;
+    setLabOrderPrice(editingPriceOrder.id, Number(newPriceValue));
     setEditingPriceOrder(null);
+    setNewPriceValue('');
   };
 
-  // Handler for adding a parameter row during report upload
-  const handleAddParamRow = () => {
-    setParameterRows((prev) => [
-      ...prev,
-      { param: '', value: '', unit: '', normalRange: '', status: 'Normal' },
-    ]);
-  };
-
-  const handleUpdateParamRow = (index, field, value) => {
-    setParameterRows((prev) => {
-      const updated = [...prev];
-      updated[index][field] = value;
-      return updated;
-    });
-  };
-
-  const handleRemoveParamRow = (index) => {
-    setParameterRows((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  // Handler for Publishing Report (Lab side integrated into Admin)
-  const handlePublishReport = (e) => {
-    e.preventDefault();
-    if (!uploadingOrder) return;
-
-    const reportPayload = {
-      technicianName: 'Muhammad Farhan (Senior Medical Technologist MLT)',
-      pathologistName: pathologistName.trim() || 'Prof. Dr. Farooq Essa, FRCPath',
-      technicianNotes: techNotes.trim() || 'All calibrations within 2SD. Results verified.',
-      parameters: parameterRows.filter((r) => r.param.trim().length > 0),
-      summary:
-        clinicalSummary.trim() ||
-        'Pathology parameters verified in standard biological ranges. Clinician correlation advised.',
-    };
-
-    updateLabOrderStatus(uploadingOrder.id, 'Published', reportPayload);
-    setUploadingOrder(null);
-  };
-
-  // Handler for Adding Lab Partner
-  const handleAddPartnerSubmit = (e) => {
+  const handleCreatePartner = (e) => {
     e.preventDefault();
     if (!newPartnerName.trim()) return;
     addLabPartner({
       name: newPartnerName.trim(),
-      branch: newPartnerBranch.trim() || 'Main Reference Facility',
-      helpline: newPartnerHelpline.trim(),
-      accreditation: newPartnerAccreditation.trim(),
-      discount: '15% OPD Direct',
+      city: newPartnerCity,
+      accreditation: newPartnerAccreditation,
+      phone: newPartnerPhone,
     });
+    setIsAddPartnerModalOpen(false);
     setNewPartnerName('');
-    setNewPartnerBranch('');
-    setIsAddPartnerOpen(false);
   };
 
-  // Handler for Adding Test to Catalog
-  const handleAddTestSubmit = (e) => {
+  const handleCreateTest = (e) => {
     e.preventDefault();
     if (!newTestName.trim()) return;
-    addTestCatalogItem({
+    addTestToCatalog({
       name: newTestName.trim(),
       category: newTestCategory,
-      price: newTestPrice,
-      fasting: newTestFasting,
+      defaultPrice: Number(newTestPrice) || 1500,
       turnaround: newTestTurnaround,
+      fastingHours: Number(newTestFasting) || 0,
     });
+    setIsAddTestModalOpen(false);
     setNewTestName('');
-    setIsAddTestOpen(false);
   };
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: '1360px', margin: '0 auto' }}>
-      {/* Page Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
-              Lab Diagnostic Management & Operations Console
+    <AppShell>
+      <div style={{ maxWidth: '1240px', margin: '0 auto', paddingBottom: '70px' }}>
+        {/* Top Header Banner */}
+        <div className="patient-welcome-banner" style={{ marginBottom: '24px' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
+              DIAGNOSTIC &amp; LABORATORY OPERATIONS CONSOLE
+            </div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '4px 0 6px 0' }}>
+              Lab Workflow, Invoicing &amp; Reports
             </h1>
-            <span
-              style={{
-                backgroundColor: 'var(--forest-900)',
-                color: 'var(--lime-accent)',
-                fontSize: '11px',
-                fontWeight: '800',
-                padding: '2px 8px',
-                borderRadius: '6px',
-              }}
+            <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
+              End-to-end management for physician lab requisitions, report uploads, partner network, and payments.
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn-lime-pill"
+              onClick={() => setIsAddPartnerModalOpen(true)}
+              style={{ padding: '10px 18px', fontSize: '12.5px' }}
             >
-              Admin + Lab Operations
-            </span>
-          </div>
-          <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-body)' }}>
-            Complete end-to-end control: lab order routing, pricing & invoices, sample processing, technician report publishing, and partner oversight.
-          </p>
-        </div>
-
-        {/* Quick Nav Tabs */}
-        <div
-          style={{
-            display: 'flex',
-            backgroundColor: '#F1F5F9',
-            padding: '4px',
-            borderRadius: '10px',
-            gap: '4px',
-          }}
-        >
-          <button
-            onClick={() => setActiveTab('orders')}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '12px',
-              fontWeight: '800',
-              cursor: 'pointer',
-              backgroundColor: activeTab === 'orders' ? '#FFFFFF' : 'transparent',
-              color: activeTab === 'orders' ? 'var(--forest-900)' : '#64748B',
-              boxShadow: activeTab === 'orders' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-            }}
-          >
-            📋 Orders & Invoicing ({labOrders.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('operations')}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '12px',
-              fontWeight: '800',
-              cursor: 'pointer',
-              backgroundColor: activeTab === 'operations' ? '#FFFFFF' : 'transparent',
-              color: activeTab === 'operations' ? 'var(--forest-900)' : '#64748B',
-              boxShadow: activeTab === 'operations' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-            }}
-          >
-            🧪 Lab Dashboard & Upload
-          </button>
-          <button
-            onClick={() => setActiveTab('partners')}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '12px',
-              fontWeight: '800',
-              cursor: 'pointer',
-              backgroundColor: activeTab === 'partners' ? '#FFFFFF' : 'transparent',
-              color: activeTab === 'partners' ? 'var(--forest-900)' : '#64748B',
-              boxShadow: activeTab === 'partners' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-            }}
-          >
-            🏢 Lab Partners ({labPartners.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('catalog')}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '12px',
-              fontWeight: '800',
-              cursor: 'pointer',
-              backgroundColor: activeTab === 'catalog' ? '#FFFFFF' : 'transparent',
-              color: activeTab === 'catalog' ? 'var(--forest-900)' : '#64748B',
-              boxShadow: activeTab === 'catalog' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-            }}
-          >
-            🔬 Test Catalog & Pricing ({testCatalog.length})
-          </button>
-        </div>
-      </div>
-
-      {/* KPI Stats Strip */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '16px',
-          marginBottom: '24px',
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Lab Gross Settled Revenue
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '900', color: '#0F5132' }}>
-            PKR {stats.totalRevenue.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '11px', color: '#16A34A', marginTop: '4px', fontWeight: '700' }}>
-            100% Invoiced & Tracked
+              <Plus size={15} />
+              <span>Add Lab Partner</span>
+            </button>
+            <button
+              type="button"
+              className="btn-white-capsule"
+              onClick={() => setIsAddTestModalOpen(true)}
+              style={{ padding: '10px 18px', fontSize: '12.5px' }}
+            >
+              <Plus size={15} />
+              <span>Configure Test</span>
+            </button>
           </div>
         </div>
 
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Total Lab Orders Dispatched
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--forest-900)' }}>
-            {stats.totalOrders}
-          </div>
-          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>
-            Across all 4 partner pathology centers
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Pending Invoices / Unpaid
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#D97706' }}>
-            {stats.pendingPayment}
-          </div>
-          <div style={{ fontSize: '11px', color: '#D97706', marginTop: '4px', fontWeight: '700' }}>
-            Awaiting Cashier / Portal Settlement
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', marginBottom: '6px' }}>
-            Certified Reports Published
-          </div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#1E40AF' }}>
-            {stats.publishedReports}
-          </div>
-          <div style={{ fontSize: '11px', color: '#16A34A', marginTop: '4px', fontWeight: '700' }}>
-            Verified with Digitized Letterhead & QR
-          </div>
-        </div>
-      </div>
-
-      {/* TAB 1: LAB ORDERS & BILLING TABLE */}
-      {activeTab === 'orders' && (
-        <div>
-          {/* Filters Bar */}
+        {/* Financial & Status KPI Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }}>
           <div
             style={{
               backgroundColor: '#FFFFFF',
-              borderRadius: '14px',
-              border: '1px solid var(--border-subtle)',
-              padding: '16px 20px',
-              marginBottom: '20px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '14px',
-            }}
-          >
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                {['All', 'Ordered', 'In Progress', 'Published'].map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => setStatusFilter(st)}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      border: 'none',
-                      cursor: 'pointer',
-                      backgroundColor: statusFilter === st ? 'var(--forest-900)' : '#F1F5F9',
-                      color: statusFilter === st ? 'var(--lime-accent)' : '#475569',
-                    }}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-
-              {/* Lab Partner Filter Dropdown */}
-              <select
-                value={labFilter}
-                onChange={(e) => setLabFilter(e.target.value)}
-                style={{
-                  padding: '7px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #CBD5E1',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  outline: 'none',
-                  backgroundColor: '#FFFFFF',
-                }}
-              >
-                <option value="All">All Partner Labs</option>
-                {labPartners.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Search Input */}
-            <div style={{ position: 'relative', minWidth: '280px' }}>
-              <Search
-                size={16}
-                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }}
-              />
-              <input
-                type="text"
-                placeholder="Search order #, patient, doctor, test..."
-                value={orderSearch}
-                onChange={(e) => setOrderSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 14px 8px 36px',
-                  borderRadius: '8px',
-                  border: '1px solid #CBD5E1',
-                  fontSize: '13px',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Orders Table */}
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '14px',
+              borderRadius: '16px',
+              padding: '18px 20px',
               border: '1px solid var(--border-subtle)',
               boxShadow: 'var(--shadow-sm)',
-              overflow: 'hidden',
             }}
           >
-            <div style={{ overflowX: 'auto' }}>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              Total Lab Revenue
+            </span>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--forest-800)', marginTop: '4px' }}>
+              PKR {totalLabRevenue.toLocaleString()}
+            </div>
+            <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '700' }}>
+              ● {paidCount} Paid Invoices Settled
+            </span>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '18px 20px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              Pending Receivables
+            </span>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#D97706', marginTop: '4px' }}>
+              PKR {pendingReceivables.toLocaleString()}
+            </div>
+            <span style={{ fontSize: '11.5px', color: '#B45309', fontWeight: '700' }}>
+              ● {pendingCount} Invoices Awaiting Payment
+            </span>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '18px 20px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              Reports Published
+            </span>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--forest-900)', marginTop: '4px' }}>
+              {publishedCount} Reports
+            </div>
+            <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '700' }}>
+              Verified &amp; Delivered to Portals
+            </span>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '18px 20px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              Diagnostic Partners
+            </span>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--forest-900)', marginTop: '4px' }}>
+              {labPartners.length} Laboratories
+            </div>
+            <span style={{ fontSize: '11.5px', color: 'var(--forest-700)', fontWeight: '700' }}>
+              Chughtai, IDC, SKMH &amp; Essa
+            </span>
+          </div>
+        </div>
+
+        {/* Tab Navigation Toolbar */}
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '16px',
+            padding: '8px 14px',
+            border: '1px solid var(--border-subtle)',
+            boxShadow: 'var(--shadow-sm)',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[
+              { id: 'orders', label: `Lab Orders & Workflow (${labOrders.length})`, icon: TestTube2 },
+              { id: 'payments', label: `Billing & Invoicing (${paidCount} Paid)`, icon: DollarSign },
+              { id: 'partners', label: `Lab Partners (${labPartners.length})`, icon: Building2 },
+              { id: 'catalog', label: `Test Catalog (${testCatalog.length})`, icon: FileText },
+              { id: 'audit', label: 'Audit Trail', icon: History },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    padding: '8px 16px',
+                    borderRadius: '10px',
+                    fontSize: '12.5px',
+                    fontWeight: isActive ? '800' : '600',
+                    cursor: 'pointer',
+                    border: isActive ? '1px solid var(--forest-800)' : '1px solid transparent',
+                    backgroundColor: isActive ? 'var(--forest-800)' : 'transparent',
+                    color: isActive ? '#FFFFFF' : 'var(--text-body)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Icon size={14} color={isActive ? 'var(--lime-accent)' : 'var(--forest-800)'} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* TAB 1: LAB ORDERS & WORKFLOW */}
+        {activeTab === 'orders' && (
+          <div>
+            {/* Search and Filters */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '16px 20px',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: 'var(--shadow-sm)',
+                marginBottom: '16px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px',
+              }}
+            >
+              <div style={{ position: 'relative', width: '360px', maxWidth: '100%' }}>
+                <Search size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: 'var(--text-muted)' }} />
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Search order #, patient, MRN, doctor..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  style={{ paddingLeft: '36px', fontSize: '13px', borderRadius: '10px', height: '38px' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  style={{
+                    padding: '7px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-subtle)',
+                    fontSize: '12.5px',
+                    fontWeight: '700',
+                    color: 'var(--forest-900)',
+                    backgroundColor: '#FFFFFF',
+                  }}
+                >
+                  <option value="All">All Statuses</option>
+                  <option value="Received">Received in Lab</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Published">Published (Ready)</option>
+                  <option value="Pending Payment">Pending Payment</option>
+                </select>
+
+                <select
+                  value={labFilter}
+                  onChange={(e) => setLabFilter(e.target.value)}
+                  style={{
+                    padding: '7px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-subtle)',
+                    fontSize: '12.5px',
+                    fontWeight: '700',
+                    color: 'var(--forest-900)',
+                    backgroundColor: '#FFFFFF',
+                  }}
+                >
+                  <option value="All">All Diagnostic Labs</option>
+                  {labPartners.map((lp) => (
+                    <option key={lp.id} value={lp.name}>{lp.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Orders Table */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                border: '1px solid var(--border-subtle)',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--border-subtle)', color: '#475569' }}>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: '800' }}>Order & Invoice #</th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: '800' }}>Patient & MRN</th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: '800' }}>Ordering Doctor</th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: '800' }}>Assigned Lab</th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: '800' }}>Tests</th>
-                    <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: '800' }}>Price (PKR)</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', fontWeight: '800' }}>Payment</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', fontWeight: '800' }}>Order Status</th>
-                    <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: '800' }}>Admin Actions</th>
+                  <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', textAlign: 'left' }}>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>Order #</th>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>Patient &amp; MRN</th>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>Prescribed Tests</th>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>Assigned Lab</th>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>Workflow Status</th>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>Invoice &amp; Payment</th>
+                    <th style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-900)', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredOrders.length === 0 ? (
                     <tr>
-                      <td colSpan="9" style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>
-                        No lab orders match the filters.
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--text-muted)' }}>
+                        No lab orders match the selected filters.
                       </td>
                     </tr>
                   ) : (
                     filteredOrders.map((order) => {
+                      const isPublished = order.status === 'Published';
+                      const isInProgress = order.status === 'In Progress';
+                      const isReceived = order.status === 'Received';
                       const isPaid = order.paymentStatus === 'Paid';
-                      const isPublished = order.orderStatus === 'Published';
 
                       return (
                         <tr
                           key={order.id}
                           style={{
-                            borderBottom: '1px solid #F1F5F9',
-                            transition: 'background-color 0.1s ease',
+                            borderBottom: '1px solid var(--border-subtle)',
+                            transition: 'background 0.15s ease',
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#FAFAFA')}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
                         >
-                          {/* Order / Invoice # */}
-                          <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontWeight: '800', color: 'var(--forest-900)' }}>
-                              {order.orderNumber || order.id}
-                            </div>
-                            <div style={{ fontSize: '11px', color: '#64748B' }}>
-                              Inv: <span style={{ fontFamily: 'monospace' }}>{order.invoiceNumber || 'INV-01'}</span>
-                            </div>
-                            <div style={{ fontSize: '11px', color: '#94A3B8' }}>{order.date}</div>
+                          {/* Order # */}
+                          <td style={{ padding: '14px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                            <div>{order.orderNumber}</div>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{order.date}</span>
                           </td>
 
                           {/* Patient */}
-                          <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontWeight: '800', color: '#0F172A' }}>{order.patientName}</div>
-                            <div style={{ fontSize: '11px', color: '#64748B' }}>
-                              MRN #{order.patientMrn || 'MC-89241'}
+                          <td style={{ padding: '14px 16px' }}>
+                            <div style={{ fontWeight: '800', color: 'var(--forest-900)' }}>
+                              {order.patientName}
                             </div>
-                          </td>
-
-                          {/* Doctor */}
-                          <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontWeight: '700', color: '#0F172A' }}>{order.doctorName}</div>
-                            <div style={{ fontSize: '11px', color: '#64748B' }}>{order.doctorSpecialty}</div>
-                          </td>
-
-                          {/* Assigned Lab */}
-                          <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontWeight: '700', color: '#0F5132' }}>{order.labPartnerName}</div>
-                            <div style={{ fontSize: '11px', color: '#64748B' }}>{order.labBranch}</div>
+                            <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                              MRN: {order.patientMrn} · Dr. {order.doctorName?.replace('Dr. ', '')}
+                            </div>
                           </td>
 
                           {/* Tests */}
-                          <td style={{ padding: '12px 16px', maxWidth: '200px' }}>
-                            <div style={{ fontWeight: '600', color: '#0F172A', whiteSpace: 'normal', lineHeight: '1.3' }}>
-                              {(order.tests || []).map((t) => t.name).join(', ') || 'Diagnostic Panel'}
+                          <td style={{ padding: '14px 16px' }}>
+                            <div style={{ fontWeight: '700', color: 'var(--forest-900)', maxWidth: '240px' }}>
+                              {(order.tests || []).join(', ')}
+                            </div>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              {order.fastingRequired ? `⚠️ ${order.fastingHours}h Fasting` : 'No Fasting'} · Priority: <b>{order.urgency}</b>
                             </div>
                           </td>
 
-                          {/* Price & Edit Price CTA */}
-                          <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                            <div style={{ fontWeight: '900', color: '#0F5132', fontSize: '14px' }}>
-                              PKR {(order.price || 0).toLocaleString()}
-                            </div>
-                            <button
-                              onClick={() => {
-                                setEditingPriceOrder(order);
-                                setCustomPriceInput(order.price || '');
-                                setCustomNotesInput(order.invoiceNotes || '');
-                              }}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: '#2563EB',
-                                fontSize: '11px',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                padding: 0,
-                                textDecoration: 'underline',
-                                marginTop: '2px',
-                              }}
-                            >
-                              Set Price / Notes
-                            </button>
+                          {/* Assigned Lab */}
+                          <td style={{ padding: '14px 16px' }}>
+                            <span style={{ fontWeight: '700', color: 'var(--forest-900)', display: 'block' }}>
+                              {order.assignedLab}
+                            </span>
                           </td>
 
-                          {/* Payment Status & Collect CTA */}
-                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                          {/* Status */}
+                          <td style={{ padding: '14px 16px' }}>
                             <span
                               style={{
-                                display: 'inline-block',
-                                padding: '3px 8px',
-                                borderRadius: '6px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
                                 fontSize: '11px',
                                 fontWeight: '800',
-                                backgroundColor: isPaid ? '#DCFCE7' : '#FEF3C7',
-                                color: isPaid ? '#166534' : '#B45309',
+                                padding: '3px 9px',
+                                borderRadius: '9999px',
+                                backgroundColor: isPublished ? '#DCFCE7' : isInProgress ? '#EFF6FF' : '#FEF3C7',
+                                color: isPublished ? '#166534' : isInProgress ? '#1E40AF' : '#92400E',
                               }}
                             >
-                              {isPaid ? 'Paid' : 'Pending'}
+                              {isPublished && <CheckCircle2 size={12} />}
+                              {isInProgress && <Clock size={12} />}
+                              {order.status}
                             </span>
-                            {!isPaid && (
-                              <button
-                                onClick={() => setPaymentModalOrder(order)}
-                                style={{
-                                  display: 'block',
-                                  margin: '4px auto 0',
-                                  padding: '3px 8px',
-                                  borderRadius: '4px',
-                                  border: '1px solid #16A34A',
-                                  backgroundColor: '#F0FDF4',
-                                  color: '#166534',
-                                  fontSize: '10px',
-                                  fontWeight: '800',
-                                  cursor: 'pointer',
-                                }}
-                              >
-                                Collect Payment
-                              </button>
-                            )}
                           </td>
 
-                          {/* Order Status */}
-                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                            <select
-                              value={order.orderStatus}
-                              onChange={(e) => updateLabOrderStatus(order.id, e.target.value)}
+                          {/* Invoice / Payment */}
+                          <td style={{ padding: '14px 16px' }}>
+                            <div style={{ fontWeight: '800', color: 'var(--forest-900)' }}>
+                              PKR {(order.price || 0).toLocaleString()}
+                            </div>
+                            <span
                               style={{
-                                padding: '4px 8px',
-                                borderRadius: '6px',
-                                border: '1px solid #CBD5E1',
                                 fontSize: '11px',
-                                fontWeight: '700',
-                                outline: 'none',
-                                backgroundColor:
-                                  order.orderStatus === 'Published'
-                                    ? '#DCFCE7'
-                                    : order.orderStatus === 'In Progress'
-                                    ? '#DBEAFE'
-                                    : '#FEF3C7',
-                                color:
-                                  order.orderStatus === 'Published'
-                                    ? '#166534'
-                                    : order.orderStatus === 'In Progress'
-                                    ? '#1E40AF'
-                                    : '#92400E',
+                                fontWeight: '800',
+                                color: isPaid ? '#059669' : '#D97706',
                               }}
                             >
-                              <option value="Ordered">Ordered</option>
-                              <option value="Received">Received</option>
-                              <option value="In Progress">In Progress</option>
-                              <option value="Completed">Completed</option>
-                              <option value="Published">Published</option>
-                            </select>
+                              ● {order.paymentStatus}
+                            </span>
                           </td>
 
                           {/* Actions */}
-                          <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
+                          <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                              {/* Workflow status advancement buttons */}
+                              {isReceived && (
+                                <button
+                                  type="button"
+                                  className="btn-white-capsule"
+                                  onClick={() => updateLabOrderStatus(order.id, 'In Progress', 'Specimen received & analysis started')}
+                                  style={{ padding: '5px 10px', fontSize: '11.5px', fontWeight: '700' }}
+                                  title="Mark sample as received and start analyzer run"
+                                >
+                                  Start Run
+                                </button>
+                              )}
+
+                              {isInProgress && (
+                                <button
+                                  type="button"
+                                  className="btn-lime-pill"
+                                  onClick={() => setSelectedOrderForUpload(order)}
+                                  style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '800' }}
+                                >
+                                  <Upload size={12} />
+                                  <span>Upload Results</span>
+                                </button>
+                              )}
+
+                              {isPublished && (
+                                <button
+                                  type="button"
+                                  className="btn-lime-pill"
+                                  onClick={() => setSelectedOrderForReport(order)}
+                                  style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '800' }}
+                                >
+                                  <FileText size={12} />
+                                  <span>View Report</span>
+                                </button>
+                              )}
+
+                              {/* Print Order Slip */}
                               <button
-                                onClick={() => setSelectedSlipOrder(order)}
-                                style={{
-                                  padding: '5px 8px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #CBD5E1',
-                                  backgroundColor: '#FFFFFF',
-                                  color: '#334155',
-                                  fontSize: '11px',
-                                  fontWeight: '700',
-                                  cursor: 'pointer',
-                                }}
-                                title="Print Lab Order Slip"
+                                type="button"
+                                className="btn-white-capsule"
+                                onClick={() => setSelectedOrderForSlip(order)}
+                                style={{ padding: '5px 10px', fontSize: '11.5px' }}
+                                title="Print A4 Lab Requisition Slip"
                               >
-                                Slip
+                                <Printer size={13} />
                               </button>
 
-                              {isPublished ? (
+                              {/* Collect Payment if pending */}
+                              {!isPaid && (
                                 <button
-                                  onClick={() => setSelectedReportOrder(order)}
-                                  style={{
-                                    padding: '5px 10px',
-                                    borderRadius: '6px',
-                                    border: 'none',
-                                    backgroundColor: 'var(--forest-900)',
-                                    color: 'var(--lime-accent)',
-                                    fontSize: '11px',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                  }}
-                                  title="Inspect Official Report"
+                                  type="button"
+                                  className="btn-white-capsule"
+                                  onClick={() => setSelectedOrderForPayment(order)}
+                                  style={{ padding: '5px 10px', fontSize: '11.5px', color: '#059669', fontWeight: '700' }}
+                                  title="Collect cash or card payment"
                                 >
-                                  Report
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => {
-                                    setUploadingOrder(order);
-                                    setActiveTab('operations');
-                                  }}
-                                  style={{
-                                    padding: '5px 10px',
-                                    borderRadius: '6px',
-                                    border: 'none',
-                                    backgroundColor: '#2563EB',
-                                    color: '#FFFFFF',
-                                    fontSize: '11px',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                  }}
-                                  title="Upload Test Results & Publish Report"
-                                >
-                                  Upload
+                                  Collect
                                 </button>
                               )}
                             </div>
@@ -735,847 +580,635 @@ export default function AdminLabManagementPage() {
               </table>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* TAB 2: LAB OPERATIONS & TECHNICIAN CONSOLE */}
-      {activeTab === 'operations' && (
-        <div style={{ display: 'grid', gridTemplateColumns: uploadingOrder ? '1fr 1.2fr' : '1fr', gap: '24px' }}>
-          {/* Active Work Queue for Technicians */}
+        {/* TAB 2: BILLING & INVOICING */}
+        {activeTab === 'payments' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: 'var(--forest-900)' }}>
-                Pathology Laboratory Bench Work Queue
-              </h3>
-              <span style={{ fontSize: '12px', color: '#64748B' }}>
-                Select an order to mark status or publish verified findings
-              </span>
-            </div>
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                border: '1px solid var(--border-subtle)',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+                  Diagnostic Billing Ledger &amp; Invoices
+                </h3>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  Real-time invoice synchronization with Patient &amp; Hospital Accounts
+                </span>
+              </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {labOrders.map((ord) => {
-                const isSelected = uploadingOrder?.id === ord.id;
-                return (
-                  <div
-                    key={ord.id}
-                    style={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '12px',
-                      border: isSelected ? '2px solid #2563EB' : '1px solid var(--border-subtle)',
-                      padding: '16px 20px',
-                      boxShadow: 'var(--shadow-xs)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontWeight: '800', color: 'var(--forest-900)', fontSize: '15px' }}>
-                            {ord.orderNumber || ord.id}
-                          </span>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', textAlign: 'left' }}>
+                    <th style={{ padding: '12px 16px' }}>Invoice #</th>
+                    <th style={{ padding: '12px 16px' }}>Order ID</th>
+                    <th style={{ padding: '12px 16px' }}>Patient</th>
+                    <th style={{ padding: '12px 16px' }}>Diagnostic Investigation</th>
+                    <th style={{ padding: '12px 16px' }}>Invoice Amount</th>
+                    <th style={{ padding: '12px 16px' }}>Payment Channel</th>
+                    <th style={{ padding: '12px 16px' }}>Status</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {labOrders.map((order) => {
+                    const isPaid = order.paymentStatus === 'Paid';
+                    return (
+                      <tr key={order.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                        <td style={{ padding: '14px 16px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                          {order.invoiceNumber || 'INV-LB-8021'}
+                        </td>
+                        <td style={{ padding: '14px 16px', color: 'var(--forest-800)', fontWeight: '700' }}>
+                          {order.orderNumber}
+                        </td>
+                        <td style={{ padding: '14px 16px', fontWeight: '700' }}>
+                          {order.patientName}
+                        </td>
+                        <td style={{ padding: '14px 16px', color: '#4B5563' }}>
+                          {(order.tests || []).join(', ')}
+                        </td>
+                        <td style={{ padding: '14px 16px', fontWeight: '900', color: 'var(--forest-900)' }}>
+                          PKR {(order.price || 0).toLocaleString()}
+                        </td>
+                        <td style={{ padding: '14px 16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                          {order.paymentMethod || 'Online Portal'}
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
                           <span
                             style={{
-                              backgroundColor: ord.orderStatus === 'Published' ? '#DCFCE7' : '#FEF3C7',
-                              color: ord.orderStatus === 'Published' ? '#166534' : '#92400E',
-                              fontSize: '10px',
+                              fontSize: '11px',
                               fontWeight: '800',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              backgroundColor: isPaid ? '#DCFCE7' : order.paymentStatus === 'Refunded' ? '#FEE2E2' : '#FEF3C7',
+                              color: isPaid ? '#166534' : order.paymentStatus === 'Refunded' ? '#991B1B' : '#92400E',
                             }}
                           >
-                            {ord.orderStatus}
+                            {order.paymentStatus}
                           </span>
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#0F172A', fontWeight: '700', marginTop: '2px' }}>
-                          Patient: {ord.patientName} (MRN #{ord.patientMrn || 'MC-89241'})
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#64748B' }}>
-                          Tests: {(ord.tests || []).map((t) => t.name).join(', ') || 'Diagnostic Panel'}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#0F5132', marginTop: '4px', fontWeight: '600' }}>
-                          Assigned: {ord.labPartnerName} • Doctor: {ord.doctorName}
-                        </div>
-                      </div>
+                        </td>
+                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px' }}>
+                            {!isPaid && (
+                              <button
+                                type="button"
+                                className="btn-lime-pill"
+                                onClick={() => setSelectedOrderForPayment(order)}
+                                style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '800' }}
+                              >
+                                Collect Payment
+                              </button>
+                            )}
 
-                      {/* Fast Step Transitions: Received -> In Progress -> Completed */}
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-                          <button
-                            type="button"
-                            onClick={() => updateLabOrderStatus(ord.id, 'Received')}
-                            style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
-                              fontWeight: '700',
-                              borderRadius: '4px',
-                              border: '1px solid #CBD5E1',
-                              backgroundColor: ord.orderStatus === 'Received' ? '#0F172A' : '#FFFFFF',
-                              color: ord.orderStatus === 'Received' ? '#FFFFFF' : '#475569',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Received
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => updateLabOrderStatus(ord.id, 'In Progress')}
-                            style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
-                              fontWeight: '700',
-                              borderRadius: '4px',
-                              border: '1px solid #CBD5E1',
-                              backgroundColor: ord.orderStatus === 'In Progress' ? '#2563EB' : '#FFFFFF',
-                              color: ord.orderStatus === 'In Progress' ? '#FFFFFF' : '#475569',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            In Progress
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => updateLabOrderStatus(ord.id, 'Completed')}
-                            style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
-                              fontWeight: '700',
-                              borderRadius: '4px',
-                              border: '1px solid #CBD5E1',
-                              backgroundColor: ord.orderStatus === 'Completed' ? '#16A34A' : '#FFFFFF',
-                              color: ord.orderStatus === 'Completed' ? '#FFFFFF' : '#475569',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Completed
-                          </button>
-                        </div>
+                            {isPaid && (
+                              <button
+                                type="button"
+                                className="btn-white-capsule"
+                                onClick={() => refundLabOrderPayment(order.id)}
+                                style={{ padding: '5px 10px', fontSize: '11.5px', color: '#991B1B' }}
+                              >
+                                Refund
+                              </button>
+                            )}
 
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setUploadingOrder(ord);
-                            if (ord.report?.parameters?.length) {
-                              setParameterRows(ord.report.parameters);
-                            }
-                            if (ord.report?.summary) {
-                              setClinicalSummary(ord.report.summary);
-                            }
-                            if (ord.report?.technicianNotes) {
-                              setTechNotes(ord.report.technicianNotes);
-                            }
-                          }}
+                            <button
+                              type="button"
+                              className="btn-white-capsule"
+                              onClick={() => {
+                                setEditingPriceOrder(order);
+                                setNewPriceValue(order.price || '');
+                              }}
+                              style={{ padding: '5px 10px', fontSize: '11.5px' }}
+                              title="Set or adjust test invoice price"
+                            >
+                              <Edit2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: LAB PARTNERS MANAGEMENT */}
+        {activeTab === 'partners' && (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              {labPartners.map((partner) => {
+                const isActive = partner.status === 'Active';
+                return (
+                  <div
+                    key={partner.id}
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '16px',
+                      padding: '20px',
+                      border: '1px solid var(--border-subtle)',
+                      boxShadow: 'var(--shadow-sm)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      opacity: isActive ? 1 : 0.6,
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                        <div
                           style={{
-                            padding: '6px 14px',
-                            backgroundColor: 'var(--forest-900)',
-                            color: 'var(--lime-accent)',
-                            borderRadius: '6px',
-                            border: 'none',
-                            fontSize: '12px',
-                            fontWeight: '800',
-                            cursor: 'pointer',
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: '12px',
+                            backgroundColor: 'rgba(197, 225, 165, 0.3)',
+                            color: 'var(--forest-800)',
+                            display: 'grid',
+                            placeItems: 'center',
                           }}
                         >
-                          {ord.orderStatus === 'Published' ? 'Edit / View Results' : 'Enter Results & Publish →'}
-                        </button>
+                          <Building2 size={20} />
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            backgroundColor: isActive ? '#DCFCE7' : '#F3F4F6',
+                            color: isActive ? '#166534' : '#6B7280',
+                          }}
+                        >
+                          {partner.status}
+                        </span>
                       </div>
+
+                      <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '4px 0', color: 'var(--forest-900)' }}>
+                        {partner.name}
+                      </h3>
+                      <div style={{ fontSize: '12px', color: '#059669', fontWeight: '700', marginBottom: '4px' }}>
+                        {partner.accreditation}
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                        City Coverage: {partner.city}<br />
+                        Helpline: {partner.phone}<br />
+                        Rating: <b>{partner.turnaroundRating || '4.8 ★'}</b>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                        Home Collection: {partner.homeCollection ? 'Available ✓' : 'In-Lab Only'}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn-white-capsule"
+                        onClick={() => toggleLabPartner(partner.id)}
+                        style={{ padding: '5px 12px', fontSize: '11.5px', fontWeight: '700' }}
+                      >
+                        {isActive ? 'Deactivate' : 'Activate'}
+                      </button>
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
+        )}
 
-          {/* Right Panel: Enter Results & Publish Official Report */}
-          {uploadingOrder && (
+        {/* TAB 4: TEST CATALOG & PRICING */}
+        {activeTab === 'catalog' && (
+          <div>
             <div
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: '14px',
-                border: '1.5px solid #2563EB',
-                padding: '24px',
-                boxShadow: 'var(--shadow-md)',
+                borderRadius: '16px',
+                border: '1px solid var(--border-subtle)',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)' }}>
-                    Publish Diagnostic Report
-                  </h3>
-                  <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748B' }}>
-                    Order #{uploadingOrder.orderNumber || uploadingOrder.id} • Patient: {uploadingOrder.patientName}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setUploadingOrder(null)}
-                  style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <form onSubmit={handlePublishReport}>
-                {/* Parameter Values Table */}
-                <div style={{ marginBottom: '18px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A' }}>
-                      TEST PARAMETERS & OBSERVED VALUES
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleAddParamRow}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '4px 8px',
-                        backgroundColor: '#EFF6FF',
-                        color: '#1D4ED8',
-                        borderRadius: '6px',
-                        border: '1px solid #BFDBFE',
-                        fontSize: '11px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <Plus size={12} /> Add Parameter
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {parameterRows.map((row, idx) => (
-                      <div
-                        key={idx}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: '1.8fr 1fr 0.8fr 1.2fr 0.9fr 28px',
-                          gap: '6px',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <input
-                          type="text"
-                          placeholder="Parameter Name"
-                          value={row.param}
-                          onChange={(e) => handleUpdateParamRow(idx, 'param', e.target.value)}
-                          style={{ padding: '6px 8px', fontSize: '11px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Observed Value"
-                          value={row.value}
-                          onChange={(e) => handleUpdateParamRow(idx, 'value', e.target.value)}
-                          style={{ padding: '6px 8px', fontSize: '11px', borderRadius: '6px', border: '1px solid #CBD5E1', fontWeight: '700' }}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Unit"
-                          value={row.unit}
-                          onChange={(e) => handleUpdateParamRow(idx, 'unit', e.target.value)}
-                          style={{ padding: '6px 8px', fontSize: '11px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Ref Interval"
-                          value={row.normalRange}
-                          onChange={(e) => handleUpdateParamRow(idx, 'normalRange', e.target.value)}
-                          style={{ padding: '6px 8px', fontSize: '11px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                        />
-                        <select
-                          value={row.status}
-                          onChange={(e) => handleUpdateParamRow(idx, 'status', e.target.value)}
-                          style={{ padding: '6px 4px', fontSize: '11px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                        >
-                          <option value="Normal">Normal</option>
-                          <option value="High">High</option>
-                          <option value="Low">Low</option>
-                        </select>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', textAlign: 'left' }}>
+                    <th style={{ padding: '12px 16px' }}>Test Code</th>
+                    <th style={{ padding: '12px 16px' }}>Investigation Name</th>
+                    <th style={{ padding: '12px 16px' }}>Category</th>
+                    <th style={{ padding: '12px 16px' }}>Turnaround (TAT)</th>
+                    <th style={{ padding: '12px 16px' }}>Fasting Requirement</th>
+                    <th style={{ padding: '12px 16px' }}>Configured Price</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {testCatalog.map((test) => (
+                    <tr key={test.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '12px 16px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                        {test.code}
+                      </td>
+                      <td style={{ padding: '12px 16px', fontWeight: '700', color: 'var(--forest-900)' }}>
+                        {test.name}
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', backgroundColor: 'var(--canvas-bg)', padding: '2px 8px', borderRadius: '4px' }}>
+                          {test.category}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>
+                        {test.turnaround}
+                      </td>
+                      <td style={{ padding: '12px 16px', color: test.fastingHours > 0 ? '#B45309' : '#059669', fontWeight: '600' }}>
+                        {test.fastingHours > 0 ? `${test.fastingHours}h Fasting` : 'Non-Fasting'}
+                      </td>
+                      <td style={{ padding: '12px 16px', fontWeight: '900', color: 'var(--forest-900)' }}>
+                        PKR {test.defaultPrice.toLocaleString()}
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                         <button
                           type="button"
-                          onClick={() => handleRemoveParamRow(idx)}
-                          style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer', padding: 0 }}
+                          className="btn-white-capsule"
+                          onClick={() => {
+                            const newPrice = prompt(`Enter new base price (PKR) for ${test.name}:`, test.defaultPrice);
+                            if (newPrice && !isNaN(Number(newPrice))) {
+                              updateTestPrice(test.id, Number(newPrice));
+                            }
+                          }}
+                          style={{ padding: '4px 10px', fontSize: '11.5px' }}
                         >
-                          <Trash2 size={14} />
+                          Edit Fee
                         </button>
-                      </div>
-                    ))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: AUDIT TRAIL */}
+        {activeTab === 'audit' && (
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              padding: '24px',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 16px 0', color: 'var(--forest-900)' }}>
+              Diagnostic Network Real-Time Audit Trail
+            </h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {labOrders.flatMap((order) =>
+                (order.auditTrail || []).map((trail, idx) => ({
+                  ...trail,
+                  key: `${order.id}-${idx}`,
+                  orderId: order.orderNumber,
+                  patient: order.patientName,
+                }))
+              ).map((event) => (
+                <div
+                  key={event.key}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '14px',
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--canvas-bg)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                      color: 'var(--forest-800)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <History size={16} />
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                        {event.event} · Order #{event.orderId} ({event.patient})
+                      </span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        {event.time}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#4B5563' }}>
+                      Actor: <b>{event.actor}</b> — {event.note}
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                {/* Technician Notes */}
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '4px' }}>
-                    TECHNICIAN NOTES & ANALYZER CALIBRATION
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Automated analyzer Sysmex XN-1000. Calibrations validated."
-                    value={techNotes}
-                    onChange={(e) => setTechNotes(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                {/* Pathologist Summary */}
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '4px' }}>
-                    PATHOLOGIST SUMMARY & CLINICAL INTERPRETATION
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Clinical findings, normal baseline hemogram, or recommendations..."
-                    value={clinicalSummary}
-                    onChange={(e) => setClinicalSummary(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box', resize: 'none' }}
-                  />
-                </div>
-
-                {/* Certifying Pathologist Name */}
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '4px' }}>
-                    CERTIFYING PATHOLOGIST
-                  </label>
-                  <input
-                    type="text"
-                    value={pathologistName}
-                    onChange={(e) => setPathologistName(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box', fontWeight: '700' }}
-                  />
-                </div>
-
-                {/* Publish CTA */}
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setUploadingOrder(null)}
-                    style={{
-                      flex: 1,
-                      padding: '10px',
-                      backgroundColor: '#FFFFFF',
-                      border: '1px solid #CBD5E1',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                    }}
-                  >
+        {/* Adjust Price Modal */}
+        {editingPriceOrder && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(14, 56, 44, 0.7)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+            }}
+            onClick={() => setEditingPriceOrder(null)}
+          >
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '24px',
+                width: '400px',
+                maxWidth: '90vw',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 10px 0' }}>
+                Set Test Price for #{editingPriceOrder.orderNumber}
+              </h3>
+              <form onSubmit={handleSavePrice}>
+                <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                  Invoice Amount (PKR)
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={newPriceValue}
+                  onChange={(e) => setNewPriceValue(e.target.value)}
+                  style={{ fontSize: '14px', borderRadius: '8px', marginBottom: '16px' }}
+                  required
+                />
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                  <button type="button" className="btn-white-capsule" onClick={() => setEditingPriceOrder(null)}>
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    style={{
-                      flex: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      padding: '10px',
-                      backgroundColor: 'var(--forest-900)',
-                      color: 'var(--lime-accent)',
-                      borderRadius: '8px',
-                      border: 'none',
-                      fontSize: '13px',
-                      fontWeight: '800',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <CheckCircle size={16} />
-                    <span>Publish Certified Report</span>
+                  <button type="submit" className="btn-lime-pill">
+                    Save Price
                   </button>
                 </div>
               </form>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB 3: LAB PARTNERS MANAGEMENT */}
-      {activeTab === 'partners' && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)' }}>
-                Contracted Diagnostic Pathology Partners
-              </h3>
-              <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#64748B' }}>
-                Manage internal and external laboratory networks, branch SLAs, and active routing status.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setIsAddPartnerOpen(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '9px 18px',
-                backgroundColor: 'var(--forest-900)',
-                color: 'var(--lime-accent)',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '13px',
-                fontWeight: '800',
-                cursor: 'pointer',
-              }}
-            >
-              <Plus size={16} /> Add Lab Partner
-            </button>
           </div>
+        )}
 
+        {/* Add Lab Partner Modal */}
+        {isAddPartnerModalOpen && (
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '16px',
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(14, 56, 44, 0.7)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
             }}
+            onClick={() => setIsAddPartnerModalOpen(false)}
           >
-            {labPartners.map((partner) => {
-              const isActive = partner.status === 'Active';
-              return (
-                <div
-                  key={partner.id}
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '12px',
-                    border: '1px solid var(--border-subtle)',
-                    padding: '20px',
-                    boxShadow: 'var(--shadow-xs)',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)' }}>
-                        {partner.name}
-                      </h4>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748B' }}>
-                        {partner.branch}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => toggleLabPartnerStatus(partner.id)}
-                      style={{
-                        padding: '3px 8px',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        fontWeight: '800',
-                        border: 'none',
-                        cursor: 'pointer',
-                        backgroundColor: isActive ? '#DCFCE7' : '#FEE2E2',
-                        color: isActive ? '#166534' : '#991B1B',
-                      }}
-                    >
-                      {isActive ? 'Active Partner' : 'Deactivated'}
-                    </button>
-                  </div>
-
-                  <div style={{ fontSize: '12px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '14px' }}>
-                    <div><b>Helpline:</b> {partner.helpline}</div>
-                    <div><b>Accreditation:</b> {partner.accreditation}</div>
-                    <div><b>Direct Terms:</b> {partner.discount}</div>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #F1F5F9', paddingTop: '10px' }}>
-                    <span style={{ fontSize: '11px', color: '#64748B' }}>
-                      Routing ID: <code>{partner.id}</code>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => toggleLabPartnerStatus(partner.id)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#2563EB',
-                        fontSize: '12px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {isActive ? 'Deactivate' : 'Activate'}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Add Partner Inline Modal */}
-          {isAddPartnerOpen && (
             <div
               style={{
-                position: 'fixed',
-                inset: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                zIndex: 9999,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '20px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '24px',
+                width: '460px',
+                maxWidth: '92vw',
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <div
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '14px',
-                  maxWidth: '480px',
-                  width: '100%',
-                  padding: '24px',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>Add Laboratory Partner</h3>
-                  <button onClick={() => setIsAddPartnerOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                    <X size={20} />
+              <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 14px 0' }}>
+                Register Certified Lab Partner
+              </h3>
+              <form onSubmit={handleCreatePartner} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                    Laboratory Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newPartnerName}
+                    onChange={(e) => setNewPartnerName(e.target.value)}
+                    placeholder="e.g. Al-Razi Healthcare Diagnostics"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                    City / Coverage
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newPartnerCity}
+                    onChange={(e) => setNewPartnerCity(e.target.value)}
+                    placeholder="Lahore / Nationwide"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                    Accreditation Status
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newPartnerAccreditation}
+                    onChange={(e) => setNewPartnerAccreditation(e.target.value)}
+                    placeholder="ISO-15189 / CAP Certified"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                    Helpline / Dispatch Phone
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newPartnerPhone}
+                    onChange={(e) => setNewPartnerPhone(e.target.value)}
+                    placeholder="+92 42 111 222 333"
+                    required
+                  />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '10px' }}>
+                  <button type="button" className="btn-white-capsule" onClick={() => setIsAddPartnerModalOpen(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-lime-pill">
+                    Add Partner
                   </button>
                 </div>
-                <form onSubmit={handleAddPartnerSubmit}>
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Lab Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Islamabad Diagnostic Center (IDC)"
-                      value={newPartnerName}
-                      onChange={(e) => setNewPartnerName(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Branch Facility</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Main Reference Lab, Lahore"
-                      value={newPartnerBranch}
-                      onChange={(e) => setNewPartnerBranch(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Helpline / Dispatch Phone</label>
-                    <input
-                      type="text"
-                      value={newPartnerHelpline}
-                      onChange={(e) => setNewPartnerHelpline(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '18px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Accreditation & Standards</label>
-                    <input
-                      type="text"
-                      value={newPartnerAccreditation}
-                      onChange={(e) => setNewPartnerAccreditation(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setIsAddPartnerOpen(false)}
-                      style={{ flex: 1, padding: '9px', borderRadius: '6px', border: '1px solid #CBD5E1', backgroundColor: '#FFF', cursor: 'pointer' }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      style={{ flex: 2, padding: '9px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--forest-900)', color: 'var(--lime-accent)', fontWeight: '800', cursor: 'pointer' }}
-                    >
-                      Save Partner
-                    </button>
-                  </div>
-                </form>
-              </div>
+              </form>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB 4: TEST CATALOG & PRICING */}
-      {activeTab === 'catalog' && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)' }}>
-                Clinical Diagnostic Catalog & Price Configuration
-              </h3>
-              <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#64748B' }}>
-                Configure available test codes, pricing matrices, fasting guidelines, and turnaround commitments.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setIsAddTestOpen(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '9px 18px',
-                backgroundColor: 'var(--forest-900)',
-                color: 'var(--lime-accent)',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '13px',
-                fontWeight: '800',
-                cursor: 'pointer',
-              }}
-            >
-              <Plus size={16} /> Add Test to Catalog
-            </button>
           </div>
+        )}
 
+        {/* Add Test to Catalog Modal */}
+        {isAddTestModalOpen && (
           <div
             style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '14px',
-              border: '1px solid var(--border-subtle)',
-              boxShadow: 'var(--shadow-sm)',
-              overflow: 'hidden',
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(14, 56, 44, 0.7)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
             }}
+            onClick={() => setIsAddTestModalOpen(false)}
           >
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-              <thead>
-                <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--border-subtle)', color: '#475569' }}>
-                  <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Code & Test Name</th>
-                  <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Category</th>
-                  <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Fasting Rules</th>
-                  <th style={{ textAlign: 'left', padding: '12px 18px', fontWeight: '800' }}>Turnaround</th>
-                  <th style={{ textAlign: 'right', padding: '12px 18px', fontWeight: '800' }}>Base Price (PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {testCatalog.map((test) => (
-                  <tr key={test.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                    <td style={{ padding: '12px 18px' }}>
-                      <div style={{ fontWeight: '800', color: '#0F172A' }}>{test.name}</div>
-                      <div style={{ fontSize: '11px', color: '#64748B' }}>Code: {test.code}</div>
-                    </td>
-                    <td style={{ padding: '12px 18px', color: '#334155' }}>{test.category}</td>
-                    <td style={{ padding: '12px 18px', color: test.fasting?.includes('required') ? '#DC2626' : '#166534', fontWeight: '600' }}>
-                      {test.fasting}
-                    </td>
-                    <td style={{ padding: '12px 18px', color: '#475569' }}>{test.turnaround}</td>
-                    <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: '900', color: '#0F5132' }}>
-                      PKR {test.price.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Add Test Inline Modal */}
-          {isAddTestOpen && (
             <div
               style={{
-                position: 'fixed',
-                inset: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                zIndex: 9999,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '20px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '24px',
+                width: '460px',
+                maxWidth: '92vw',
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <div
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '14px',
-                  maxWidth: '480px',
-                  width: '100%',
-                  padding: '24px',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>Add Diagnostic Test to Catalog</h3>
-                  <button onClick={() => setIsAddTestOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                    <X size={20} />
-                  </button>
+              <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 14px 0' }}>
+                Add New Diagnostic Test to Catalog
+              </h3>
+              <form onSubmit={handleCreateTest} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                    Test Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newTestName}
+                    onChange={(e) => setNewTestName(e.target.value)}
+                    placeholder="e.g. Serum Ferritin"
+                    required
+                  />
                 </div>
-                <form onSubmit={handleAddTestSubmit}>
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Test Name</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                      Category
+                    </label>
+                    <select
+                      value={newTestCategory}
+                      onChange={(e) => setNewTestCategory(e.target.value)}
+                      style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid var(--border-subtle)', fontSize: '13px' }}
+                    >
+                      <option value="Hematology">Hematology</option>
+                      <option value="Biochemistry">Biochemistry</option>
+                      <option value="Endocrinology">Endocrinology</option>
+                      <option value="Radiology & Imaging">Radiology</option>
+                      <option value="Clinical Pathology">Clinical Pathology</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                      Base Price (PKR)
+                    </label>
                     <input
-                      type="text"
+                      type="number"
+                      className="form-input"
+                      value={newTestPrice}
+                      onChange={(e) => setNewTestPrice(e.target.value)}
                       required
-                      placeholder="e.g. Serum Ferritin & Iron Studies"
-                      value={newTestName}
-                      onChange={(e) => setNewTestName(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
                     />
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-                    <div>
-                      <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Category</label>
-                      <input
-                        type="text"
-                        value={newTestCategory}
-                        onChange={(e) => setNewTestCategory(e.target.value)}
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Price (PKR)</label>
-                      <input
-                        type="number"
-                        value={newTestPrice}
-                        onChange={(e) => setNewTestPrice(Number(e.target.value))}
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                      />
-                    </div>
-                  </div>
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Fasting Instructions</label>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                      Turnaround (TAT)
+                    </label>
                     <input
                       type="text"
-                      value={newTestFasting}
-                      onChange={(e) => setNewTestFasting(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '18px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Turnaround Time</label>
-                    <input
-                      type="text"
+                      className="form-input"
                       value={newTestTurnaround}
                       onChange={(e) => setNewTestTurnaround(e.target.value)}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', boxSizing: 'border-box' }}
+                      placeholder="e.g. 6 Hours"
                     />
                   </div>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setIsAddTestOpen(false)}
-                      style={{ flex: 1, padding: '9px', borderRadius: '6px', border: '1px solid #CBD5E1', backgroundColor: '#FFF', cursor: 'pointer' }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      style={{ flex: 2, padding: '9px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--forest-900)', color: 'var(--lime-accent)', fontWeight: '800', cursor: 'pointer' }}
-                    >
-                      Add Test
-                    </button>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                      Fasting Hours (0 for none)
+                    </label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={newTestFasting}
+                      onChange={(e) => setNewTestFasting(e.target.value)}
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Price & Invoice Edit Modal */}
-      {editingPriceOrder && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.6)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '14px',
-              maxWidth: '460px',
-              width: '100%',
-              padding: '24px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>
-                Set Test Price & Generate Invoice
-              </h3>
-              <button onClick={() => setEditingPriceOrder(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <form onSubmit={handleSavePrice}>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-                  Order Requisition #{editingPriceOrder.orderNumber || editingPriceOrder.id}
-                </label>
-                <div style={{ fontSize: '13px', color: '#0F172A', fontWeight: '600' }}>
-                  Patient: {editingPriceOrder.patientName} (MRN #{editingPriceOrder.patientMrn || 'MC-89241'})
                 </div>
-              </div>
-
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-                  Invoice Price (PKR)
-                </label>
-                <input
-                  type="number"
-                  required
-                  value={customPriceInput}
-                  onChange={(e) => setCustomPriceInput(e.target.value)}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '14px', fontWeight: '700', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '18px' }}>
-                <label style={{ fontSize: '12px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-                  Invoice Remarks / Discount Notes
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Standard OPD Pathology Discount Applied"
-                  value={customNotesInput}
-                  onChange={(e) => setCustomNotesInput(e.target.value)}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '12px', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button
-                  type="button"
-                  onClick={() => setEditingPriceOrder(null)}
-                  style={{ flex: 1, padding: '9px', borderRadius: '6px', border: '1px solid #CBD5E1', backgroundColor: '#FFF', cursor: 'pointer' }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{ flex: 2, padding: '9px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--forest-900)', color: 'var(--lime-accent)', fontWeight: '800', cursor: 'pointer' }}
-                >
-                  Save & Update Invoice
-                </button>
-              </div>
-            </form>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '10px' }}>
+                  <button type="button" className="btn-white-capsule" onClick={() => setIsAddTestModalOpen(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-lime-pill">
+                    Save Test
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Slip Modal */}
-      {selectedSlipOrder && (
-        <PrintableLabOrderSlip
-          order={selectedSlipOrder}
-          onClose={() => setSelectedSlipOrder(null)}
+        {/* Requisition Slip Modal */}
+        <LabOrderSlipModal
+          isOpen={Boolean(selectedOrderForSlip)}
+          onClose={() => setSelectedOrderForSlip(null)}
+          order={selectedOrderForSlip}
         />
-      )}
 
-      {/* Report Modal */}
-      {selectedReportOrder && (
-        <PrintableLabReport
-          order={selectedReportOrder}
-          onClose={() => setSelectedReportOrder(null)}
+        {/* View Official Report Modal */}
+        <LabReportViewModal
+          isOpen={Boolean(selectedOrderForReport)}
+          onClose={() => setSelectedOrderForReport(null)}
+          order={selectedOrderForReport}
         />
-      )}
 
-      {/* Payment Settlement Modal */}
-      {paymentModalOrder && (
-        <LabPaymentModal
-          isOpen={!!paymentModalOrder}
-          order={paymentModalOrder}
-          isAdmin={true}
-          onClose={() => setPaymentModalOrder(null)}
+        {/* Upload & Publish Results Modal */}
+        <UploadReportModal
+          isOpen={Boolean(selectedOrderForUpload)}
+          onClose={() => setSelectedOrderForUpload(null)}
+          order={selectedOrderForUpload}
         />
-      )}
-    </div>
+
+        {/* Collect Payment Modal */}
+        <PayLabOrderModal
+          isOpen={Boolean(selectedOrderForPayment)}
+          onClose={() => setSelectedOrderForPayment(null)}
+          order={selectedOrderForPayment}
+          isAdminMode={true}
+        />
+      </div>
+    </AppShell>
   );
 }

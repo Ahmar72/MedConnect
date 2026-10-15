@@ -33,6 +33,7 @@ import {
   Clock,
   Search,
   TrendingUp,
+  TestTube2,
 } from 'lucide-react';
 
 export default function AppShell({ children }) {
@@ -316,8 +317,8 @@ export default function AppShell({ children }) {
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <FileText size={17} />
-                <span>Lab Orders & History</span>
+                <TestTube2 size={17} />
+                <span>Lab Orders & Reports</span>
               </NavLink>
 
               <NavLink
@@ -421,8 +422,8 @@ export default function AppShell({ children }) {
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <FileText size={17} />
-                <span>Lab Diagnostics Suite</span>
+                <TestTube2 size={17} />
+                <span>Lab Operations &amp; Reports</span>
               </NavLink>
             </nav>
           </>

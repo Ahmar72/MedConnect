@@ -1,179 +1,156 @@
 import React, { useState, useMemo } from 'react';
+import { useDemo } from '../../../context/DemoContext';
 import {
   X,
   Search,
   Check,
-  Plus,
-  Trash2,
+  TestTube2,
   AlertCircle,
   Clock,
-  Building,
-  CheckCircle2,
+  Sparkles,
+  Building2,
   FileText,
+  Send,
   Printer,
   ChevronDown,
 } from 'lucide-react';
-import { useDemo } from '../../../context/DemoContext';
-import PrintableLabOrderSlip from './PrintableLabOrderSlip';
 
-export default function OrderLabTestModal({
-  isOpen,
-  onClose,
-  patientData = null,
-  onOrderCreated = null,
-}) {
+export default function OrderLabTestModal({ isOpen, onClose, defaultPatient, onOrderCreated }) {
   const {
     testCatalog = [],
     labPartners = [],
     createLabOrder,
     currentUser,
+    patientsList = [],
     showToast,
   } = useDemo();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedTests, setSelectedTests] = useState([]);
-  const [isFastingRequired, setIsFastingRequired] = useState(false);
+  const [selectedPatientId, setSelectedPatientId] = useState(
+    defaultPatient?.id || defaultPatient?.mrn || (patientsList[0]?.id || 'patient-alex')
+  );
+  const [searchTest, setSearchTest] = useState('');
+  const [selectedTests, setSelectedTests] = useState(['Complete Blood Count (CBC)']);
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [instructions, setInstructions] = useState('Evaluate baseline clinical status and rule out systemic issues.');
+  const [fastingRequired, setFastingRequired] = useState(false);
+  const [fastingHours, setFastingHours] = useState(10);
   const [urgency, setUrgency] = useState('Routine'); // 'Routine' | 'Urgent' | 'STAT'
-  const [notes, setNotes] = useState('');
-  const [selectedLabId, setSelectedLabId] = useState(() => labPartners[0]?.id || 'lab-chughtai');
+  const [assignedLab, setAssignedLab] = useState(labPartners[0]?.name || 'Chughtai Lab');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // State for immediate print slip after sending
-  const [createdOrderSlip, setCreatedOrderSlip] = useState(null);
+  // Active patient object
+  const activePatient = useMemo(() => {
+    if (defaultPatient?.name) return defaultPatient;
+    return patientsList.find((p) => p.id === selectedPatientId || p.mrn === selectedPatientId) || patientsList[0] || {};
+  }, [defaultPatient, patientsList, selectedPatientId]);
 
-  // Extract available categories
+  // Categories
   const categories = useMemo(() => {
     const set = new Set(testCatalog.map((t) => t.category));
     return ['All', ...Array.from(set)];
   }, [testCatalog]);
 
   // Filtered test catalog
-  const filteredTests = useMemo(() => {
-    return testCatalog.filter((test) => {
-      const matchSearch =
-        test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (test.code && test.code.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        test.category.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchCat = selectedCategory === 'All' || test.category === selectedCategory;
-      return matchSearch && matchCat;
+  const filteredCatalog = useMemo(() => {
+    return testCatalog.filter((item) => {
+      const matchCat = categoryFilter === 'All' || item.category === categoryFilter;
+      const matchQuery =
+        !searchTest ||
+        item.name.toLowerCase().includes(searchTest.toLowerCase()) ||
+        item.code.toLowerCase().includes(searchTest.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTest.toLowerCase());
+      return matchCat && matchQuery;
     });
-  }, [testCatalog, searchTerm, selectedCategory]);
-
-  const toggleTestSelection = (test) => {
-    setSelectedTests((prev) => {
-      const exists = prev.find((t) => t.id === test.id);
-      if (exists) {
-        return prev.filter((t) => t.id !== test.id);
-      } else {
-        // Auto-check fasting if test hints it
-        if ((test.fasting || '').toLowerCase().includes('fasting required')) {
-          setIsFastingRequired(true);
-        }
-        return [...prev, test];
-      }
-    });
-  };
-
-  const removeTest = (testId) => {
-    setSelectedTests((prev) => prev.filter((t) => t.id !== testId));
-  };
-
-  const totalPrice = useMemo(() => {
-    return selectedTests.reduce((sum, t) => sum + (Number(t.price) || 0), 0);
-  }, [selectedTests]);
-
-  const selectedLab = useMemo(() => {
-    return labPartners.find((l) => l.id === selectedLabId) || labPartners[0];
-  }, [labPartners, selectedLabId]);
-
-  const handleSendOrder = (e) => {
-    e.preventDefault();
-    if (selectedTests.length === 0) {
-      showToast('Please select at least one lab test to order.', 'warning');
-      return;
-    }
-
-    const orderPayload = {
-      patientId: patientData?.id || 'patient-alex',
-      patientName: patientData?.name || patientData?.patientName || 'Alex Khan',
-      patientMrn: patientData?.mrn || patientData?.patientMrn || 'MC-89241',
-      patientPhone: patientData?.phone || patientData?.patientPhone || '+92 300 1234567',
-      patientAge: patientData?.age || patientData?.patientAge || 29,
-      patientGender: patientData?.gender || patientData?.patientGender || 'Male',
-      patientCity: patientData?.city || patientData?.patientCity || 'Lahore',
-      doctorName: currentUser?.name || 'Dr. Amina Shah',
-      doctorSpecialty: currentUser?.specialty || 'General Physician',
-      doctorPmdc: currentUser?.pmdcNumber || '39482-P',
-      tests: selectedTests,
-      instructions: {
-        fasting: isFastingRequired,
-        urgency,
-        notes: notes.trim(),
-      },
-      labPartnerId: selectedLab?.id || 'lab-chughtai',
-      labPartnerName: selectedLab?.name || 'Chughtai Lab',
-      labBranch: selectedLab?.branch || 'Central Reference Facility',
-    };
-
-    const newOrder = createLabOrder(orderPayload);
-    if (onOrderCreated) {
-      onOrderCreated(newOrder);
-    }
-
-    // Set order for print preview option
-    setCreatedOrderSlip(newOrder);
-  };
+  }, [testCatalog, categoryFilter, searchTest]);
 
   if (!isOpen) return null;
 
-  if (createdOrderSlip) {
-    return (
-      <PrintableLabOrderSlip
-        order={createdOrderSlip}
-        onClose={() => {
-          setCreatedOrderSlip(null);
-          onClose();
-        }}
-      />
-    );
-  }
+  const toggleTest = (testName) => {
+    if (selectedTests.includes(testName)) {
+      if (selectedTests.length === 1) {
+        showToast('At least one diagnostic test must be selected.', 'warning');
+        return;
+      }
+      setSelectedTests((prev) => prev.filter((t) => t !== testName));
+    } else {
+      setSelectedTests((prev) => [...prev, testName]);
+    }
+  };
+
+  const handleSendOrder = (e) => {
+    if (e) e.preventDefault();
+    if (selectedTests.length === 0) {
+      showToast('Please select at least one test.', 'warning');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const newOrder = createLabOrder({
+      patientId: activePatient.id,
+      patientName: activePatient.name || activePatient.patientName || 'Alex Khan',
+      patientMrn: activePatient.mrn || 'MC-89241',
+      patientPhone: activePatient.phone || '+92 300 1234567',
+      patientAge: activePatient.age || 29,
+      patientGender: activePatient.gender || 'Male',
+      patientCity: activePatient.city || 'Lahore',
+      doctorId: currentUser?.id || 'dr-amina-shah',
+      doctorName: currentUser?.name || 'Dr. Amina Shah',
+      doctorSpecialty: currentUser?.specialty || 'General Physician',
+      tests: selectedTests,
+      instructions,
+      fastingRequired,
+      fastingHours: fastingRequired ? Number(fastingHours) : 0,
+      urgency,
+      assignedLab,
+    });
+
+    setIsSubmitting(false);
+    if (onOrderCreated) {
+      onOrderCreated(newOrder);
+    }
+    onClose();
+  };
 
   return (
     <div
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 9998,
+        backgroundColor: 'rgba(14, 56, 44, 0.65)',
+        backdropFilter: 'blur(5px)',
+        zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '16px',
       }}
+      onClick={onClose}
     >
       <div
         style={{
           backgroundColor: '#FFFFFF',
-          borderRadius: '16px',
-          maxWidth: '860px',
-          width: '100%',
+          borderRadius: '20px',
+          width: '740px',
+          maxWidth: '96vw',
           maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           overflow: 'hidden',
+          border: '1px solid var(--border-subtle)',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
           style={{
-            padding: '18px 24px',
-            backgroundColor: 'var(--forest-900)',
-            color: '#FFFFFF',
+            padding: '20px 24px',
+            borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            backgroundColor: 'var(--canvas-bg)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -181,407 +158,363 @@ export default function OrderLabTestModal({
               style={{
                 width: '40px',
                 height: '40px',
-                borderRadius: '10px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                backgroundColor: 'rgba(197, 225, 165, 0.35)',
+                color: 'var(--forest-800)',
                 display: 'grid',
                 placeItems: 'center',
-                color: 'var(--lime-accent)',
               }}
             >
-              <FileText size={22} />
+              <TestTube2 size={22} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
                 Order Diagnostic Lab Tests
               </h2>
-              <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#94A3B8' }}>
-                Patient: <b style={{ color: '#FFFFFF' }}>{patientData?.name || patientData?.patientName || 'Alex Khan'}</b> (MRN #{patientData?.mrn || patientData?.patientMrn || 'MC-89241'})
-              </p>
+              <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                Patient: <b style={{ color: 'var(--forest-900)' }}>{activePatient.name || activePatient.patientName}</b> ({activePatient.mrn || 'MC-89241'})
+              </span>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             style={{
-              background: 'transparent',
+              background: 'none',
               border: 'none',
-              color: '#94A3B8',
               cursor: 'pointer',
+              color: 'var(--text-muted)',
               padding: '6px',
+              borderRadius: '8px',
             }}
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div
-          style={{
-            padding: '24px',
-            overflowY: 'auto',
-            display: 'grid',
-            gridTemplateColumns: '1.2fr 1fr',
-            gap: '24px',
-          }}
-        >
-          {/* Left Column: Test Search & Catalog */}
+        {/* Scrollable Body */}
+        <div style={{ padding: '24px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* 1. TEST SELECTION */}
           <div>
-            <div style={{ marginBottom: '14px' }}>
-              <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '6px' }}>
-                SEARCH & SELECT LAB INVESTIGATIONS (MULTI-SELECT)
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                1. Select Tests ({selectedTests.length} selected)
               </label>
-              <div style={{ position: 'relative' }}>
-                <Search
-                  size={16}
-                  style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Search test name (CBC, Lipid, HbA1c, X-Ray, MRI)..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px 10px 38px',
-                    borderRadius: '8px',
-                    border: '1px solid #CBD5E1',
-                    fontSize: '13px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                Multi-select tests from accredited catalog
+              </span>
             </div>
 
-            {/* Category Filter Pills */}
-            <div
-              style={{
-                display: 'flex',
-                gap: '6px',
-                overflowX: 'auto',
-                paddingBottom: '8px',
-                marginBottom: '12px',
-              }}
-            >
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
+            {/* Selected Tags */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
+              {selectedTests.map((testName) => (
+                <span
+                  key={testName}
                   style={{
-                    padding: '5px 12px',
-                    borderRadius: '20px',
-                    fontSize: '11px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                    color: 'var(--forest-900)',
+                    fontSize: '12px',
                     fontWeight: '700',
-                    border: 'none',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    backgroundColor: selectedCategory === cat ? 'var(--forest-900)' : '#F1F5F9',
-                    color: selectedCategory === cat ? 'var(--lime-accent)' : '#475569',
+                    border: '1px solid rgba(14, 56, 44, 0.15)',
                   }}
                 >
-                  {cat}
-                </button>
+                  <Check size={12} color="var(--forest-800)" />
+                  {testName}
+                  <button
+                    type="button"
+                    onClick={() => toggleTest(testName)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'inline-flex', color: '#991B1B' }}
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
               ))}
             </div>
 
-            {/* Test Items List */}
-            <div
-              style={{
-                maxHeight: '320px',
-                overflowY: 'auto',
-                border: '1px solid #E2E8F0',
-                borderRadius: '10px',
-                padding: '6px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-              }}
-            >
-              {filteredTests.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '30px', color: '#94A3B8', fontSize: '13px' }}>
-                  No diagnostic tests found matching "{searchTerm}".
-                </div>
-              ) : (
-                filteredTests.map((test) => {
-                  const isSelected = selectedTests.some((t) => t.id === test.id);
-                  return (
-                    <div
-                      key={test.id}
-                      onClick={() => toggleTestSelection(test)}
-                      style={{
-                        padding: '10px 12px',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        backgroundColor: isSelected ? '#F0FDF4' : '#FFFFFF',
-                        border: isSelected ? '1.5px solid #22C55E' : '1px solid #F1F5F9',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div
-                          style={{
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '5px',
-                            border: isSelected ? '1.5px solid #16A34A' : '1.5px solid #CBD5E1',
-                            backgroundColor: isSelected ? '#16A34A' : '#FFFFFF',
-                            display: 'grid',
-                            placeItems: 'center',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          {isSelected && <Check size={14} />}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A' }}>
-                            {test.name}
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#64748B' }}>
-                            {test.category} • TAT: {test.turnaround} • <span style={{ color: test.fasting.includes('required') ? '#DC2626' : '#166534' }}>{test.fasting}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '800', color: '#0F5132' }}>
-                          PKR {test.price.toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {/* Right Column: Selected Tests, Lab Assignment, Instructions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Selected Tests Summary Box */}
-            <div
-              style={{
-                backgroundColor: '#F8FAFC',
-                borderRadius: '10px',
-                border: '1px solid #E2E8F0',
-                padding: '14px',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A' }}>
-                  SELECTED TESTS ({selectedTests.length})
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: '900', color: '#0F5132' }}>
-                  PKR {totalPrice.toLocaleString()}
-                </span>
+            {/* Search and Category Filter */}
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+              <div style={{ position: 'relative', flex: 1 }}>
+                <Search size={15} style={{ position: 'absolute', left: '12px', top: '11px', color: 'var(--text-muted)' }} />
+                <input
+                  type="text"
+                  placeholder="Search tests (e.g. CBC, Lipid, X-Ray, MRI, LFT)..."
+                  className="form-input"
+                  value={searchTest}
+                  onChange={(e) => setSearchTest(e.target.value)}
+                  style={{ paddingLeft: '36px', fontSize: '13px', height: '38px', borderRadius: '10px' }}
+                />
               </div>
 
-              {selectedTests.length === 0 ? (
-                <p style={{ margin: 0, fontSize: '12px', color: '#94A3B8', fontStyle: 'italic' }}>
-                  No tests selected yet. Click any test on the left to add.
-                </p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
-                  {selectedTests.map((t) => (
-                    <div
-                      key={t.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '6px 10px',
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: '6px',
-                        border: '1px solid #E2E8F0',
-                        fontSize: '12px',
-                      }}
-                    >
-                      <span style={{ fontWeight: '600', color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '240px' }}>
-                        {t.name}
-                      </span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: '700', color: '#0F5132' }}>PKR {t.price.toLocaleString()}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeTest(t.id)}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: '#94A3B8',
-                            cursor: 'pointer',
-                            padding: '2px',
-                          }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Lab Partner Assignment */}
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                <Building size={14} color="#0F5132" />
-                ASSIGN TO PATHOLOGY LAB PARTNER
-              </label>
               <select
-                value={selectedLabId}
-                onChange={(e) => setSelectedLabId(e.target.value)}
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
                 style={{
-                  width: '100%',
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #CBD5E1',
-                  fontSize: '13px',
-                  outline: 'none',
-                  backgroundColor: '#FFFFFF',
+                  padding: '0 12px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '12.5px',
                   fontWeight: '600',
-                  color: '#0F172A',
+                  color: 'var(--forest-900)',
+                  backgroundColor: '#FFFFFF',
+                  cursor: 'pointer',
+                  height: '38px',
                 }}
               >
-                {labPartners.map((partner) => (
-                  <option key={partner.id} value={partner.id}>
-                    {partner.name} — {partner.branch}
-                  </option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
 
-            {/* Urgency & Fasting Controls */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '6px' }}>
-                  PRIORITY
-                </label>
-                <select
-                  value={urgency}
-                  onChange={(e) => setUrgency(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    border: '1px solid #CBD5E1',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    outline: 'none',
-                  }}
-                >
-                  <option value="Routine">Routine</option>
-                  <option value="Urgent">Urgent (Express)</option>
-                  <option value="STAT">STAT (Immediate Emergency)</option>
-                </select>
-              </div>
+            {/* Test Catalog List */}
+            <div
+              style={{
+                maxHeight: '180px',
+                overflowY: 'auto',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '12px',
+                padding: '4px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                backgroundColor: 'var(--canvas-bg)',
+              }}
+            >
+              {filteredCatalog.map((item) => {
+                const isSelected = selectedTests.includes(item.name);
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => toggleTest(item.name)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      backgroundColor: isSelected ? 'rgba(197, 225, 165, 0.4)' : '#FFFFFF',
+                      border: isSelected ? '1px solid var(--forest-800)' : '1px solid transparent',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--forest-900)' }}>
+                          {item.name}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '10.5px',
+                            fontWeight: '700',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                            backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                            color: 'var(--forest-800)',
+                          }}
+                        >
+                          {item.category}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                        {item.sampleType} · TAT: {item.turnaround} · Fasting: {item.fastingHours > 0 ? `${item.fastingHours} hrs` : 'None'}
+                      </div>
+                    </div>
 
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '6px' }}>
-                  FASTING PROTOCOL
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setIsFastingRequired(!isFastingRequired)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    border: isFastingRequired ? '1.5px solid #DC2626' : '1px solid #CBD5E1',
-                    backgroundColor: isFastingRequired ? '#FEF2F2' : '#FFFFFF',
-                    color: isFastingRequired ? '#991B1B' : '#475569',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    textAlign: 'center',
-                  }}
-                >
-                  {isFastingRequired ? '⚠️ Fasting Required' : 'No Fasting'}
-                </button>
-              </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                        PKR {item.defaultPrice.toLocaleString()}
+                      </span>
+                      <div
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '6px',
+                          border: isSelected ? 'none' : '1.5px solid var(--border-strong)',
+                          backgroundColor: isSelected ? 'var(--forest-800)' : 'transparent',
+                          color: '#FFFFFF',
+                          display: 'grid',
+                          placeItems: 'center',
+                        }}
+                      >
+                        {isSelected && <Check size={13} />}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 2. INSTRUCTIONS & CLINICAL NOTES */}
+          <div>
+            <label style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)', display: 'block', marginBottom: '6px' }}>
+              2. Clinical Indication & Instructions for Lab / Patient
+            </label>
+            <textarea
+              rows={2}
+              className="form-input"
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              placeholder="e.g. Rule out iron deficiency anemia, check fasting lipid levels, monitor liver enzymes."
+              style={{ fontSize: '13px', borderRadius: '10px', width: '100%' }}
+            />
+          </div>
+
+          {/* 3. FASTING, URGENCY & ASSIGNED LAB */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+            {/* Fasting Required */}
+            <div
+              style={{
+                backgroundColor: 'var(--canvas-bg)',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '8px' }}>
+                <input
+                  type="checkbox"
+                  checked={fastingRequired}
+                  onChange={(e) => setFastingRequired(e.target.checked)}
+                  style={{ width: '16px', height: '16px', accentColor: 'var(--forest-800)' }}
+                />
+                <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--forest-900)' }}>
+                  Fasting Required
+                </span>
+              </label>
+
+              {fastingRequired && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input
+                    type="number"
+                    min={1}
+                    max={24}
+                    value={fastingHours}
+                    onChange={(e) => setFastingHours(e.target.value)}
+                    style={{ width: '60px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border-subtle)', fontSize: '12.5px' }}
+                  />
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Hours overnight</span>
+                </div>
+              )}
             </div>
 
-            {/* Clinical Indications / Notes */}
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '800', color: '#0F172A', display: 'block', marginBottom: '6px' }}>
-                CLINICAL NOTES & INSTRUCTIONS
+            {/* Urgency */}
+            <div
+              style={{
+                backgroundColor: 'var(--canvas-bg)',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                Priority / Urgency
               </label>
-              <textarea
-                rows={2}
-                placeholder="Specific clinical indication, suspicion or instructions for pathology team..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+              <select
+                value={urgency}
+                onChange={(e) => setUrgency(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px 12px',
+                  padding: '6px 8px',
                   borderRadius: '8px',
-                  border: '1px solid #CBD5E1',
-                  fontSize: '12px',
-                  outline: 'none',
-                  resize: 'none',
-                  boxSizing: 'border-box',
-                  fontFamily: 'inherit',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: urgency === 'STAT' ? '#B91C1C' : urgency === 'Urgent' ? '#B45309' : 'var(--forest-900)',
+                  backgroundColor: '#FFFFFF',
                 }}
-              />
+              >
+                <option value="Routine">Routine (Standard Turnaround)</option>
+                <option value="Urgent">Urgent (Priority Batch)</option>
+                <option value="STAT">STAT (Immediate Emergency)</option>
+              </select>
+            </div>
+
+            {/* Assign Lab Partner */}
+            <div
+              style={{
+                backgroundColor: 'var(--canvas-bg)',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                Assign to Lab Partner
+              </label>
+              <select
+                value={assignedLab}
+                onChange={(e) => setAssignedLab(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '6px 8px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '12.5px',
+                  fontWeight: '700',
+                  color: 'var(--forest-900)',
+                  backgroundColor: '#FFFFFF',
+                }}
+              >
+                {labPartners.map((lp) => (
+                  <option key={lp.id} value={lp.name}>
+                    {lp.name} ({lp.accreditation.split(' ')[0]})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
 
-        {/* Modal Footer / CTA */}
+        {/* Footer */}
         <div
           style={{
             padding: '16px 24px',
-            backgroundColor: '#F8FAFC',
-            borderTop: '1px solid #E2E8F0',
+            borderTop: '1px solid var(--border-subtle)',
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: 'var(--canvas-bg)',
           }}
         >
-          <div style={{ fontSize: '12px', color: '#64748B' }}>
-            Result: Lab + Patient + Admin will receive instantaneous notification.
+          <div style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+            Order transmits simultaneously to <b>{assignedLab}</b>, <b>{activePatient.name}</b>, &amp; <b>Admin</b>.
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
               type="button"
+              className="btn-white-capsule"
               onClick={onClose}
-              style={{
-                padding: '9px 18px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #CBD5E1',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#475569',
-                cursor: 'pointer',
-              }}
+              style={{ padding: '8px 16px', fontSize: '13px' }}
             >
               Cancel
             </button>
 
             <button
               type="button"
+              className="btn-lime-pill"
               onClick={handleSendOrder}
-              disabled={selectedTests.length === 0}
+              disabled={isSubmitting || selectedTests.length === 0}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '9px 24px',
-                backgroundColor: selectedTests.length > 0 ? 'var(--forest-900)' : '#94A3B8',
-                color: 'var(--lime-accent)',
-                border: 'none',
-                borderRadius: '8px',
+                padding: '9px 22px',
                 fontSize: '13px',
                 fontWeight: '800',
-                cursor: selectedTests.length > 0 ? 'pointer' : 'not-allowed',
-                boxShadow: 'var(--shadow-sm)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                opacity: selectedTests.length === 0 ? 0.6 : 1,
               }}
             >
-              <CheckCircle2 size={16} />
-              <span>Send Order</span>
+              <Send size={15} />
+              <span>Send Order ({selectedTests.length})</span>
             </button>
           </div>
         </div>

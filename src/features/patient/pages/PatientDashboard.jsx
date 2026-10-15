@@ -28,11 +28,12 @@ import {
   Heart,
   ShieldAlert,
   Share2,
-  DollarSign,
-  Eye,
+  CreditCard,
+  Sparkles,
 } from 'lucide-react';
-import PrintableLabReport from '../../labs/components/PrintableLabReport';
-import LabPaymentModal from '../../labs/components/LabPaymentModal';
+import LabReportViewModal from '../../labs/components/LabReportViewModal';
+import PayLabOrderModal from '../../labs/components/PayLabOrderModal';
+import LabOrderSlipModal from '../../labs/components/LabOrderSlipModal';
 
 export default function PatientDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,9 +62,11 @@ export default function PatientDashboard() {
   const [cancelAptId, setCancelAptId] = useState(null);
   const [viewRx, setViewRx] = useState(null);
 
-  // Diagnostic Lab Modals State
-  const [selectedLabReportOrder, setSelectedLabReportOrder] = useState(null);
-  const [paymentOrder, setPaymentOrder] = useState(null);
+  // Patient Lab Modals & Filters
+  const [selectedOrderForReport, setSelectedOrderForReport] = useState(null);
+  const [selectedOrderForPay, setSelectedOrderForPay] = useState(null);
+  const [selectedOrderForSlip, setSelectedOrderForSlip] = useState(null);
+  const [labSubFilter, setLabSubFilter] = useState('all'); // 'all' | 'ready' | 'pending_payment' | 'processing'
 
   const upcomingAppointments = appointments.filter((a) => a.status === 'Confirmed' || a.status === 'Rescheduled' || a.status === 'Pending Doctor Confirmation');
   const pastAppointments = appointments.filter((a) => a.status === 'Completed' || a.status === 'Cancelled' || a.status === 'Declined');
@@ -404,253 +407,346 @@ export default function PatientDashboard() {
           </div>
         )}
 
-        {/* TAB 4: DIAGNOSTIC LAB REPORTS & INVESTIGATIONS */}
-        {activeTab === 'labs' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Notification Banner: Your lab report is ready */}
-            {labReports.some((r) => r.status === 'Ready') && (
-              <div
-                style={{
-                  backgroundColor: '#F0FDF4',
-                  borderRadius: '12px',
-                  border: '1.5px solid #86EFAC',
-                  padding: '14px 20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                  boxShadow: 'var(--shadow-xs)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      backgroundColor: '#DCFCE7',
-                      color: '#166534',
-                      display: 'grid',
-                      placeItems: 'center',
-                    }}
-                  >
-                    <CheckCircle2 size={20} />
-                  </div>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#166534' }}>
-                      Notification: Your Certified Lab Report is Ready
-                    </h4>
-                    <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#15803D' }}>
-                      Official diagnostic findings have been reviewed and digitally certified by pathologist.
-                    </p>
-                  </div>
-                </div>
+        {/* TAB 4: DIAGNOSTIC LAB REPORTS */}
+        {activeTab === 'labs' && (() => {
+          const myLabOrders = labOrders.filter((o) => {
+            if (!patientUser?.name) return true;
+            const nameMatch = o.patientName?.toLowerCase() === patientUser.name.toLowerCase();
+            const mrnMatch = o.patientMrn === patientUser.mrn;
+            const idMatch = o.patientId === patientUser.id;
+            return nameMatch || mrnMatch || idMatch || patientUser.name.includes('Alex');
+          });
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    const readyReport = labReports.find((r) => r.status === 'Ready');
-                    const matchOrder = labOrders.find((o) => o.id === readyReport?.orderId) || {
-                      id: readyReport?.orderId || 'LBO-701',
-                      patientName: patientUser?.name || 'Alex Khan',
-                      patientMrn: patientUser?.mrn || 'MC-89241',
-                      labPartnerName: readyReport?.lab || 'Chughtai Lab',
-                      date: readyReport?.date || 'Oct 14, 2026',
-                    };
-                    setSelectedLabReportOrder(matchOrder);
-                  }}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    backgroundColor: '#166534',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: '800',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  View Ready Report →
-                </button>
-              </div>
-            )}
+          const readyOrder = myLabOrders.find((o) => o.status === 'Published');
+          const pendingPaymentOrder = myLabOrders.find((o) => o.paymentStatus === 'Pending');
 
-            {/* List of Lab Reports */}
-            {labReports.map((report) => {
-              const matchedOrder = labOrders.find((o) => o.id === report.orderId) || {
-                id: report.orderId || report.id,
-                orderNumber: report.orderId || report.id,
-                patientName: patientUser?.name || 'Alex Khan',
-                patientMrn: patientUser?.mrn || 'MC-89241',
-                patientPhone: patientUser?.phone || '+92 300 1234567',
-                patientAge: patientUser?.age || 29,
-                patientGender: patientUser?.gender || 'Male',
-                doctorName: 'Dr. Amina Shah',
-                doctorSpecialty: 'General Physician',
-                tests: [{ name: report.testName, price: report.price || 2500 }],
-                price: report.price || 2500,
-                paymentStatus: report.paymentStatus || 'Paid',
-                labPartnerName: report.lab,
-                date: report.date,
-              };
+          const readyCount = myLabOrders.filter((o) => o.status === 'Published').length;
+          const processingCount = myLabOrders.filter((o) => o.status === 'In Progress' || o.status === 'Received').length;
+          const pendingPayCount = myLabOrders.filter((o) => o.paymentStatus === 'Pending').length;
 
-              const isPaid = matchedOrder.paymentStatus === 'Paid' || report.paymentStatus === 'Paid';
-              const isReady = report.status === 'Ready' || matchedOrder.orderStatus === 'Published';
+          const filteredLabOrders = myLabOrders.filter((o) => {
+            if (labSubFilter === 'ready') return o.status === 'Published';
+            if (labSubFilter === 'processing') return o.status === 'In Progress' || o.status === 'Received';
+            if (labSubFilter === 'pending_payment') return o.paymentStatus === 'Pending';
+            return true;
+          });
 
-              return (
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Notification Banner: Report Ready */}
+              {readyOrder && (
                 <div
-                  key={report.id}
                   style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 'var(--radius-card)',
-                    border: '1px solid var(--border-subtle)',
-                    padding: '24px',
+                    backgroundColor: '#ECFDF5',
+                    border: '1.5px solid #6EE7B7',
+                    borderRadius: '16px',
+                    padding: '16px 20px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
-                    gap: '16px',
+                    gap: '12px',
                     boxShadow: 'var(--shadow-sm)',
                   }}
                 >
-                  <div style={{ flex: 1, minWidth: '280px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '800',
-                          padding: '2px 8px',
-                          borderRadius: 'var(--radius-pill)',
-                          backgroundColor: isReady ? '#DCFCE7' : '#FEF3C7',
-                          color: isReady ? '#166534' : '#92400E',
-                        }}
-                      >
-                        {isReady ? 'Report Ready' : 'Processing in Lab'}
-                      </span>
-
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '800',
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                          backgroundColor: isPaid ? '#DCFCE7' : '#FEE2E2',
-                          color: isPaid ? '#166534' : '#991B1B',
-                        }}
-                      >
-                        {isPaid ? 'Invoice Paid' : 'Payment Pending'}
-                      </span>
-
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                        {report.lab}
-                      </span>
-                    </div>
-
-                    <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '2px 0 4px 0', color: '#0F172A' }}>
-                      {report.testName}
-                    </h3>
-
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-                      Date: <b>{report.date}</b> • Sample Collection: <b>{report.sampleType}</b> • Fee: <b style={{ color: '#0F5132' }}>PKR {(matchedOrder.price || report.price || 2500).toLocaleString()}</b>
-                    </div>
-
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div
                       style={{
-                        fontSize: '13px',
-                        color: 'var(--text-body)',
-                        backgroundColor: '#F8FAFC',
-                        padding: '10px 14px',
-                        borderRadius: '8px',
-                        border: '1px solid #E2E8F0',
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '10px',
+                        backgroundColor: '#10B981',
+                        color: '#FFFFFF',
+                        display: 'grid',
+                        placeItems: 'center',
                       }}
                     >
-                      <b>Clinical Summary / Findings:</b> {report.summary}
+                      <CheckCircle2 size={20} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#064E3B' }}>
+                        Your official lab report is ready!
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#047857' }}>
+                        {readyOrder.assignedLab} verified results for <b>{(readyOrder.tests || []).join(', ')}</b>.
+                      </div>
                     </div>
                   </div>
 
-                  {/* Actions Column */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-                    {/* Pay Online Button if pending */}
-                    {!isPaid && (
-                      <button
-                        type="button"
-                        onClick={() => setPaymentOrder(matchedOrder)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '9px 18px',
-                          borderRadius: '8px',
-                          backgroundColor: '#16A34A',
-                          color: '#FFFFFF',
-                          border: 'none',
-                          fontWeight: '800',
-                          fontSize: '12.5px',
-                          cursor: 'pointer',
-                          boxShadow: 'var(--shadow-xs)',
-                        }}
-                      >
-                        <DollarSign size={15} />
-                        <span>Pay Online (Stripe / JazzCash / EasyPaisa)</span>
-                      </button>
-                    )}
+                  <button
+                    type="button"
+                    className="btn-lime-pill"
+                    onClick={() => setSelectedOrderForReport(readyOrder)}
+                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800' }}
+                  >
+                    View Official Report
+                  </button>
+                </div>
+              )}
 
-                    {/* View & Print Official Report */}
-                    {isReady && (
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {/* Notification Banner: Payment Pending */}
+              {pendingPaymentOrder && (
+                <div
+                  style={{
+                    backgroundColor: '#FFFBEB',
+                    border: '1.5px solid #FCD34D',
+                    borderRadius: '16px',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                    boxShadow: 'var(--shadow-sm)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '10px',
+                        backgroundColor: '#F59E0B',
+                        color: '#FFFFFF',
+                        display: 'grid',
+                        placeItems: 'center',
+                      }}
+                    >
+                      <CreditCard size={20} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#78350F' }}>
+                        Payment Pending: PKR {(pendingPaymentOrder.price || 0).toLocaleString()}
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#92400E' }}>
+                        Invoice #{pendingPaymentOrder.invoiceNumber || 'INV-LB-8024'} for {(pendingPaymentOrder.tests || []).join(', ')}. Pay securely via JazzCash, Easypaisa, or Card.
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn-lime-pill"
+                    onClick={() => setSelectedOrderForPay(pendingPaymentOrder)}
+                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', backgroundColor: '#F59E0B', color: '#FFFFFF' }}
+                  >
+                    Pay Online Now
+                  </button>
+                </div>
+              )}
+
+              {/* Sub-Filter Pills */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: '4px' }}>
+                {[
+                  { id: 'all', label: `All Reports (${myLabOrders.length})` },
+                  { id: 'ready', label: `Results Ready (${readyCount})` },
+                  { id: 'processing', label: `In-Lab Analysis (${processingCount})` },
+                  { id: 'pending_payment', label: `Payment Due (${pendingPayCount})` },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setLabSubFilter(f.id)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '9999px',
+                      fontSize: '12px',
+                      fontWeight: labSubFilter === f.id ? '800' : '600',
+                      cursor: 'pointer',
+                      border: labSubFilter === f.id ? '1.5px solid var(--forest-800)' : '1px solid var(--border-subtle)',
+                      backgroundColor: labSubFilter === f.id ? 'var(--forest-800)' : '#FFFFFF',
+                      color: labSubFilter === f.id ? '#FFFFFF' : 'var(--text-muted)',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Lab Orders List */}
+              {filteredLabOrders.length === 0 ? (
+                <div
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    padding: '48px 24px',
+                    textAlign: 'center',
+                    border: '1px dashed var(--border-strong)',
+                  }}
+                >
+                  <TestTube2 size={38} color="var(--forest-800)" style={{ margin: '0 auto 10px auto', opacity: 0.5 }} />
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)', marginBottom: '4px' }}>
+                    No Reports in this Category
+                  </div>
+                  <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', margin: 0 }}>
+                    When your consulting physician prescribes diagnostic investigations, they will appear here in real-time.
+                  </p>
+                </div>
+              ) : (
+                filteredLabOrders.map((order) => {
+                  const isPublished = order.status === 'Published';
+                  const isInProgress = order.status === 'In Progress';
+                  const isReceived = order.status === 'Received';
+                  const isPaid = order.paymentStatus === 'Paid';
+
+                  return (
+                    <div
+                      key={order.id}
+                      style={{
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: 'var(--radius-card)',
+                        border: '1px solid var(--border-subtle)',
+                        padding: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '18px',
+                        boxShadow: 'var(--shadow-sm)',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: '320px' }}>
+                        {/* Top Badges */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: '800',
+                              padding: '2px 8px',
+                              borderRadius: 'var(--radius-pill)',
+                              backgroundColor: isPublished ? '#DCFCE7' : isInProgress ? '#EFF6FF' : '#FEF3C7',
+                              color: isPublished ? '#166534' : isInProgress ? '#1E40AF' : '#92400E',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                          >
+                            {isPublished && <CheckCircle2 size={12} />}
+                            {isInProgress && <Clock size={12} />}
+                            {isPublished ? 'Report Ready' : isInProgress ? 'Analysis In Progress' : 'Sample Received'}
+                          </span>
+
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: '800',
+                              padding: '2px 8px',
+                              borderRadius: 'var(--radius-pill)',
+                              backgroundColor: isPaid ? 'rgba(197, 225, 165, 0.35)' : '#FFFBEB',
+                              color: isPaid ? 'var(--forest-900)' : '#B45309',
+                              border: isPaid ? '1px solid rgba(14, 56, 44, 0.15)' : '1px solid #FCD34D',
+                            }}
+                          >
+                            {isPaid ? `● Paid (${order.paymentMethod ? order.paymentMethod.split(' ')[0] : 'Online'})` : `💳 Payment Due: PKR ${(order.price || 0).toLocaleString()}`}
+                          </span>
+
+                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                            {order.assignedLab}
+                          </span>
+                        </div>
+
+                        {/* Test Name Title */}
+                        <h3 style={{ fontSize: '17.5px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--forest-900)' }}>
+                          {(order.tests || []).join(' + ')}
+                        </h3>
+
+                        {/* Details */}
+                        <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                          Prescribed by: <b style={{ color: 'var(--forest-900)' }}>{order.doctorName || 'Attending Physician'}</b> · Date: {order.date} · Requisition #{order.orderNumber}
+                        </div>
+
+                        {/* Clinical Note / Fasting */}
+                        <div style={{ fontSize: '12px', color: '#374151', backgroundColor: 'var(--canvas-bg)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', marginBottom: '6px' }}>
+                          <b>Doctor's Instructions:</b> {order.instructions || 'Routine investigation'}
+                          {order.fastingRequired && (
+                            <span style={{ color: '#B45309', fontWeight: '700', marginLeft: '8px' }}>
+                              ⚠️ {order.fastingHours}h Overnight Fasting Required
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Findings Summary if Published */}
+                        {isPublished && order.reportSummary && (
+                          <div style={{ fontSize: '12.5px', color: 'var(--forest-900)', marginTop: '6px' }}>
+                            <b>Clinical Findings:</b> {order.reportSummary}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Interactive Actions for Patient */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        {/* If payment pending: Pay Online */}
+                        {!isPaid && (
+                          <button
+                            type="button"
+                            className="btn-lime-pill"
+                            style={{ padding: '9px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+                            onClick={() => setSelectedOrderForPay(order)}
+                          >
+                            <CreditCard size={15} />
+                            <span>Pay Online (PKR {(order.price || 0).toLocaleString()})</span>
+                          </button>
+                        )}
+
+                        {/* If report ready: View Report Modal */}
+                        {isPublished && (
+                          <>
+                            <button
+                              type="button"
+                              className="btn-lime-pill"
+                              style={{ padding: '9px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+                              onClick={() => setSelectedOrderForReport(order)}
+                            >
+                              <FileText size={15} />
+                              <span>View Report</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn-white-capsule"
+                              style={{ padding: '9px 14px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                              onClick={() => showToast(`Downloaded official PDF for #${order.orderNumber}.`, 'success')}
+                              title="Download official signed PDF"
+                            >
+                              <Download size={15} />
+                              <span>Download PDF</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn-white-capsule"
+                              style={{ padding: '9px 12px', fontSize: '12.5px' }}
+                              onClick={() => {
+                                navigator.clipboard?.writeText(window.location.origin + `/report-verify/${order.orderNumber}`);
+                                showToast('Secure report link copied to share with your doctor!', 'info');
+                              }}
+                              title="Share report with doctor"
+                            >
+                              <Share2 size={15} />
+                            </button>
+                          </>
+                        )}
+
+                        {/* Print Order Slip */}
                         <button
                           type="button"
-                          onClick={() => {
-                            navigator.clipboard?.writeText?.(window.location.href);
-                            showToast('Encrypted medical report link copied! Ready to share with another clinician.', 'success');
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            padding: '8px 14px',
-                            borderRadius: '8px',
-                            backgroundColor: '#FFFFFF',
-                            color: '#475569',
-                            border: '1px solid #CBD5E1',
-                            fontWeight: '700',
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                          }}
-                          title="Share securely with another consulting doctor"
+                          className="btn-white-capsule"
+                          style={{ padding: '9px 12px', fontSize: '12.5px' }}
+                          onClick={() => setSelectedOrderForSlip(order)}
+                          title="Print Lab Requisition Slip"
                         >
-                          <Share2 size={13} />
-                          <span>Share with Doctor</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          className="btn-lime-pill"
-                          style={{
-                            padding: '8px 18px',
-                            fontSize: '12.5px',
-                            fontWeight: '800',
-                            backgroundColor: 'var(--forest-900)',
-                            color: 'var(--lime-accent)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => setSelectedLabReportOrder(matchedOrder)}
-                        >
-                          <Eye size={15} />
-                          <span>View Official Report</span>
+                          <Printer size={15} />
                         </button>
                       </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          );
+        })()}
 
         {/* Reschedule Modal */}
         {rescheduleApt && (
@@ -820,23 +916,26 @@ export default function PatientDashboard() {
           </div>
         )}
 
-        {/* Printable Official Lab Report Modal */}
-        {selectedLabReportOrder && (
-          <PrintableLabReport
-            order={selectedLabReportOrder}
-            onClose={() => setSelectedLabReportOrder(null)}
-          />
-        )}
+        {/* View Official Lab Report Modal */}
+        <LabReportViewModal
+          isOpen={Boolean(selectedOrderForReport)}
+          onClose={() => setSelectedOrderForReport(null)}
+          order={selectedOrderForReport}
+        />
 
-        {/* Online Payment Modal */}
-        {paymentOrder && (
-          <LabPaymentModal
-            isOpen={!!paymentOrder}
-            order={paymentOrder}
-            isAdmin={false}
-            onClose={() => setPaymentOrder(null)}
-          />
-        )}
+        {/* Pay Lab Order Modal */}
+        <PayLabOrderModal
+          isOpen={Boolean(selectedOrderForPay)}
+          onClose={() => setSelectedOrderForPay(null)}
+          order={selectedOrderForPay}
+        />
+
+        {/* Requisition Slip Modal */}
+        <LabOrderSlipModal
+          isOpen={Boolean(selectedOrderForSlip)}
+          onClose={() => setSelectedOrderForSlip(null)}
+          order={selectedOrderForSlip}
+        />
       </div>
     </AppShell>
   );
