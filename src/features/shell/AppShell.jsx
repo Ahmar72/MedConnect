@@ -312,6 +312,15 @@ export default function AppShell({ children }) {
               </NavLink>
 
               <NavLink
+                to="/doctor/lab-orders"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <FileText size={17} />
+                <span>Lab Orders & History</span>
+              </NavLink>
+
+              <NavLink
                 to="/doctor/earnings"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
@@ -405,6 +414,15 @@ export default function AppShell({ children }) {
               >
                 <TrendingUp size={17} />
                 <span>Financial Ledger</span>
+              </NavLink>
+
+              <NavLink
+                to="/admin/labs"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <FileText size={17} />
+                <span>Lab Diagnostics Suite</span>
               </NavLink>
             </nav>
           </>

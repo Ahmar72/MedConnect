@@ -21,6 +21,7 @@ import {
   DoctorReceiptSlipPage,
   DoctorInvoiceStatementPage,
   DoctorManageSchedulePage,
+  DoctorLabOrdersPage,
 } from './features/doctor/pages';
 import {
   AdminDashboard,
@@ -29,6 +30,7 @@ import {
   AdminBranchesPage,
   AdminQueuePage,
   AdminReportsPage,
+  AdminLabManagementPage,
 } from './features/admin/pages';
 
 import ProtectedRoute from './shared/components/ProtectedRoute';
@@ -125,12 +127,29 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/patient/lab-reports"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <Navigate to="/appointments?tab=labs" replace />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Doctor Role (Strictly Protected: Only Verified Clinicians) */}
         <Route
           path="/doctor"
           element={
             <ProtectedRoute allowedRoles={['doctor']}>
               <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/lab-orders"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorLabOrdersPage />
             </ProtectedRoute>
           }
         />
@@ -269,6 +288,22 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/labs"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminLabManagementPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/lab-orders"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminLabManagementPage />
             </ProtectedRoute>
           }
         />
