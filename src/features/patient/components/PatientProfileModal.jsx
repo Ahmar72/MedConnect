@@ -200,7 +200,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 color: 'var(--lime-accent)',
                 display: 'grid',
                 placeItems: 'center',
-                fontWeight: '800',
+                fontWeight: '400',
                 fontSize: '18px',
                 overflow: 'hidden',
                 flexShrink: 0,
@@ -218,7 +218,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '400', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
                   Patient Health Profile & Records
                 </h2>
                 <span
@@ -226,7 +226,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                     backgroundColor: 'rgba(197, 225, 165, 0.25)',
                     color: 'var(--lime-accent)',
                     fontSize: '11px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     padding: '3px 8px',
                     borderRadius: '999px',
                   }}
@@ -279,7 +279,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                   display: 'grid',
                   placeItems: 'center',
                   fontSize: '20px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   overflow: 'hidden',
                   boxShadow: '0 4px 12px rgba(14, 56, 44, 0.15)',
                   flexShrink: 0,
@@ -296,7 +296,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 )}
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   Patient Profile Picture
                 </h4>
                 <p style={{ margin: '3px 0 0 0', fontSize: '12.5px', color: 'var(--text-muted)' }}>
@@ -338,7 +338,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                   }}
                 >
                   <Trash2 size={13} />
@@ -370,7 +370,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                   border: 'none',
                   color: 'var(--forest-700)',
                   fontSize: '12px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   textDecoration: 'underline',
                   display: 'flex',
@@ -390,7 +390,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                   border: 'none',
                   color: 'var(--text-muted)',
                   fontSize: '12px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   cursor: 'pointer',
                 }}
               >
@@ -405,7 +405,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
               <div
                 style={{
                   fontSize: '12px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   letterSpacing: '0.8px',
                   textTransform: 'uppercase',
                   color: 'var(--forest-700)',
@@ -421,7 +421,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Full Patient Name
                   </label>
                   <input
@@ -441,7 +441,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Mobile Phone (For SMS & OTP Updates)
                   </label>
                   <input
@@ -463,7 +463,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Email Address (For Reports & Consult Links)
                   </label>
                   <input
@@ -483,7 +483,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Residential City
                   </label>
                   <input
@@ -497,7 +497,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                   Home Street Address
                 </label>
                 <input
@@ -515,7 +515,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
               <div
                 style={{
                   fontSize: '12px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   letterSpacing: '0.8px',
                   textTransform: 'uppercase',
                   color: 'var(--forest-700)',
@@ -531,7 +531,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Blood Group
                   </label>
                   <select
@@ -552,7 +552,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Patient Age
                   </label>
                   <input
@@ -565,7 +565,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Biological Gender
                   </label>
                   <select
@@ -583,7 +583,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Known Allergies (Medications & Food)
                   </label>
                   <input
@@ -596,7 +596,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                  <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                     Chronic Medical Conditions
                   </label>
                   <input
@@ -610,7 +610,7 @@ export default function PatientProfileModal({ isOpen, onClose }) {
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                <label className="form-label" style={{ fontWeight: '400', fontSize: '13px' }}>
                   Emergency Contact (Name, Relation & Phone Number)
                 </label>
                 <input

@@ -138,7 +138,7 @@ export default function OladocSearchBar({ onSearchSubmit, initialQuery = '' }) {
                       <div className="suggestion-sub">{spec.urdu} · {spec.description}</div>
                     </div>
                   </div>
-                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '600' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     View Specialists →
                   </span>
                 </div>
@@ -167,7 +167,7 @@ export default function OladocSearchBar({ onSearchSubmit, initialQuery = '' }) {
                       <div className="suggestion-sub">{doc.specialty} · {doc.qualifications}</div>
                     </div>
                   </div>
-                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '600' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     Profile & Fee →
                   </span>
                 </div>
@@ -193,7 +193,7 @@ export default function OladocSearchBar({ onSearchSubmit, initialQuery = '' }) {
                       <div className="suggestion-sub">Consult {cond.specialty}</div>
                     </div>
                   </div>
-                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '600' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     Find Doctor →
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export default function OladocSearchBar({ onSearchSubmit, initialQuery = '' }) {
                       <div className="suggestion-sub">{lab.lab} · Rs. {lab.discountedFee} (Home Sampling)</div>
                     </div>
                   </div>
-                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '600' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     Book Lab →
                   </span>
                 </div>

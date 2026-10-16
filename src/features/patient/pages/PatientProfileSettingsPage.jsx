@@ -173,7 +173,7 @@ export default function PatientProfileSettingsPage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             backgroundColor: 'transparent',
             border: 'none',
@@ -188,12 +188,9 @@ export default function PatientProfileSettingsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0, color: 'var(--forest-900)' }}>
-              My Health Profile
+            <h1 style={{ fontSize: '26px', fontWeight: '700', margin: 0, color: 'var(--forest-900)' }}>
+              My Profile & Health Record
             </h1>
-            <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Manage your personal demographics, emergency contacts, medical history, and clinical records
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -201,51 +198,31 @@ export default function PatientProfileSettingsPage() {
               type="button"
               className="btn-white-capsule"
               onClick={() => navigate('/appointments')}
-              style={{ border: '1.5px solid var(--forest-800)', color: 'var(--forest-800)', padding: '10px 18px', fontSize: '13px', fontWeight: '700' }}
+              style={{ border: '1.5px solid var(--forest-800)', color: 'var(--forest-800)', padding: '10px 18px', fontSize: '13px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Calendar size={15} />
               <span>My Appointments</span>
-            </button>
-
-            <button
-              type="button"
-              className="btn-lime-pill"
-              onClick={handleSave}
-              disabled={isSaving}
-              style={{ padding: '10px 22px', fontSize: '13.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-              {isSaving ? (
-                <>
-                  <span className="live-pulse-dot" style={{ width: '8px', height: '8px' }} />
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Save size={16} />
-                  <span>Save Profile Changes</span>
-                </>
-              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Two-Column Layout (Matching Doctor Profile Page Exactly) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '28px', alignItems: 'flex-start' }}>
+      {/* Main Two-Column Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '24px', alignItems: 'flex-start', width: '100%' }}>
         {/* Left Column: Patient Profile Snapshot Card */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div
             style={{
               backgroundColor: '#FFFFFF',
-              borderRadius: '24px',
+              borderRadius: '20px',
               border: '1px solid var(--border-subtle)',
-              padding: '28px 24px',
+              padding: '28px 22px',
               boxShadow: 'var(--shadow-sm)',
               textAlign: 'center',
             }}
           >
             {/* Photo Avatar with Camera Upload Overlay */}
-            <div style={{ position: 'relative', width: '108px', height: '108px', margin: '0 auto 16px auto' }}>
+            <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 16px auto' }}>
               <div
                 style={{
                   width: '100%',
@@ -253,8 +230,8 @@ export default function PatientProfileSettingsPage() {
                   borderRadius: '24px',
                   backgroundColor: 'var(--forest-800)',
                   color: 'var(--lime-accent)',
-                  fontSize: '32px',
-                  fontWeight: '800',
+                  fontSize: '30px',
+                  fontWeight: '400',
                   display: 'grid',
                   placeItems: 'center',
                   overflow: 'hidden',
@@ -294,7 +271,7 @@ export default function PatientProfileSettingsPage() {
                 }}
                 title="Upload profile picture"
               >
-                <Camera size={15} />
+                <Camera size={14} />
               </button>
 
               <input
@@ -315,12 +292,12 @@ export default function PatientProfileSettingsPage() {
                   border: 'none',
                   color: '#DC2626',
                   fontSize: '12px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px',
-                  marginBottom: '14px',
+                  marginBottom: '12px',
                 }}
               >
                 <Trash2 size={13} />
@@ -328,110 +305,65 @@ export default function PatientProfileSettingsPage() {
               </button>
             )}
 
-            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 2px 0', color: 'var(--forest-900)' }}>
+            <h2 style={{ fontSize: '19px', fontWeight: '400', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
               {formData.name}
             </h2>
             <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '10px' }}>
-              Registered Patient · {formData.city}
+              {formData.city} · {formData.gender} · {formData.age} yrs
             </div>
 
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#FEF3C7', color: '#78350F', padding: '3px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', border: '1px solid #FCD34D', marginBottom: '18px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#FEF3C7', color: '#78350F', padding: '3px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '400', border: '1px solid #FCD34D', marginBottom: '16px' }}>
               <span>MRN #{formData.mrn}</span>
             </div>
 
-            {/* Quick Stats Grid */}
+            {/* Quick Contact & Blood Summary */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
+                gridTemplateColumns: '1fr 1fr',
                 gap: '8px',
                 backgroundColor: 'var(--canvas-bg)',
-                borderRadius: '14px',
-                padding: '12px 10px',
-                marginBottom: '18px',
-                border: '1px solid var(--border-subtle)',
-              }}
-            >
-              <div>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '700' }}>Blood</span>
-                <span style={{ fontSize: '14px', fontWeight: '800', color: '#DC2626' }}>{formData.bloodGroup}</span>
-              </div>
-              <div style={{ borderLeft: '1px solid var(--border-subtle)', borderRight: '1px solid var(--border-subtle)' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '700' }}>Visits</span>
-                <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>{formData.totalVisits}</span>
-              </div>
-              <div>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '700' }}>Age</span>
-                <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>{formData.age}y</span>
-              </div>
-            </div>
-
-            {/* Status Pill */}
-            <div
-              style={{
-                backgroundColor: '#ECFDF5',
-                border: '1px solid #A7F3D0',
                 borderRadius: '12px',
-                padding: '10px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                padding: '12px',
+                border: '1px solid var(--border-subtle)',
+                textAlign: 'left',
+                fontSize: '12px',
               }}
             >
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '12px', fontWeight: '800', color: '#065F46' }}>Patient Account Status</div>
-                <div style={{ fontSize: '11px', color: '#047857' }}>Active in Clinic Registry</div>
+              <div>
+                <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '11px', fontWeight: '400' }}>Blood Group</span>
+                <span style={{ fontWeight: '400', color: '#DC2626', fontSize: '14px' }}>{formData.bloodGroup}</span>
               </div>
-              <span style={{ backgroundColor: '#059669', color: '#FFFFFF', fontSize: '11px', fontWeight: '800', padding: '3px 10px', borderRadius: '9999px' }}>
-                Active
-              </span>
+              <div>
+                <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '11px', fontWeight: '400' }}>Phone</span>
+                <span style={{ fontWeight: '400', color: 'var(--forest-900)', fontSize: '12px' }}>{formData.phone}</span>
+              </div>
             </div>
-          </div>
-
-          {/* NADRA / PMDC Encrypted Health Record Badge */}
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '20px',
-              border: '1px solid var(--border-subtle)',
-              padding: '18px 20px',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--forest-800)', fontWeight: '800', fontSize: '13px', marginBottom: '6px' }}>
-              <ShieldCheck size={18} color="var(--forest-800)" />
-              <span>PMDC & HIPAA Encrypted</span>
-            </div>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
-              Your electronic health records (EHR) and prescriptions are strictly protected with end-to-end 256-bit encryption.
-            </p>
           </div>
         </div>
 
-        {/* Right Column: Tabbed Settings Form Card */}
+        {/* Right Column: Interactive Profile Settings Card */}
         <div
           style={{
             backgroundColor: '#FFFFFF',
-            borderRadius: '24px',
+            borderRadius: '20px',
             border: '1px solid var(--border-subtle)',
             boxShadow: 'var(--shadow-sm)',
             overflow: 'hidden',
           }}
         >
-          {/* Tab Navigation Strip */}
+          {/* Interactive Tab Strip */}
           <div
             style={{
               display: 'flex',
               borderBottom: '1px solid var(--border-subtle)',
               backgroundColor: 'var(--canvas-bg)',
-              overflowX: 'auto',
             }}
           >
             {[
-              { id: 'personal', label: '1. Personal & Contact', icon: <User size={15} /> },
-              { id: 'vitals', label: '2. Vitals & Demographics', icon: <Activity size={15} /> },
-              { id: 'medical', label: '3. Medical History & Allergies', icon: <Heart size={15} /> },
-              { id: 'emergency', label: '4. Emergency & Insurance', icon: <Building2 size={15} /> },
+              { id: 'personal', label: 'Personal & Contact', icon: <User size={15} /> },
+              { id: 'clinical', label: 'Clinical & Vitals', icon: <Activity size={15} /> },
+              { id: 'emergency', label: 'Emergency Contact', icon: <Heart size={15} /> },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -440,18 +372,19 @@ export default function PatientProfileSettingsPage() {
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
                   style={{
-                    padding: '16px 20px',
+                    flex: 1,
+                    padding: '14px 18px',
                     border: 'none',
                     borderBottom: isActive ? '3px solid var(--forest-800)' : '3px solid transparent',
                     backgroundColor: isActive ? '#FFFFFF' : 'transparent',
                     color: isActive ? 'var(--forest-900)' : 'var(--text-muted)',
                     fontWeight: isActive ? '800' : '600',
-                    fontSize: '13px',
+                    fontSize: '13.5px',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '8px',
-                    flexShrink: 0,
                     transition: 'all 0.15s ease',
                   }}
                 >
@@ -463,26 +396,17 @@ export default function PatientProfileSettingsPage() {
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSave} style={{ padding: '32px' }}>
+          <form onSubmit={handleSave} style={{ padding: '28px' }}>
             {/* TAB 1: PERSONAL & CONTACT */}
             {activeTab === 'personal' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
-                    Personal Demographics & Contact Information
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
-                    These details will be used for official hospital admission, prescriptions, and appointment alerts
-                  </p>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Full Patient Name</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Full Patient Name</label>
                     <input
                       type="text"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
@@ -490,11 +414,11 @@ export default function PatientProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>CNIC / National Identity Card</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>CNIC Number</label>
                     <input
                       type="text"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.cnic}
                       onChange={(e) => setFormData({ ...formData, cnic: e.target.value })}
                       placeholder="e.g. 35201-8924190-3"
@@ -504,11 +428,11 @@ export default function PatientProfileSettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Mobile Phone Number (SMS Alerts)</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Mobile Phone</label>
                     <input
                       type="tel"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       required
@@ -516,11 +440,11 @@ export default function PatientProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Email Address</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Email Address</label>
                     <input
                       type="email"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
@@ -530,10 +454,10 @@ export default function PatientProfileSettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>City / District</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>City</label>
                     <select
                       className="form-select"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     >
@@ -544,11 +468,11 @@ export default function PatientProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Residential Address</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Residential Address</label>
                     <input
                       type="text"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       placeholder="Street address, house number, area"
@@ -558,25 +482,48 @@ export default function PatientProfileSettingsPage() {
               </div>
             )}
 
-            {/* TAB 2: VITALS & DEMOGRAPHICS */}
-            {activeTab === 'vitals' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* TAB 2: CLINICAL & VITALS */}
+            {activeTab === 'clinical' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                {/* Interactive Blood Group Selector */}
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
-                    Physical Demographics & Vitals
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
-                    Basics required by clinicians for BMI assessment and appropriate pharmaceutical dosage calculation
-                  </p>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '8px', display: 'block' }}>
+                    Select Blood Group:
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => {
+                      const isSelected = formData.bloodGroup === bg;
+                      return (
+                        <button
+                          key={bg}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, bloodGroup: bg })}
+                          style={{
+                            padding: '8px 16px',
+                            borderRadius: '10px',
+                            border: isSelected ? '2px solid #DC2626' : '1px solid #D1D5DB',
+                            backgroundColor: isSelected ? '#FEF2F2' : '#FFFFFF',
+                            color: isSelected ? '#DC2626' : 'var(--forest-900)',
+                            fontWeight: '400',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                          }}
+                        >
+                          {bg}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Age (Years)</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Age (Years)</label>
                     <input
                       type="number"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.age}
                       onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
                       min="1"
@@ -586,166 +533,99 @@ export default function PatientProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Gender</label>
-                    <select
-                      className="form-select"
-                      style={{ borderRadius: '12px' }}
-                      value={formData.gender}
-                      onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Gender</label>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      {['Male', 'Female', 'Other'].map((g) => {
+                        const isSelected = formData.gender === g;
+                        return (
+                          <button
+                            key={g}
+                            type="button"
+                            onClick={() => setFormData({ ...formData, gender: g })}
+                            style={{
+                              flex: 1,
+                              padding: '9px 10px',
+                              borderRadius: '8px',
+                              border: isSelected ? '2px solid var(--forest-800)' : '1px solid #D1D5DB',
+                              backgroundColor: isSelected ? 'var(--canvas-bg)' : '#FFFFFF',
+                              color: isSelected ? 'var(--forest-900)' : 'var(--text-muted)',
+                              fontWeight: isSelected ? '800' : '600',
+                              fontSize: '12.5px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {g}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Blood Group</label>
-                    <select
-                      className="form-select"
-                      style={{ borderRadius: '12px' }}
-                      value={formData.bloodGroup}
-                      onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
-                    >
-                      {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
-                        <option key={bg} value={bg}>{bg}</option>
-                      ))}
-                    </select>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Weight / Height</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ borderRadius: '10px' }}
+                        value={formData.weight}
+                        onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                        placeholder="74 kg"
+                      />
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ borderRadius: '10px' }}
+                        value={formData.height}
+                        onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                        placeholder="178 cm"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Height</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      style={{ borderRadius: '12px' }}
-                      value={formData.height}
-                      onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                      placeholder="e.g. 178 cm or 5'10''"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Weight</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      style={{ borderRadius: '12px' }}
-                      value={formData.weight}
-                      onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                      placeholder="e.g. 74 kg"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Marital Status</label>
-                    <select
-                      className="form-select"
-                      style={{ borderRadius: '12px' }}
-                      value={formData.maritalStatus}
-                      onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
-                    >
-                      <option value="Single">Single</option>
-                      <option value="Married">Married</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: MEDICAL HISTORY & ALLERGIES */}
-            {activeTab === 'medical' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
-                    Clinical History, Drug Allergies & Medications
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
-                    Crucial clinical safety data visible to your consulting physician to prevent adverse interactions
-                  </p>
-                </div>
-
+                {/* Drug Allergies Highlighted Input */}
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', color: '#991B1B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', color: '#991B1B', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <AlertTriangle size={15} color="#DC2626" />
-                    <span>Known Drug Allergies & Reactions</span>
+                    <span>Known Drug Allergies & Sensitivities</span>
                   </label>
                   <input
                     type="text"
                     className="form-input"
-                    style={{ borderRadius: '12px', border: '1.5px solid #FCA5A5', backgroundColor: '#FEF2F2', color: '#7F1D1D' }}
+                    style={{ borderRadius: '10px', border: '1.5px solid #FCA5A5', backgroundColor: '#FEF2F2', color: '#7F1D1D' }}
                     value={formData.allergies}
                     onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                    placeholder="e.g. Penicillin, Sulfa drugs, NSAIDs (or write 'None reported')"
+                    placeholder="e.g. Penicillin, Sulfa drugs (or type 'None reported')"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>
-                    Chronic Medical Conditions & Diagnoses
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>
+                    Ongoing Medications & Daily Prescriptions
                   </label>
                   <input
                     type="text"
                     className="form-input"
-                    style={{ borderRadius: '12px' }}
-                    value={formData.conditions}
-                    onChange={(e) => setFormData({ ...formData, conditions: e.target.value })}
-                    placeholder="e.g. Hypertension, Asthma, Type 2 Diabetes, Migraine..."
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>
-                    Ongoing Daily Medications & Supplements
-                  </label>
-                  <textarea
-                    className="form-textarea"
-                    rows={3}
-                    style={{ borderRadius: '12px' }}
+                    style={{ borderRadius: '10px' }}
                     value={formData.medications}
                     onChange={(e) => setFormData({ ...formData, medications: e.target.value })}
-                    placeholder="e.g. Tab. Rigix 10mg once daily, Cap. Risek 20mg morning..."
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>
-                    Past Surgical History / Major Procedures
-                  </label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    style={{ borderRadius: '12px' }}
-                    value={formData.surgeries}
-                    onChange={(e) => setFormData({ ...formData, surgeries: e.target.value })}
-                    placeholder="e.g. Appendectomy in 2021, none otherwise"
+                    placeholder="e.g. Tab. Rigix 10mg once daily, none otherwise"
                   />
                 </div>
               </div>
             )}
 
-            {/* TAB 4: EMERGENCY & INSURANCE */}
+            {/* TAB 3: EMERGENCY CONTACT */}
             {activeTab === 'emergency' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
-                    Emergency Contacts & Health Insurance
-                  </h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
-                    Emergency escalation contacts and insurance card details for hospital admissions
-                  </p>
-                </div>
-
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Contact Person Name</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Emergency Contact Name</label>
                     <input
                       type="text"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.emergencyContactName}
                       onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
                       placeholder="e.g. Tariq Khan"
@@ -754,24 +634,24 @@ export default function PatientProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Relationship</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Relationship</label>
                     <input
                       type="text"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.emergencyContactRelation}
                       onChange={(e) => setFormData({ ...formData, emergencyContactRelation: e.target.value })}
-                      placeholder="e.g. Brother / Spouse / Father"
+                      placeholder="e.g. Brother / Spouse"
                       required
                     />
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Emergency Phone</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Emergency Phone</label>
                     <input
                       type="tel"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.emergencyPhone}
                       onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
                       placeholder="+92 321 9876543"
@@ -782,10 +662,10 @@ export default function PatientProfileSettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Health Insurance Company</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Health Insurance Company</label>
                     <select
                       className="form-select"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.insuranceProvider}
                       onChange={(e) => setFormData({ ...formData, insuranceProvider: e.target.value })}
                     >
@@ -799,11 +679,11 @@ export default function PatientProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '700' }}>Policy / Member ID Number</label>
+                    <label className="form-label" style={{ fontSize: '13px', fontWeight: '400' }}>Policy / Card Number</label>
                     <input
                       type="text"
                       className="form-input"
-                      style={{ borderRadius: '12px' }}
+                      style={{ borderRadius: '10px' }}
                       value={formData.insurancePolicyNumber}
                       onChange={(e) => setFormData({ ...formData, insurancePolicyNumber: e.target.value })}
                       placeholder="e.g. JUB-PK-98241"
@@ -813,10 +693,10 @@ export default function PatientProfileSettingsPage() {
               </div>
             )}
 
-            {/* Bottom Save Changes Bar */}
+            {/* Bottom Save Changes Bar - ONLY AT THE BOTTOM */}
             <div
               style={{
-                marginTop: '32px',
+                marginTop: '28px',
                 paddingTop: '20px',
                 borderTop: '1px solid var(--border-subtle)',
                 display: 'flex',
@@ -838,7 +718,7 @@ export default function PatientProfileSettingsPage() {
                 type="submit"
                 className="btn-lime-pill"
                 disabled={isSaving}
-                style={{ padding: '11px 26px', fontSize: '13.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{ padding: '11px 28px', fontSize: '14px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 {isSaving ? (
                   <>

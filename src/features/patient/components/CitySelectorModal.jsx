@@ -64,7 +64,7 @@ export default function CitySelectorModal() {
               backgroundColor: 'var(--canvas-bg)',
               border: '1px solid var(--border-strong)',
               fontSize: '13px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: 'var(--forest-800)',
               marginBottom: '18px',
               transition: 'all 0.2s',
@@ -87,7 +87,7 @@ export default function CitySelectorModal() {
             />
           </div>
 
-          <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
+          <div style={{ fontSize: '11px', fontWeight: '400', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
             Popular Pakistani Cities
           </div>
 
@@ -102,14 +102,14 @@ export default function CitySelectorModal() {
                   onClick={() => handleSelectCity(city)}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-main)' }}>
+                    <span style={{ fontWeight: '400', fontSize: '14px', color: 'var(--text-main)' }}>
                       {city.name}
                     </span>
                     {isSelected && <Check size={16} color="var(--forest-800)" />}
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
                     <span>{city.province}</span>
-                    <span style={{ fontWeight: '600', color: 'var(--forest-700)' }}>{city.doctorsCount}</span>
+                    <span style={{ fontWeight: '400', color: 'var(--forest-700)' }}>{city.doctorsCount}</span>
                   </div>
                 </div>
               );

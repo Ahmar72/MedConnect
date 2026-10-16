@@ -18,6 +18,7 @@ import {
   Share2,
   Heart,
   MessageSquare,
+  Stethoscope,
 } from 'lucide-react';
 
 export default function DoctorProfilePage() {
@@ -91,7 +92,7 @@ export default function DoctorProfilePage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             background: 'none',
             border: 'none',
@@ -141,7 +142,7 @@ export default function DoctorProfilePage() {
                 }}
               />
             ) : (
-              <span style={{ fontSize: '32px', fontWeight: '800', color: '#FFFFFF' }}>
+              <span style={{ fontSize: '32px', fontWeight: '400', color: '#FFFFFF' }}>
                 {doctor.initials || doctor.name?.slice(0, 2)}
               </span>
             )}
@@ -150,12 +151,12 @@ export default function DoctorProfilePage() {
           {/* Core Info */}
           <div style={{ flex: 1, minWidth: '280px' }}>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
-              <span className="badge-pmdc">
+              <span className="badge-pmdc" style={{ fontWeight: '400' }}>
                 <ShieldCheck size={13} />
                 <span>PMC/PMDC Verified ({doctor.pmdcNumber || '58190-P'})</span>
               </span>
               {doctor.onlineNow && (
-                <span className="badge-online-pulse">
+                <span className="badge-online-pulse" style={{ fontWeight: '400' }}>
                   <span className="live-pulse-dot" style={{ width: '6px', height: '6px' }} />
                   <span>Online Now</span>
                 </span>
@@ -163,7 +164,7 @@ export default function DoctorProfilePage() {
               <span
                 style={{
                   fontSize: '11px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   color: 'var(--forest-800)',
                   backgroundColor: 'rgba(197, 225, 165, 0.4)',
                   padding: '3px 9px',
@@ -174,18 +175,18 @@ export default function DoctorProfilePage() {
               </span>
             </div>
 
-            <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: '28px', fontWeight: '800', margin: '4px 0 6px 0', color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: '700', margin: '4px 0 6px 0', color: 'var(--text-main)' }}>
               {doctor.name}
             </h1>
 
-            <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--forest-700)', marginBottom: '4px' }}>
+            <div style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-700)', marginBottom: '4px' }}>
               {doctor.title || doctor.specialty}
             </div>
 
             {/* Education & Qualifications */}
-            <div style={{ fontSize: '13.5px', color: '#4B5563', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '13.5px', color: '#4B5563', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '400' }}>
               <Award size={15} color="var(--forest-700)" />
-              <b>Education:</b> {doctor.qualifications || 'MBBS, FCPS'} · {doctor.specialty}
+              <span>Education: {doctor.qualifications || 'MBBS, FCPS'} · {doctor.specialty}</span>
             </div>
 
             {/* Consultation Fee Badges */}
@@ -202,8 +203,8 @@ export default function DoctorProfilePage() {
                 }}
               >
                 <Video size={14} color="#15803D" />
-                <span style={{ fontSize: '12px', color: '#166534', fontWeight: '600' }}>Video Consult:</span>
-                <b style={{ fontSize: '13px', color: '#166534' }}>Rs. {doctor.videoFee || 2000}</b>
+                <span style={{ fontSize: '12px', color: '#166534', fontWeight: '400' }}>Video Consult:</span>
+                <span style={{ fontSize: '13px', color: '#166534', fontWeight: '400' }}>Rs. {doctor.videoFee || 2000}</span>
               </div>
 
               <div
@@ -218,8 +219,8 @@ export default function DoctorProfilePage() {
                 }}
               >
                 <Building2 size={14} color="#1D4ED8" />
-                <span style={{ fontSize: '12px', color: '#1E40AF', fontWeight: '600' }}>In-Clinic Visit:</span>
-                <b style={{ fontSize: '13px', color: '#1E40AF' }}>Rs. {doctor.inClinicFee || 2500}</b>
+                <span style={{ fontSize: '12px', color: '#1E40AF', fontWeight: '400' }}>In-Clinic Visit:</span>
+                <span style={{ fontSize: '13px', color: '#1E40AF', fontWeight: '400' }}>Rs. {doctor.inClinicFee || 2500}</span>
               </div>
             </div>
 
@@ -227,7 +228,7 @@ export default function DoctorProfilePage() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '13px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Star size={16} fill="#B45309" color="#B45309" />
-                <b style={{ color: '#B45309' }}>{doctor.rating || '4.8'}</b>
+                <span style={{ color: '#B45309', fontWeight: '400' }}>{doctor.rating || '4.8'}</span>
                 <span style={{ color: 'var(--text-muted)' }}>({doctor.reviewsCount || 240} verified reviews)</span>
               </div>
 
@@ -238,7 +239,7 @@ export default function DoctorProfilePage() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <ThumbsUp size={16} color="#1B5E20" />
-                <span style={{ color: '#1B5E20', fontWeight: '700' }}>{doctor.satisfaction || '98%'} patient satisfaction</span>
+                <span style={{ color: '#1B5E20', fontWeight: '400' }}>{doctor.satisfaction || '98%'} patient satisfaction</span>
               </div>
             </div>
           </div>
@@ -252,7 +253,7 @@ export default function DoctorProfilePage() {
                 width: '100%',
                 padding: '14px 24px',
                 fontSize: '14.5px',
-                fontWeight: '800',
+                fontWeight: '400',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -293,7 +294,7 @@ export default function DoctorProfilePage() {
           alignItems: 'center',
         }}
       >
-        <span style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <span style={{ fontSize: '11.5px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           JUMP TO SECTION:
         </span>
         <a
@@ -301,7 +302,7 @@ export default function DoctorProfilePage() {
           style={{
             textDecoration: 'none',
             fontSize: '13px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             backgroundColor: 'rgba(197, 225, 165, 0.3)',
             padding: '6px 14px',
@@ -319,7 +320,7 @@ export default function DoctorProfilePage() {
           style={{
             textDecoration: 'none',
             fontSize: '13px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             backgroundColor: 'var(--canvas-bg)',
             padding: '6px 14px',
@@ -337,7 +338,7 @@ export default function DoctorProfilePage() {
           style={{
             textDecoration: 'none',
             fontSize: '13px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             backgroundColor: 'var(--canvas-bg)',
             padding: '6px 14px',
@@ -372,12 +373,9 @@ export default function DoctorProfilePage() {
             <Building2 size={20} />
           </div>
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '400', color: 'var(--forest-800)', margin: 0 }}>
               Practices & Hospital Schedules ({doctor.practices.length} Locations)
             </h2>
-            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
-              Verified hospital affiliations, clinical consult timings, fees, and instant slot reservations
-            </p>
           </div>
         </div>
 
@@ -416,17 +414,17 @@ export default function DoctorProfilePage() {
                 </div>
 
                 <div>
-                  <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
+                  <h3 style={{ fontSize: '17px', fontWeight: '400', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
                     {practice.hospital}
                   </h3>
                   <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>
                     <MapPin size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
                     {practice.address}
                   </div>
-                  <div style={{ display: 'flex', gap: '14px', fontSize: '12.5px', color: 'var(--forest-800)', fontWeight: '600', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '14px', fontSize: '12.5px', color: 'var(--forest-800)', fontWeight: '400', flexWrap: 'wrap' }}>
                     <span>🗓 {practice.days}</span>
                     <span>⏰ {practice.timing}</span>
-                    <span style={{ color: '#15803D', fontWeight: '700' }}>● Next: {practice.nextDate}</span>
+                    <span style={{ color: '#15803D' }}>● Next: {practice.nextDate}</span>
                   </div>
                 </div>
               </div>
@@ -434,13 +432,13 @@ export default function DoctorProfilePage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Consultation Fee</span>
-                  <b style={{ fontSize: '18px', color: 'var(--forest-800)' }}>Rs. {practice.fee}</b>
+                  <span style={{ fontSize: '18px', color: 'var(--forest-800)', fontWeight: '400' }}>Rs. {practice.fee}</span>
                 </div>
 
                 <button
                   type="button"
                   className={practice.isVideo ? 'btn-lime-pill' : 'btn-book-clinic'}
-                  style={{ padding: '11px 22px', fontSize: '13.5px' }}
+                  style={{ padding: '11px 22px', fontSize: '13.5px', fontWeight: '400' }}
                   onClick={() => handleStartBooking(practice.isVideo ? 'video' : 'clinic', practice.id)}
                 >
                   <span>Select Slot</span>
@@ -472,12 +470,9 @@ export default function DoctorProfilePage() {
             <Award size={20} />
           </div>
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '400', color: 'var(--forest-800)', margin: 0 }}>
               About Doctor & Clinical Services
             </h2>
-            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
-              Professional qualifications, medical philosophy, and specialized treatments
-            </p>
           </div>
         </div>
 
@@ -486,83 +481,98 @@ export default function DoctorProfilePage() {
             backgroundColor: '#FFFFFF',
             borderRadius: '16px',
             border: '1px solid var(--border-subtle)',
-            padding: '32px',
+            padding: '32px 36px',
             boxShadow: 'var(--shadow-sm)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '28px',
           }}
         >
-          {/* Bio / Background */}
-          <div style={{ marginBottom: '28px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--forest-900)' }}>
-              Doctor Background & Medical Philosophy
-            </h3>
-            <p style={{ fontSize: '14.5px', lineHeight: '1.7', color: 'var(--text-body)', margin: 0 }}>
-              {doctor.bio}
+          {/* About & Bio Summary */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <Stethoscope size={18} color="var(--forest-800)" />
+              <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
+                About {doctor.name}
+              </h3>
+            </div>
+            <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#4B5563', margin: '0 0 16px 0' }}>
+              {doctor.bio || `${doctor.name} is a dedicated ${doctor.specialty} providing comprehensive, evidence-based medical care. Committed to early disease detection, patient education, and tailored therapeutic management.`}
             </p>
-          </div>
 
-          {/* Education & Credentials Box */}
-          <div
-            style={{
-              backgroundColor: 'var(--canvas-bg)',
-              borderRadius: '12px',
-              padding: '16px 20px',
-              marginBottom: '28px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              border: '1px solid var(--border-subtle)',
-            }}
-          >
+            {/* Clean inline credentials without nested cards */}
             <div
               style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(197, 225, 165, 0.4)',
-                color: 'var(--forest-800)',
-                display: 'grid',
-                placeItems: 'center',
-                flexShrink: 0,
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: '12px 24px',
+                fontSize: '13px',
+                color: '#374151',
+                paddingTop: '4px',
               }}
             >
-              <Award size={18} />
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
-                EDUCATION & CREDENTIALS
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <Award size={15} color="var(--forest-700)" />
+                <span>Qualifications: {doctor.qualifications || 'MBBS, MRCGP (UK), FCPS'}</span>
               </div>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main)', marginTop: '2px' }}>
-                {doctor.qualifications || 'MBBS, FCPS'} · Specialist in {doctor.specialty}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <ShieldCheck size={15} color="#166534" />
+                <span>PMDC License: #{doctor.pmdcNumber || '41902-P'} (Active)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <Clock size={15} color="var(--forest-700)" />
+                <span>Experience: {doctor.experience || '12 Years'} in {doctor.specialty}</span>
               </div>
             </div>
           </div>
 
-          {/* Services Grid */}
+          <div style={{ height: '1px', backgroundColor: 'var(--border-subtle)' }} />
+
+          {/* Clinical Services & Care Focus - Clean Readable Points (NO CARDS) */}
           <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 14px 0', color: 'var(--forest-900)' }}>
-              Specialized Services & Clinical Treatments
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
-              {doctor.services.map((svc, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '12px 16px',
-                    backgroundColor: 'var(--canvas-bg)',
-                    borderRadius: '10px',
-                    fontSize: '13.5px',
-                    fontWeight: '600',
-                    color: 'var(--text-main)',
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <CheckCircle2 size={16} color="var(--forest-700)" style={{ flexShrink: 0 }} />
-                  <span>{svc}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <CheckCircle2 size={18} color="var(--forest-800)" />
+              <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
+                Clinical Services & Care Focus
+              </h3>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <span style={{ color: '#166534', fontSize: '15px', lineHeight: '1.4' }}>●</span>
+                <div style={{ fontSize: '13.5px', lineHeight: '1.6', color: '#374151' }}>
+                  <span style={{ color: 'var(--forest-900)' }}>Comprehensive Medical Consultations</span> — In-depth clinical assessments, physical examinations, and evaluation of acute and ongoing symptoms.
                 </div>
-              ))}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <span style={{ color: '#166534', fontSize: '15px', lineHeight: '1.4' }}>●</span>
+                <div style={{ fontSize: '13.5px', lineHeight: '1.6', color: '#374151' }}>
+                  <span style={{ color: 'var(--forest-900)' }}>Chronic Disease Management & Monitoring</span> — Structured diagnostic tracking and tailored therapy for hypertension, diabetes, asthma, and metabolic conditions.
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <span style={{ color: '#166534', fontSize: '15px', lineHeight: '1.4' }}>●</span>
+                <div style={{ fontSize: '13.5px', lineHeight: '1.6', color: '#374151' }}>
+                  <span style={{ color: 'var(--forest-900)' }}>Preventive Screenings & Health Checkups</span> — Routine blood pressure checks, BMI assessment, cardiovascular screening, and targeted diagnostic laboratory referrals.
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <span style={{ color: '#166534', fontSize: '15px', lineHeight: '1.4' }}>●</span>
+                <div style={{ fontSize: '13.5px', lineHeight: '1.6', color: '#374151' }}>
+                  <span style={{ color: 'var(--forest-900)' }}>Prescription Guidance & Medication Review</span> — Rational drug therapy, safe dosage optimization, allergy cross-checking, and continuous symptom follow-ups.
+                </div>
+              </div>
+
+              {doctor.services && doctor.services.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', paddingTop: '8px', flexWrap: 'wrap', fontSize: '13px', color: '#4B5563' }}>
+                  <span style={{ color: 'var(--forest-800)' }}>Additional Clinical Focus:</span>
+                  <span>{doctor.services.join(' · ')}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -588,12 +598,9 @@ export default function DoctorProfilePage() {
             <MessageSquare size={20} />
           </div>
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '400', color: 'var(--forest-800)', margin: 0 }}>
               Patient Reviews ({doctor.reviewsCount || 240} Verified Reviews)
             </h2>
-            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
-              Direct verified feedback from patients who consulted with {doctor.name}
-            </p>
           </div>
         </div>
 
@@ -614,7 +621,7 @@ export default function DoctorProfilePage() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ fontSize: '42px', fontWeight: '900', color: 'var(--forest-800)', lineHeight: 1 }}>
+            <div style={{ fontSize: '42px', fontWeight: '400', color: 'var(--forest-800)', lineHeight: 1 }}>
               {doctor.rating || '4.9'}
             </div>
             <div>
@@ -629,11 +636,11 @@ export default function DoctorProfilePage() {
 
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
             <div style={{ textAlign: 'center', padding: '0 16px', borderLeft: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '20px', fontWeight: '800', color: '#15803D' }}>{doctor.satisfaction || '99%'}</div>
+              <div style={{ fontSize: '20px', fontWeight: '400', color: '#15803D' }}>{doctor.satisfaction || '99%'}</div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Patient Satisfaction</div>
             </div>
             <div style={{ textAlign: 'center', padding: '0 16px', borderLeft: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--forest-800)' }}>100%</div>
+              <div style={{ fontSize: '20px', fontWeight: '400', color: 'var(--forest-800)' }}>100%</div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>PMDC Verified Care</div>
             </div>
           </div>
@@ -663,14 +670,14 @@ export default function DoctorProfilePage() {
                       color: 'var(--lime-accent)',
                       display: 'grid',
                       placeItems: 'center',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       fontSize: '13px',
                     }}
                   >
                     {rev.author[0]}
                   </div>
                   <div>
-                    <b style={{ fontSize: '14px', color: 'var(--text-main)' }}>{rev.author}</b>
+                    <span style={{ fontSize: '14px', color: 'var(--text-main)', fontWeight: '400' }}>{rev.author}</span>
                     <span style={{ fontSize: '11px', color: 'var(--badge-green-text)', marginLeft: '8px' }}>
                       ✓ Verified Patient
                     </span>
@@ -688,7 +695,7 @@ export default function DoctorProfilePage() {
               <div
                 style={{
                   fontSize: '11.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   color: 'var(--forest-700)',
                   backgroundColor: 'var(--canvas-bg)',
                   padding: '3px 10px',

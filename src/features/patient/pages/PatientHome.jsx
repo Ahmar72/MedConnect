@@ -471,7 +471,7 @@ export default function PatientHome() {
   };
 
   const upcomingVisits = appointments.filter(
-    (a) => a.status === 'Confirmed' || a.status === 'Pending Doctor Confirmation'
+    (a) => a.status !== 'Completed' && !a.isCompleted && a.status !== 'Cancelled' && a.status !== 'Declined'
   );
 
   return (
@@ -479,36 +479,40 @@ export default function PatientHome() {
       {/* =========================================================================
           TOP SECTION: SEARCH BAR & DISCOVERY HEADER
          ========================================================================= */}
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--forest-600)' }}>
-            PATIENT CARE CONSOLE · PAKISTAN HEALTHCARE
+      <div style={{ marginBottom: '22px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '999px', background: 'rgba(14, 56, 44, 0.06)', border: '1px solid rgba(14, 56, 44, 0.12)', marginBottom: '8px' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981', display: 'inline-block' }} />
+          <span style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--forest-800)' }}>
+            PATIENT CARE DIRECTORY · PMDC VERIFIED
           </span>
         </div>
-        <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: '28px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+        <h1 style={{ fontSize: '26px', fontWeight: '700', margin: '0 0 6px 0', color: 'var(--text-main)', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
           Find Qualified PMDC Doctors & Clinics
         </h1>
-        <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: '0 0 18px 0' }}>
-          Book confirmed hospital appointments or consult certified clinicians via encrypted video visit
+        <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 16px 0', lineHeight: 1.4 }}>
+          Search licensed specialists, verify credentials, and book verified in-person hospital consultations.
         </p>
 
         {/* Unified Search & City Bar */}
         <div
           style={{
             backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            border: '1.5px solid rgba(14, 56, 44, 0.15)',
+            borderRadius: '14px',
+            border: '1.5px solid rgba(14, 56, 44, 0.14)',
             boxShadow: '0 4px 18px rgba(14, 56, 44, 0.05)',
-            padding: '8px 12px',
+            padding: '7px 12px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             flexWrap: 'wrap',
+            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
           }}
         >
           {/* Doctor / Specialty Search Input */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '240px' }}>
-            <Search size={18} color="var(--forest-800)" />
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(14, 56, 44, 0.06)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+              <Search size={16} color="var(--forest-800)" />
+            </div>
             <input
               type="text"
               placeholder="Search doctors, hospital, specialty, or health condition..."
@@ -528,18 +532,19 @@ export default function PatientHome() {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'grid', placeItems: 'center', padding: '4px' }}
+                title="Clear search"
               >
                 <X size={15} />
               </button>
             )}
           </div>
 
-          <div style={{ width: '1px', height: '32px', backgroundColor: 'var(--border-subtle)' }} />
+          <div style={{ width: '1px', height: '28px', backgroundColor: 'rgba(14, 56, 44, 0.12)' }} />
 
           {/* City Availability Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '170px' }}>
-            <MapPin size={16} color="var(--forest-800)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '180px', backgroundColor: 'rgba(14, 56, 44, 0.03)', padding: '5px 10px', borderRadius: '10px' }}>
+            <MapPin size={15} color="var(--forest-800)" style={{ flexShrink: 0 }} />
             <select
               value={filterCity}
               onChange={(e) => setFilterCity(e.target.value)}
@@ -547,12 +552,12 @@ export default function PatientHome() {
                 border: 'none',
                 outline: 'none',
                 fontSize: '13px',
-                fontWeight: '700',
+                fontWeight: '500',
                 color: 'var(--forest-800)',
                 backgroundColor: 'transparent',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                paddingRight: '6px',
+                width: '100%',
               }}
             >
               <option value="All Cities">All Cities (Pakistan)</option>
@@ -575,16 +580,17 @@ export default function PatientHome() {
               }}
               style={{
                 fontSize: '11.5px',
-                fontWeight: '700',
+                fontWeight: '500',
                 color: '#DC2626',
                 background: 'rgba(220, 38, 38, 0.08)',
                 border: '1px solid rgba(220, 38, 38, 0.2)',
                 padding: '6px 12px',
-                borderRadius: 'var(--radius-pill)',
+                borderRadius: '999px',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
-              Clear Filter ✕
+              Reset Filters ✕
             </button>
           )}
         </div>
@@ -593,16 +599,18 @@ export default function PatientHome() {
       {/* =========================================================================
           SECTION 2: POPULAR SPECIALTIES CHIPS RIGHT AFTER SEARCH BAR
          ========================================================================= */}
-      <div style={{ marginBottom: '28px' }}>
+      <div style={{ marginBottom: '26px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <span style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            ✦ POPULAR SPECIALTIES (FILTER DOCTORS)
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '11.5px', fontWeight: '600', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+              ✦ POPULAR SPECIALTIES (FILTER DOCTORS)
+            </span>
+          </div>
           {selectedSpecialty !== 'All' && (
             <button
               type="button"
               onClick={() => setSelectedSpecialty('All')}
-              style={{ fontSize: '12px', color: 'var(--forest-800)', fontWeight: '700', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: '12px', color: 'var(--forest-800)', fontWeight: '500', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Show All Specialties
             </button>
@@ -617,17 +625,17 @@ export default function PatientHome() {
             onClick={() => scrollSpecialties('left')}
             aria-label="Scroll Specialties Left"
             style={{
-              width: '36px',
-              height: '36px',
+              width: '34px',
+              height: '34px',
               borderRadius: '50%',
-              border: '1.5px solid #D1D5DB',
+              border: '1.5px solid rgba(14, 56, 44, 0.15)',
               backgroundColor: '#FFFFFF',
               color: 'var(--forest-800)',
               display: 'grid',
               placeItems: 'center',
               cursor: 'pointer',
               flexShrink: 0,
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
@@ -639,7 +647,7 @@ export default function PatientHome() {
               e.currentTarget.style.color = 'var(--forest-800)';
             }}
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={16} />
           </button>
 
           <div
@@ -667,15 +675,16 @@ export default function PatientHome() {
               onClick={() => setSelectedSpecialty('All')}
               style={{
                 padding: '8px 16px',
-                borderRadius: 'var(--radius-pill)',
+                borderRadius: '999px',
                 fontSize: '12.5px',
-                fontWeight: '700',
+                fontWeight: selectedSpecialty === 'All' ? '600' : '400',
                 cursor: 'pointer',
                 backgroundColor: selectedSpecialty === 'All' ? 'var(--forest-800)' : '#FFFFFF',
                 color: selectedSpecialty === 'All' ? '#FFFFFF' : 'var(--forest-800)',
-                border: `1.5px solid ${selectedSpecialty === 'All' ? 'var(--forest-800)' : 'rgba(14, 56, 44, 0.15)'}`,
+                border: `1.5px solid ${selectedSpecialty === 'All' ? 'var(--forest-800)' : 'rgba(14, 56, 44, 0.14)'}`,
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
+                boxShadow: selectedSpecialty === 'All' ? '0 3px 10px rgba(14, 56, 44, 0.2)' : '0 2px 5px rgba(0,0,0,0.02)',
                 transition: 'all 0.2s ease',
               }}
             >
@@ -694,16 +703,16 @@ export default function PatientHome() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '8px 16px',
-                    borderRadius: 'var(--radius-pill)',
+                    borderRadius: '999px',
                     fontSize: '12.5px',
-                    fontWeight: '700',
+                    fontWeight: isSelected ? '600' : '400',
                     cursor: 'pointer',
                     backgroundColor: isSelected ? 'var(--forest-800)' : '#FFFFFF',
-                    color: isSelected ? 'var(--lime-accent)' : 'var(--text-main)',
+                    color: isSelected ? '#FFFFFF' : 'var(--text-main)',
                     border: `1.5px solid ${isSelected ? 'var(--forest-800)' : 'rgba(14, 56, 44, 0.14)'}`,
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                    boxShadow: isSelected ? '0 3px 10px rgba(14, 56, 44, 0.2)' : '0 2px 5px rgba(0,0,0,0.02)',
                     transition: 'all 0.2s ease',
                   }}
                 >
@@ -711,9 +720,11 @@ export default function PatientHome() {
                   <span
                     style={{
                       fontSize: '10.5px',
-                      color: isSelected ? 'var(--lime-accent)' : 'var(--forest-700)',
+                      color: isSelected ? '#A7F3D0' : 'var(--forest-700)',
                       fontFamily: 'sans-serif',
-                      opacity: 0.85,
+                      backgroundColor: isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(14, 56, 44, 0.05)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
                     }}
                   >
                     {sp.urdu}
@@ -729,17 +740,17 @@ export default function PatientHome() {
             onClick={() => scrollSpecialties('right')}
             aria-label="Scroll Specialties Right"
             style={{
-              width: '36px',
-              height: '36px',
+              width: '34px',
+              height: '34px',
               borderRadius: '50%',
-              border: '1.5px solid #D1D5DB',
+              border: '1.5px solid rgba(14, 56, 44, 0.15)',
               backgroundColor: '#FFFFFF',
               color: 'var(--forest-800)',
               display: 'grid',
               placeItems: 'center',
               cursor: 'pointer',
               flexShrink: 0,
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
@@ -751,50 +762,9 @@ export default function PatientHome() {
               e.currentTarget.style.color = 'var(--forest-800)';
             }}
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={16} />
           </button>
         </div>
-      </div>
-
-      {/* =========================================================================
-          SECTION 3: PRIMARY PATIENT SERVICE TABS
-         ========================================================================= */}
-      <div className="patient-nav-tabs">
-        <button
-          type="button"
-          className={`patient-tab-btn ${activeTab === 'doctors' ? 'active' : ''}`}
-          onClick={() => setActiveTab('doctors')}
-        >
-          <Activity size={16} />
-          <span>Verified Doctors ({filteredDoctors.length})</span>
-        </button>
-
-        <button
-          type="button"
-          className={`patient-tab-btn ${activeTab === 'labs' ? 'active' : ''}`}
-          onClick={() => setActiveTab('labs')}
-        >
-          <TestTube2 size={16} />
-          <span>Diagnostic Lab Tests ({LAB_TESTS.length})</span>
-        </button>
-
-        <button
-          type="button"
-          className={`patient-tab-btn ${activeTab === 'pharmacy' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pharmacy')}
-        >
-          <ShoppingBag size={16} />
-          <span>Order Medicines ({PHARMACY_MEDICINES.length})</span>
-        </button>
-
-        <button
-          type="button"
-          className={`patient-tab-btn ${activeTab === 'appointments' ? 'active' : ''}`}
-          onClick={() => setActiveTab('appointments')}
-        >
-          <Calendar size={16} />
-          <span>My Visits ({upcomingVisits.length})</span>
-        </button>
       </div>
 
       {/* =========================================================================
@@ -803,17 +773,34 @@ export default function PatientHome() {
       {activeTab === 'doctors' && (
         <section>
           {/* Subheader with Filter Count & View Options */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
-                {selectedSpecialty !== 'All' ? `Top ${selectedSpecialty} Specialists` : 'PMDC Verified Doctors'} in {filterCity}
-              </h2>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)', margin: 0 }}>
+                  {selectedSpecialty !== 'All' ? `Top ${selectedSpecialty} Specialists` : 'PMDC Verified Doctors'} in {filterCity}
+                </h2>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 10px',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: 'var(--forest-800)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                  }}
+                >
+                  <Activity size={13} color="var(--forest-700)" />
+                  <span>{filteredDoctors.length} Doctors</span>
+                </div>
+              </div>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginTop: '3px' }}>
                 Showing {filteredDoctors.length} available medical practitioners
               </span>
             </div>
-
-
           </div>
 
           {/* List of Doctors in Horizontal Instacare Cards */}
@@ -890,7 +877,7 @@ export default function PatientHome() {
                     {/* Hospital practice locations chip list */}
                     {doc.practices && doc.practices.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '8px 0', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--forest-800)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-800)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <Building2 size={12} /> {doc.practices.length} Hospital Locations:
                         </span>
                         {doc.practices.map((p) => (
@@ -898,7 +885,7 @@ export default function PatientHome() {
                             key={p.id}
                             style={{
                               fontSize: '11px',
-                              fontWeight: '600',
+                              fontWeight: '400',
                               backgroundColor: '#F3F4F6',
                               color: '#1F2937',
                               padding: '2px 8px',
@@ -918,7 +905,7 @@ export default function PatientHome() {
                       {/* Option 1: Video Consultation */}
                       <div
                         className="instacare-consult-box"
-                        onClick={() => handleOpenBooking(doc, 'video')}
+                        onClick={() => navigate(`/book?doctorId=${doc.id}&type=video`)}
                         title="Click to book Online Video Consultation"
                       >
                         <div className="instacare-consult-box-top">
@@ -926,7 +913,7 @@ export default function PatientHome() {
                           <span>Video Consultation</span>
                         </div>
                         <div className="instacare-consult-box-bottom">
-                          <span style={{ color: '#166534', fontWeight: '700' }}>Available Today</span>
+                          <span style={{ color: '#166534', fontWeight: '400' }}>Available Today</span>
                           <span className="instacare-consult-fee">
                             Rs. {doc.videoFee || 2000}
                           </span>
@@ -936,7 +923,7 @@ export default function PatientHome() {
                       {/* Option 2: In-Clinic Hospital Visit */}
                       <div
                         className="instacare-consult-box"
-                        onClick={() => handleOpenBooking(doc, 'clinic')}
+                        onClick={() => navigate(`/book?doctorId=${doc.id}&type=clinic`)}
                         title={`Click to select from ${doc.practices?.length || 1} hospital locations`}
                       >
                         <div className="instacare-consult-box-top">
@@ -959,8 +946,16 @@ export default function PatientHome() {
                     </div>
                   </div>
 
-                  {/* Right Column: View Profile & Book Appointment CTAs */}
+                  {/* Right Column: Book Appointment & View Profile CTAs */}
                   <div className="instacare-actions-col">
+                    <button
+                      type="button"
+                      className="btn-instacare-book"
+                      onClick={() => navigate(`/book?doctorId=${doc.id}&type=clinic`)}
+                    >
+                      Book Appointment
+                    </button>
+
                     <a
                       href={`/doctors/${doc.id}`}
                       target="_blank"
@@ -977,14 +972,6 @@ export default function PatientHome() {
                     >
                       View Profile ↗
                     </a>
-
-                    <button
-                      type="button"
-                      className="btn-instacare-book"
-                      onClick={() => handleOpenBooking(doc, doc.videoFee ? 'video' : 'clinic')}
-                    >
-                      Book Appointment
-                    </button>
                   </div>
                 </div>
               ))}
@@ -1022,139 +1009,7 @@ export default function PatientHome() {
         </section>
       )}
 
-      {/* =========================================================================
-          TAB CONTENT 2: BOOK LAB TESTS (DIAGNOSTIC TEST DIRECTORY)
-         ========================================================================= */}
-      {activeTab === 'labs' && (
-        <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-            <div>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
-                Book Diagnostic Lab Tests with Home Sampling
-              </h2>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                Certified phlebotomists collect blood samples at your doorstep across Pakistan
-              </span>
-            </div>
 
-            {/* Filter by Lab */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--forest-800)' }}>Filter Lab:</span>
-              <select
-                value={selectedLabFilter}
-                onChange={(e) => setSelectedLabFilter(e.target.value)}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 'var(--radius-pill)',
-                  border: '1.5px solid var(--border-subtle)',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  color: 'var(--forest-800)',
-                  backgroundColor: '#FFFFFF',
-                  outline: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <option value="All">All Partner Labs</option>
-                <option value="Chughtai">Chughtai Healthcare Lab</option>
-                <option value="Islamabad">Islamabad Diagnostic Centre (IDC)</option>
-                <option value="Essa">Dr. Essa Laboratory</option>
-                <option value="Al Razi">Al Razi Healthcare</option>
-              </select>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px' }}>
-            {filteredLabTests.map((test) => (
-              <div
-                key={test.id}
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: '1.5px solid rgba(14, 56, 44, 0.12)',
-                  padding: '22px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  boxShadow: '0 4px 14px rgba(14, 56, 44, 0.04)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span
-                    style={{
-                      fontSize: '11px',
-                      fontWeight: '800',
-                      color: 'var(--forest-800)',
-                      backgroundColor: 'rgba(197, 225, 165, 0.4)',
-                      padding: '3px 9px',
-                      borderRadius: 'var(--radius-pill)',
-                    }}
-                  >
-                    {test.lab}
-                  </span>
-                  <span style={{ fontSize: '11.5px', color: '#B45309', fontWeight: '800' }}>
-                    Save 20%
-                  </span>
-                </div>
-
-                <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                  {test.name}
-                </h4>
-
-                <div style={{ fontSize: '12px', color: '#4B5563', lineHeight: '1.5' }}>
-                  <div>• {test.fasting}</div>
-                  <div>• Turnaround: {test.turnaround}</div>
-                  {test.homeSample && (
-                    <div style={{ color: '#166534', fontWeight: '700', marginTop: '4px' }}>
-                      ✓ Free Doorstep Home Sampling
-                    </div>
-                  )}
-                </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingTop: '12px',
-                    borderTop: '1px solid var(--border-subtle)',
-                    marginTop: 'auto',
-                  }}
-                >
-                  <div>
-                    <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '11px', marginRight: '6px' }}>
-                      Rs. {test.originalFee}
-                    </span>
-                    <b style={{ color: 'var(--forest-800)', fontSize: '16px' }}>
-                      Rs. {test.discountedFee}
-                    </b>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="btn-lime-pill"
-                    style={{ padding: '8px 16px', fontSize: '12.5px' }}
-                    onClick={() =>
-                      setLabBookingModal({
-                        isOpen: true,
-                        test,
-                        patientName: '',
-                        phone: '',
-                        address: '',
-                        date: 'Tomorrow 08:30 AM',
-                        collectionType: 'home',
-                        notes: '',
-                      })
-                    }
-                  >
-                    Book Test
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* =========================================================================
           TAB CONTENT 3: ORDER MEDICINES FROM CERTIFIED PHARMACIES
@@ -1163,7 +1018,7 @@ export default function PatientHome() {
         <section>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
                 Order Genuine Medicines from Certified Pharmacies
               </h2>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -1196,7 +1051,7 @@ export default function PatientHome() {
                   borderRadius: 'var(--radius-pill)',
                   border: '1.5px solid var(--border-subtle)',
                   fontSize: '12px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   color: 'var(--forest-800)',
                   backgroundColor: '#FFFFFF',
                   outline: 'none',
@@ -1231,7 +1086,7 @@ export default function PatientHome() {
                   <span
                     style={{
                       fontSize: '10.5px',
-                      fontWeight: '800',
+                      fontWeight: '400',
                       color: 'var(--forest-800)',
                       backgroundColor: 'rgba(14, 56, 44, 0.06)',
                       padding: '3px 8px',
@@ -1240,12 +1095,12 @@ export default function PatientHome() {
                   >
                     {med.pharmacy}
                   </span>
-                  <span style={{ fontSize: '10.5px', color: '#166534', fontWeight: '700' }}>
+                  <span style={{ fontSize: '10.5px', color: '#166534', fontWeight: '400' }}>
                     In Stock
                   </span>
                 </div>
 
-                <h4 style={{ margin: '4px 0 2px 0', fontSize: '14.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                <h4 style={{ margin: '4px 0 2px 0', fontSize: '14.5px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   {med.name}
                 </h4>
 
@@ -1302,7 +1157,7 @@ export default function PatientHome() {
         <section>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)', margin: '0 0 2px 0' }}>
                 Your Scheduled Medical Visits
               </h2>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -1362,7 +1217,7 @@ export default function PatientHome() {
                               <span
                                 style={{
                                   fontSize: '11.5px',
-                                  fontWeight: '800',
+                                  fontWeight: '400',
                                   padding: '3px 10px',
                                   borderRadius: 'var(--radius-pill)',
                                   backgroundColor: live.bg,
@@ -1379,7 +1234,7 @@ export default function PatientHome() {
                               <span
                                 style={{
                                   fontSize: '11px',
-                                  fontWeight: '700',
+                                  fontWeight: '400',
                                   padding: '2px 8px',
                                   borderRadius: 'var(--radius-pill)',
                                   backgroundColor: apt.status.includes('Pending') ? '#FEF3C7' : '#DCFCE7',
@@ -1394,10 +1249,10 @@ export default function PatientHome() {
                         );
                       })()}
 
-                      <h4 style={{ fontSize: '16px', fontWeight: '800', margin: '2px 0 4px 0', color: 'var(--forest-800)' }}>
+                      <h4 style={{ fontSize: '16px', fontWeight: '400', margin: '2px 0 4px 0', color: 'var(--forest-800)' }}>
                         {apt.doctorName}
                       </h4>
-                      <div style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '600' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '400' }}>
                         {apt.specialty} · 🏥 {apt.clinicName} {apt.hospitalAddress ? `(${apt.hospitalAddress})` : ''}
                       </div>
                       <div style={{ fontSize: '12.5px', color: 'var(--text-main)', marginTop: '4px' }}>
@@ -1407,21 +1262,10 @@ export default function PatientHome() {
                   </div>
 
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    {apt.type.includes('Video') && (
-                      <button
-                        type="button"
-                        className="btn-lime-pill"
-                        onClick={() => navigate(`/video?aptId=${apt.id}`)}
-                        style={{ padding: '8px 16px', fontSize: '12px' }}
-                      >
-                        <Video size={13} />
-                        <span>Join Video Visit</span>
-                      </button>
-                    )}
 
                     <button
                       type="button"
-                      style={{ fontSize: '12px', color: '#DC2626', fontWeight: '700', padding: '6px 12px', border: '1px solid rgba(220, 38, 38, 0.2)', borderRadius: '8px', background: 'none', cursor: 'pointer' }}
+                      style={{ fontSize: '12px', color: '#DC2626', fontWeight: '400', padding: '6px 12px', border: '1px solid rgba(220, 38, 38, 0.2)', borderRadius: '8px', background: 'none', cursor: 'pointer' }}
                       onClick={() => cancelAppointment(apt.id)}
                     >
                       Cancel Visit
@@ -1506,7 +1350,7 @@ export default function PatientHome() {
                     display: 'grid',
                     placeItems: 'center',
                     fontSize: '20px',
-                    fontWeight: '800',
+                    fontWeight: '400',
                     flexShrink: 0,
                     overflow: 'hidden',
                     border: '2.5px solid rgba(14, 56, 44, 0.18)',
@@ -1530,13 +1374,13 @@ export default function PatientHome() {
 
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
                       RESERVE APPOINTMENT
                     </span>
                     <span
                       style={{
                         fontSize: '11px',
-                        fontWeight: '700',
+                        fontWeight: '400',
                         color: '#15803D',
                         backgroundColor: '#DCFCE7',
                         padding: '2px 8px',
@@ -1546,7 +1390,7 @@ export default function PatientHome() {
                       PMC/PMDC Verified
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: 'var(--forest-900)', letterSpacing: '-0.01em' }}>
+                  <h3 style={{ margin: 0, fontSize: '22px', fontWeight: '400', color: 'var(--forest-900)', letterSpacing: '-0.01em' }}>
                     {bookingModal.doctor.name}
                   </h3>
                   <p style={{ margin: '3px 0 0 0', fontSize: '13.5px', color: 'var(--text-muted)' }}>
@@ -1589,7 +1433,7 @@ export default function PatientHome() {
             >
               {/* Consultation Type Selection (Large Breathable Cards) */}
               <div style={{ marginBottom: '28px' }}>
-                <label className="form-label" style={{ marginBottom: '12px', fontSize: '14px', fontWeight: '700', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ marginBottom: '12px', fontSize: '14px', fontWeight: '400', color: 'var(--forest-900)' }}>
                   Select Consultation Mode:
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px' }}>
@@ -1606,7 +1450,7 @@ export default function PatientHome() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '800', fontSize: '15.5px', color: 'var(--forest-900)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '400', fontSize: '15.5px', color: 'var(--forest-900)' }}>
                         <Video size={20} color="var(--forest-800)" />
                         <span>Online Video Visit</span>
                       </div>
@@ -1627,7 +1471,7 @@ export default function PatientHome() {
                     <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: '1.4' }}>
                       Encrypted HD video consultation from home across Pakistan
                     </div>
-                    <div style={{ fontSize: '14.5px', color: 'var(--forest-800)', fontWeight: '800' }}>
+                    <div style={{ fontSize: '14.5px', color: 'var(--forest-800)', fontWeight: '400' }}>
                       Fee: Rs. {bookingModal.doctor.videoFee || 2000}
                     </div>
                   </div>
@@ -1645,7 +1489,7 @@ export default function PatientHome() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '800', fontSize: '15.5px', color: 'var(--forest-900)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '400', fontSize: '15.5px', color: 'var(--forest-900)' }}>
                         <Building2 size={20} color="var(--forest-800)" />
                         <span>In-Clinic Hospital Visit</span>
                       </div>
@@ -1666,7 +1510,7 @@ export default function PatientHome() {
                     <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: '1.4' }}>
                       Physical specialist consultation at affiliated hospital OPD
                     </div>
-                    <div style={{ fontSize: '14.5px', color: 'var(--forest-800)', fontWeight: '800' }}>
+                    <div style={{ fontSize: '14.5px', color: 'var(--forest-800)', fontWeight: '400' }}>
                       Fee: Rs. {bookingModal.doctor.inClinicFee || 2500}
                     </div>
                   </div>
@@ -1677,7 +1521,7 @@ export default function PatientHome() {
                 {/* Hospital Selection for In-Clinic Consultation (Spacious, Uncluttered Cards) */}
                 {bookingModal.consultType === 'clinic' && (
                   <div style={{ marginBottom: '28px' }}>
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '14px', fontWeight: '700', color: 'var(--forest-900)' }}>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '14px', fontWeight: '400', color: 'var(--forest-900)' }}>
                       <Building2 size={16} color="var(--forest-800)" />
                       <span>Select Hospital / Clinic Location ({bookingModal.doctor.practices?.length || 1} Available Locations):</span>
                     </label>
@@ -1725,14 +1569,14 @@ export default function PatientHome() {
                           >
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                                <span style={{ fontWeight: '800', fontSize: '14.5px', color: 'var(--forest-900)' }}>
+                                <span style={{ fontWeight: '400', fontSize: '14.5px', color: 'var(--forest-900)' }}>
                                   {prac.hospital}
                                 </span>
                                 {isSelected && (
                                   <span
                                     style={{
                                       fontSize: '11px',
-                                      fontWeight: '800',
+                                      fontWeight: '400',
                                       color: '#15803D',
                                       backgroundColor: '#DCFCE7',
                                       padding: '3px 9px',
@@ -1749,7 +1593,7 @@ export default function PatientHome() {
                             </div>
                             <div style={{ textAlign: 'right', flexShrink: 0 }}>
                               <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Fee</span>
-                              <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                              <span style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-800)' }}>
                                 Rs. {prac.fee}
                               </span>
                             </div>
@@ -1763,7 +1607,7 @@ export default function PatientHome() {
                 {/* Date & Time Slot: 2-Column Grid with Spacing */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: 'var(--forest-900)' }}>
                       Consultation Date
                     </label>
                     <select
@@ -1781,7 +1625,7 @@ export default function PatientHome() {
                   </div>
 
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: 'var(--forest-900)' }}>
                       Available Time Slot
                     </label>
                     <select
@@ -1803,7 +1647,7 @@ export default function PatientHome() {
                 {/* Patient Name & Mobile: 2-Column Grid with Spacing */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: 'var(--forest-900)' }}>
                       Patient Full Name
                     </label>
                     <input
@@ -1832,7 +1676,7 @@ export default function PatientHome() {
                   </div>
 
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                    <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: 'var(--forest-900)' }}>
                       Mobile Number (SMS Confirmation)
                     </label>
                     <input
@@ -1863,7 +1707,7 @@ export default function PatientHome() {
 
                 {/* Reason for Visit / Symptoms */}
                 <div className="form-group" style={{ marginBottom: '26px' }}>
-                  <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: 'var(--forest-900)' }}>
                     Reason for Visit / Clinical Symptoms
                   </label>
                   <input
@@ -1912,7 +1756,7 @@ export default function PatientHome() {
                       <b>Appointment:</b> {bookingModal.consultType === 'video' ? 'Video Consultation' : `In-Clinic at ${bookingModal.selectedHospitalName || 'Specialty Hospital'}`} · {bookingModal.date} at {bookingModal.time}
                     </div>
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-800)' }}>
                     Total Payable: Rs. {bookingModal.consultType === 'video' ? (bookingModal.doctor.videoFee || 2000) : (bookingModal.fee || bookingModal.doctor.inClinicFee || 2500)}
                   </div>
                 </div>
@@ -1931,7 +1775,7 @@ export default function PatientHome() {
                   <button
                     type="submit"
                     className="btn-lime-pill"
-                    style={{ padding: '12px 32px', fontSize: '14px', fontWeight: '800' }}
+                    style={{ padding: '12px 32px', fontSize: '14px', fontWeight: '400' }}
                     onClick={handleConfirmBooking}
                   >
                     Confirm & Reserve Slot
@@ -1959,10 +1803,10 @@ export default function PatientHome() {
                   {doctorProfileModal.doctor.initials}
                 </div>
                 <div>
-                  <h3 style={{ margin: '0 0 2px 0', fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                  <h3 style={{ margin: '0 0 2px 0', fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)' }}>
                     {doctorProfileModal.doctor.name}
                   </h3>
-                  <div style={{ fontSize: '12.5px', color: 'var(--forest-700)', fontWeight: '700' }}>
+                  <div style={{ fontSize: '12.5px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     {doctorProfileModal.doctor.specialty} · PMDC License #{doctorProfileModal.doctor.pmdcNumber || 'Verified'}
                   </div>
                 </div>
@@ -1978,7 +1822,7 @@ export default function PatientHome() {
 
             <div className="modal-interactive-body">
               <div style={{ marginBottom: '16px' }}>
-                <h4 style={{ margin: '0 0 6px 0', fontSize: '13.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                <h4 style={{ margin: '0 0 6px 0', fontSize: '13.5px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   Professional Bio & Clinical Scope
                 </h4>
                 <p style={{ margin: 0, fontSize: '12.5px', color: '#4B5563', lineHeight: '1.5' }}>
@@ -2003,7 +1847,7 @@ export default function PatientHome() {
                   <b style={{ fontSize: '13px', color: 'var(--forest-800)' }}>
                     {doctorProfileModal.doctor.experience || '12+ Years Post-Fellowship'}
                   </b>
-                  <div style={{ fontSize: '11.5px', color: '#166534', fontWeight: '700', marginTop: '2px' }}>
+                  <div style={{ fontSize: '11.5px', color: '#166534', fontWeight: '400', marginTop: '2px' }}>
                     ✓ 99% Patient Satisfaction
                   </div>
                 </div>
@@ -2012,7 +1856,7 @@ export default function PatientHome() {
               {/* Hospital & Clinic Locations List */}
               {doctorProfileModal.doctor.practices && doctorProfileModal.doctor.practices.length > 0 && (
                 <div style={{ marginBottom: '18px' }}>
-                  <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                  <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)' }}>
                     Hospital Practice Locations ({doctorProfileModal.doctor.practices.length} Locations)
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2030,7 +1874,7 @@ export default function PatientHome() {
                         }}
                       >
                         <div>
-                          <div style={{ fontWeight: '700', fontSize: '12.5px', color: 'var(--forest-900)' }}>
+                          <div style={{ fontWeight: '400', fontSize: '12.5px', color: 'var(--forest-900)' }}>
                             {p.hospital}
                           </div>
                           <div style={{ fontSize: '11.5px', color: '#6B7280', marginTop: '2px' }}>
@@ -2041,7 +1885,7 @@ export default function PatientHome() {
                           </div>
                         </div>
                         <div style={{ textAlign: 'right', minWidth: '70px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                          <span style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-800)' }}>
                             Rs. {p.fee}
                           </span>
                         </div>
@@ -2091,10 +1935,10 @@ export default function PatientHome() {
           >
             <div className="modal-interactive-header" style={{ borderBottom: '1px solid rgba(14, 56, 44, 0.12)' }}>
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
                   DIAGNOSTIC LAB BOOKING
                 </span>
-                <h3 style={{ margin: '2px 0 0 0', fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                <h3 style={{ margin: '2px 0 0 0', fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   {labBookingModal.test.name}
                 </h3>
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -2239,10 +2083,10 @@ export default function PatientHome() {
           >
             <div className="modal-interactive-header" style={{ borderBottom: '1px solid rgba(14, 56, 44, 0.12)' }}>
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
                   CERTIFIED PHARMACY ORDER
                 </span>
-                <h3 style={{ margin: '2px 0 0 0', fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                <h3 style={{ margin: '2px 0 0 0', fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   {medicineOrderModal.medicine.name}
                 </h3>
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>

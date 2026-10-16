@@ -44,7 +44,7 @@ export default function ServiceCards() {
         tabIndex={0}
       >
         <div style={{ height: '24px', marginBottom: '14px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--forest-600)', letterSpacing: '0.5px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-600)', letterSpacing: '0.5px' }}>
             TOP HOSPITALS
           </span>
         </div>
@@ -72,7 +72,7 @@ export default function ServiceCards() {
         tabIndex={0}
       >
         <div style={{ height: '24px', marginBottom: '14px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '700', color: '#B45309', letterSpacing: '0.5px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '400', color: '#B45309', letterSpacing: '0.5px' }}>
             UP TO 20% OFF
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function ServiceCards() {
         tabIndex={0}
       >
         <div style={{ height: '24px', marginBottom: '14px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
             2-HOUR EXPRESS
           </span>
         </div>

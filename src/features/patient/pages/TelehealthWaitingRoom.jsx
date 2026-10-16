@@ -84,7 +84,7 @@ export default function TelehealthWaitingRoom() {
                 <span>PMC End-to-End Encrypted Telehealth</span>
               </span>
             </div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '26px', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
               {isConnected ? `In Consultation with ${doctor.name}` : 'Virtual Care Waiting Room'}
             </h1>
           </div>
@@ -109,14 +109,14 @@ export default function TelehealthWaitingRoom() {
             <div className="queue-status-banner">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span className="live-pulse-dot" />
-                <span style={{ fontSize: '13px', fontWeight: '700' }}>
+                <span style={{ fontSize: '13px', fontWeight: '400' }}>
                   {isConnected
                     ? `Live Call Duration: ${formatTime(callDuration)}`
                     : `Queue Position: #1 in line`}
                 </span>
               </div>
 
-              <div style={{ fontSize: '12px', color: 'var(--lime-accent)', fontWeight: '600' }}>
+              <div style={{ fontSize: '12px', color: 'var(--lime-accent)', fontWeight: '400' }}>
                 {isConnected ? 'HD Audio & Video Connected' : `Est. Wait: ${formatTime(secondsRemaining)}`}
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function TelehealthWaitingRoom() {
                 >
                   {doctor.initials}
                 </div>
-                <h3 style={{ fontSize: '20px', fontWeight: '700', margin: '0 0 6px 0' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: '400', margin: '0 0 6px 0' }}>
                   {doctor.name}
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-white-muted)', maxWidth: '420px', margin: '0 auto 18px auto' }}>
@@ -176,7 +176,7 @@ export default function TelehealthWaitingRoom() {
                   >
                     {doctor.initials}
                   </div>
-                  <h3 style={{ fontSize: '22px', fontWeight: '700', margin: '0 0 4px 0' }}>{doctor.name}</h3>
+                  <h3 style={{ fontSize: '22px', fontWeight: '400', margin: '0 0 4px 0' }}>{doctor.name}</h3>
                   <div style={{ fontSize: '13px', color: 'var(--lime-accent)' }}>
                     ● Speaking · Audio Active
                   </div>
@@ -288,7 +288,7 @@ export default function TelehealthWaitingRoom() {
                   <b>Diagnosis:</b> Seasonal Allergic Rhinitis & Upper Respiratory Viral Irritation
                 </div>
 
-                <div style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
                   Prescribed Medicines
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>

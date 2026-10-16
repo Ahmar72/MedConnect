@@ -105,7 +105,7 @@ export default function DoctorFilterSidebar({
           />
           <div className="fee-range-labels">
             <span>Rs. 1,000</span>
-            <span style={{ color: 'var(--forest-800)', fontWeight: '700' }}>
+            <span style={{ color: 'var(--forest-800)', fontWeight: '400' }}>
               Up to Rs. {filters.maxFee.toLocaleString()}
             </span>
             <span>Rs. 4,000</span>

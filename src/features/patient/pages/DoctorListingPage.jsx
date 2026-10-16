@@ -204,17 +204,14 @@ export default function DoctorListingPage() {
         }}
       >
         <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', margin: 0, color: 'var(--text-main)' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '700', margin: 0, color: 'var(--text-main)' }}>
             {filters.specialty === 'All' ? 'Doctors' : `${filters.specialty} Specialists`} in {selectedCity.name}
           </h1>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-            Showing {filteredDoctors.length} PMDC verified doctors with instant booking
-          </p>
         </div>
 
         {/* Sort Select */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>Sort by:</span>
+          <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '400' }}>Sort by:</span>
           <select
             className="form-select"
             value={sortBy}
@@ -277,7 +274,7 @@ export default function DoctorListingPage() {
               >
                 <RotateCcw size={24} />
               </div>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
                 No clinicians found matching your criteria
               </h3>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', maxWidth: '420px', margin: '0 0 20px 0' }}>

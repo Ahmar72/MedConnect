@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import AppShell from '../../shell/AppShell';
 import { useDemo } from '../../../context/DemoContext';
+import ThermalReceiptModal from '../../../shared/components/ThermalReceiptModal';
 import {
   Calendar,
   Clock,
@@ -27,11 +28,11 @@ import {
   MapPin,
   Heart,
   ShieldAlert,
-  Share2,
+  Pill,
+  Check,
   CreditCard,
-  Sparkles,
+  Receipt,
 } from 'lucide-react';
-
 
 export default function PatientDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,7 +43,6 @@ export default function PatientDashboard() {
     appointments,
     prescriptions,
     labReports,
-    labOrders = [],
     doctorsList,
     cancelAppointment,
     rescheduleAppointment,
@@ -59,12 +59,92 @@ export default function PatientDashboard() {
   const [newTime, setNewTime] = useState('5:30 PM');
   const [cancelAptId, setCancelAptId] = useState(null);
   const [viewRx, setViewRx] = useState(null);
+  const [thermalReceipt, setThermalReceipt] = useState({ isOpen: false, type: 'payment', data: {} });
 
-  // Patient Lab Filters
-  const [labSubFilter, setLabSubFilter] = useState('all'); // 'all' | 'ready' | 'pending_payment' | 'processing'
+  const upcomingAppointments = appointments.filter(
+    (a) =>
+      a.status !== 'Completed' &&
+      !a.isCompleted &&
+      a.status !== 'Cancelled' &&
+      a.status !== 'Declined'
+  );
+  const pastAppointments = appointments.filter(
+    (a) =>
+      a.status === 'Completed' ||
+      a.isCompleted ||
+      a.status === 'Cancelled' ||
+      a.status === 'Declined'
+  );
 
-  const upcomingAppointments = appointments.filter((a) => a.status === 'Confirmed' || a.status === 'Rescheduled' || a.status === 'Pending Doctor Confirmation');
-  const pastAppointments = appointments.filter((a) => a.status === 'Completed' || a.status === 'Cancelled' || a.status === 'Declined');
+  // Print dedicated thermal receipt for payments
+  const handlePrintPaymentReceipt = (apt) => {
+    const fee = apt.fee || 2500;
+    const processing = 150;
+    const subtotal = fee + processing;
+    const tax = Math.round(subtotal * 0.05);
+    const total = subtotal + tax;
+
+    setThermalReceipt({
+      isOpen: true,
+      type: 'payment',
+      data: {
+        patientName: apt.patientName || patientUser?.name || 'Alex Khan',
+        patientMrn: apt.patientMrn || patientUser?.mrn || 'MC-89241',
+        patientPhone: apt.patientPhone || patientUser?.phone || '+92 300 1234567',
+        doctorName: apt.doctorName,
+        doctorSpecialty: apt.specialty,
+        clinicName: apt.clinicName || 'Central Medical Complex',
+        date: apt.date,
+        time: apt.time,
+        refNumber: `PAY-${(apt.id || '901').toUpperCase()}`,
+        paymentMethod: apt.paymentMethod || 'Debit Card / JazzCash',
+        fee: fee,
+        items: [
+          { name: `1x Consultation Fee (${apt.specialty})`, price: fee },
+          { name: '1x EMR Digital Archival & Verification', price: processing },
+        ],
+        subtotal: subtotal,
+        tax: tax,
+        total: total,
+      },
+    });
+  };
+
+  // Print dedicated thermal receipt for prescriptions
+  const handlePrintPrescriptionSlip = (apt, customRx) => {
+    const matchingRx = customRx || prescriptions.find((r) => r.doctorName === apt?.doctorName || r.date === apt?.date) || {
+      diagnosis: apt?.reason || 'Borderline Essential Hypertension & Routine Review',
+      medicines: [
+        { name: 'Tab. Concor (Bisoprolol 2.5mg)', dosage: '1 tablet once daily morning', duration: '30 days', timing: 'After breakfast' },
+        { name: 'Tab. Lowplat (Aspirin 75mg)', dosage: '1 tablet once daily after lunch', duration: '30 days', timing: 'After lunch' },
+      ],
+      instructions: 'Monitor blood pressure daily morning and evening. Reduce dietary sodium intake. Follow up in 4 weeks.',
+      labTests: ['Lipid Profile (Cholesterol, HDL, LDL, Triglycerides)', 'Serum Electrolytes (Na+, K+, Cl-)'],
+    };
+
+    setThermalReceipt({
+      isOpen: true,
+      type: 'prescription',
+      data: {
+        patientName: apt?.patientName || patientUser?.name || 'Alex Khan',
+        patientMrn: apt?.patientMrn || patientUser?.mrn || 'MC-89241',
+        patientPhone: apt?.patientPhone || patientUser?.phone || '+92 300 1234567',
+        doctorName: customRx?.doctorName || apt?.doctorName || 'Attending Physician',
+        doctorSpecialty: customRx?.specialty || apt?.specialty || 'General Medicine',
+        clinicName: apt?.clinicName || 'Central Medical Complex',
+        date: customRx?.date || apt?.date || 'Today',
+        time: apt?.time || '11:00 AM',
+        refNumber: `RX-${(customRx?.id || apt?.id || '901').toUpperCase()}`,
+        diagnosis: matchingRx.diagnosis,
+        items: (matchingRx.medicines || []).map((m) => ({
+          name: m.name,
+          detail: `${m.dosage} (${m.duration})`,
+        })),
+        labTests: matchingRx.labTests || [],
+        instructions: matchingRx.instructions,
+      },
+    });
+  };
 
   const handleSetTab = (tab) => {
     setSearchParams({ tab });
@@ -90,14 +170,14 @@ export default function PatientDashboard() {
         {/* Welcome Header Banner */}
         <div className="patient-welcome-banner">
           <div>
-            <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '11px', fontWeight: '400', letterSpacing: '0.5px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
               PATIENT CARE PORTAL
             </div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '4px 0 6px 0' }}>
+            <h1 style={{ fontSize: '26px', fontWeight: '700', margin: '4px 0 6px 0' }}>
               Welcome, {patientUser.name}
             </h1>
-            <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
-              Medical Record Number: <b>{patientUser.mrn}</b> · City: {patientUser.city} · Blood Group: {patientUser.bloodGroup}
+            <div style={{ fontSize: '13px', color: 'var(--text-white-muted)', fontWeight: '400' }}>
+              Medical Record Number: {patientUser.mrn} · City: {patientUser.city} · Blood Group: {patientUser.bloodGroup}
             </div>
           </div>
 
@@ -106,7 +186,7 @@ export default function PatientDashboard() {
               type="button"
               className="btn-lime-pill"
               onClick={() => navigate('/doctors')}
-              style={{ padding: '12px 22px', fontSize: '13.5px' }}
+              style={{ padding: '12px 22px', fontSize: '13.5px', fontWeight: '400' }}
             >
               <Plus size={16} />
               <span>Book New Appointment</span>
@@ -143,14 +223,7 @@ export default function PatientDashboard() {
             <span>Prescriptions ({prescriptions.length})</span>
           </button>
 
-          <button
-            type="button"
-            className={`tab-nav-btn ${activeTab === 'labs' ? 'active' : ''}`}
-            onClick={() => handleSetTab('labs')}
-          >
-            <TestTube2 size={16} />
-            <span>Lab Reports ({labReports.length})</span>
-          </button>
+
         </div>
 
         {/* TAB 1: UPCOMING VISITS */}
@@ -162,35 +235,52 @@ export default function PatientDashboard() {
               upcomingAppointments.map((apt) => (
                 <div
                   key={apt.id}
+                  onClick={() => navigate(`/patient/appointments/${apt.id}`)}
                   style={{
                     backgroundColor: '#FFFFFF',
-                    borderRadius: 'var(--radius-card)',
-                    border: '1px solid var(--border-subtle)',
-                    padding: '24px 28px',
-                    boxShadow: 'var(--shadow-sm)',
+                    borderRadius: '16px',
+                    border: '1.5px solid #E2E8F0',
+                    padding: '20px 24px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
-                    gap: '16px',
+                    gap: '18px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--forest-800)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(14, 56, 44, 0.08)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                  title="Click to view full appointment details and summary"
                 >
-                  <div style={{ display: 'flex', gap: '18px', alignItems: 'flex-start' }}>
+                  {/* Left & Middle Info */}
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flex: 1, minWidth: '300px' }}>
                     <div
                       style={{
-                        width: '48px',
-                        height: '48px',
-                        borderRadius: '14px',
-                        backgroundColor: apt.type.includes('Video') ? 'rgba(197, 225, 165, 0.5)' : 'var(--canvas-bg)',
+                        width: '46px',
+                        height: '46px',
+                        borderRadius: '12px',
+                        backgroundColor: 'rgba(14, 56, 44, 0.06)',
                         color: 'var(--forest-800)',
                         display: 'grid',
                         placeItems: 'center',
+                        flexShrink: 0,
                       }}
                     >
-                      {apt.type.includes('Video') ? <Video size={22} /> : <Building2 size={22} />}
+                      <Building2 size={20} />
                     </div>
 
-                    <div>
+                    <div style={{ flex: 1 }}>
+                      {/* Top Badges Row */}
                       {(() => {
                         const liveStatus = getAppointmentLiveStatus(apt);
                         const isOngoing = liveStatus.status === 'ongoing';
@@ -201,11 +291,12 @@ export default function PatientDashboard() {
                               <span
                                 style={{
                                   fontSize: '11px',
-                                  fontWeight: '700',
-                                  padding: '2px 8px',
-                                  borderRadius: 'var(--radius-pill)',
-                                  backgroundColor: 'var(--badge-amber-bg)',
-                                  color: 'var(--badge-amber-text)',
+                                  fontWeight: '600',
+                                  padding: '3px 9px',
+                                  borderRadius: '6px',
+                                  backgroundColor: '#FEF3C7',
+                                  color: '#92400E',
+                                  border: '1px solid #FCD34D',
                                 }}
                               >
                                 ⏳ Awaiting Doctor Confirmation
@@ -213,10 +304,10 @@ export default function PatientDashboard() {
                             ) : (
                               <span
                                 style={{
-                                  fontSize: '11.5px',
-                                  fontWeight: '800',
+                                  fontSize: '11px',
+                                  fontWeight: '600',
                                   padding: '3px 10px',
-                                  borderRadius: 'var(--radius-pill)',
+                                  borderRadius: '6px',
                                   backgroundColor: isOngoing ? '#DCFCE7' : isMissed ? '#FEF2F2' : '#EFF6FF',
                                   color: isOngoing ? '#166534' : isMissed ? '#DC2626' : '#1D4ED8',
                                   border: `1px solid ${isOngoing ? '#86EFAC' : isMissed ? '#FCA5A5' : '#BFDBFE'}`,
@@ -228,52 +319,102 @@ export default function PatientDashboard() {
                                 {liveStatus.badge}
                               </span>
                             )}
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+
+                            <span
+                              style={{
+                                fontSize: '11px',
+                                fontWeight: '500',
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                backgroundColor: '#F8FAFC',
+                                color: '#64748B',
+                                border: '1px solid #E2E8F0',
+                              }}
+                            >
+                              In-Clinic Visit
+                            </span>
+
+                            <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '500' }}>
                               ID: #{apt.id}
                             </span>
                           </div>
                         );
                       })()}
 
-                      <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '2px 0 4px 0' }}>
-                        {apt.doctorName}
+                      {/* Doctor Name & Facility */}
+                      <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '0 0 3px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>{apt.doctorName}</span>
+                        <span style={{ fontSize: '10.5px', color: '#166534', backgroundColor: '#DCFCE7', padding: '1px 6px', borderRadius: '4px', fontWeight: '500' }}>PMDC Verified</span>
                       </h3>
-                      <div style={{ fontSize: '12.5px', color: 'var(--forest-700)', fontWeight: '600' }}>
-                        {apt.specialty} · {apt.clinicName}
+                      <div style={{ fontSize: '13px', color: 'var(--forest-700)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span>{apt.specialty}</span>
+                        <span>•</span>
+                        <span>{apt.clinicName || 'National Hospital & Medical Centre'}</span>
                       </div>
-                      <div style={{ fontSize: '13px', color: 'var(--text-main)', marginTop: '6px' }}>
-                        🗓 <b>{apt.date} at {apt.time}</b> · Reason: {apt.reason}
+
+                      {/* Clearly Defined Metadata Chips */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px', flexWrap: 'wrap', fontSize: '12.5px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#1E293B', backgroundColor: '#F1F5F9', padding: '3px 10px', borderRadius: '6px', fontWeight: '500' }}>
+                          <Calendar size={13} color="var(--forest-800)" />
+                          <span>{apt.date} at {apt.time}</span>
+                        </span>
+
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#047857', backgroundColor: '#ECFDF5', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>
+                          <span>Fee: Rs. {apt.fee ? apt.fee.toLocaleString() : '2,000'} (Confirmed)</span>
+                        </span>
+
+                        {apt.reason && apt.reason.trim().length > 3 && (
+                          <span style={{ color: '#64748B', fontStyle: 'italic', maxWidth: '320px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            Reason: "{apt.reason}"
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    {apt.canJoin && (
-                      <button
-                        type="button"
-                        className="btn-lime-pill"
-                        style={{ padding: '9px 18px', fontSize: '12.5px' }}
-                        onClick={() => navigate(`/video?aptId=${apt.id}`)}
-                      >
-                        <Video size={14} />
-                        <span>Join Video Visit</span>
-                      </button>
-                    )}
-
+                  {/* Actions (Reschedule, Cancel) */}
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       type="button"
                       className="btn-white-capsule"
-                      style={{ border: '1px solid var(--border-strong)', fontSize: '12px', padding: '8px 14px' }}
-                      onClick={() => setRescheduleApt(apt)}
+                      style={{ border: '1.5px solid #CBD5E1', fontSize: '12px', padding: '7px 14px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '5px' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRescheduleApt(apt);
+                      }}
                     >
-                      Reschedule
+                      <RotateCcw size={13} />
+                      <span>Reschedule</span>
                     </button>
 
                     <button
                       type="button"
-                      style={{ fontSize: '12px', color: '#DC2626', fontWeight: '600', padding: '8px 10px' }}
-                      onClick={() => setCancelAptId(apt.id)}
+                      style={{
+                        fontSize: '12px',
+                        color: '#DC2626',
+                        fontWeight: '500',
+                        padding: '7px 12px',
+                        background: '#FEF2F2',
+                        border: '1px solid #FECACA',
+                        borderRadius: '999px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#DC2626';
+                        e.currentTarget.style.color = '#FFFFFF';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#FEF2F2';
+                        e.currentTarget.style.color = '#DC2626';
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCancelAptId(apt.id);
+                      }}
                     >
                       Cancel
                     </button>
@@ -284,9 +425,6 @@ export default function PatientDashboard() {
               <div className="preview-state-banner empty">
                 <Calendar size={32} style={{ color: 'var(--forest-800)', marginBottom: '12px' }} />
                 <h3>No upcoming visits scheduled</h3>
-                <p style={{ margin: '0 0 16px 0', fontSize: '13px' }}>
-                  Browse PMDC certified specialists to book an in-person or video consultation.
-                </p>
                 <button type="button" className="btn-lime-pill" onClick={() => navigate('/doctors')}>
                   Book Consultation
                 </button>
@@ -297,50 +435,277 @@ export default function PatientDashboard() {
 
         {/* TAB 2: PAST VISITS */}
         {activeTab === 'past' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {pastAppointments.map((apt) => (
-              <div
-                key={apt.id}
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-card)',
-                  border: '1px solid var(--border-subtle)',
-                  padding: '20px 24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  opacity: apt.status === 'Cancelled' ? 0.75 : 1,
-                }}
-              >
-                <div>
-                  <span
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '100%' }}>
+            {pastAppointments.length === 0 ? (
+              <div className="preview-state-banner empty">
+                <Calendar size={32} style={{ color: 'var(--forest-800)', marginBottom: '12px' }} />
+                <h3>No past visits recorded</h3>
+              </div>
+            ) : (
+              pastAppointments.map((apt) => {
+                const isCompleted = apt.status === 'Completed';
+                const matchingRx = prescriptions.find((r) => r.doctorName === apt.doctorName || r.date === apt.date) || {
+                  diagnosis: apt.reason || 'Routine Consultation & Medical Review',
+                  medicines: [
+                    { name: 'Tab. Concor (Bisoprolol 2.5mg)', dosage: '1 tablet once daily morning', duration: '30 days', timing: 'After breakfast' },
+                    { name: 'Tab. Lowplat (Aspirin 75mg)', dosage: '1 tablet once daily after lunch', duration: '30 days', timing: 'After lunch' },
+                  ],
+                  instructions: 'Monitor blood pressure daily morning and evening. Reduce dietary sodium intake. Follow up in 4 weeks.',
+                  labTests: ['Lipid Profile (Cholesterol, HDL, LDL, Triglycerides)', 'Serum Electrolytes (Na+, K+, Cl-)'],
+                };
+
+                if (!isCompleted) {
+                  return (
+                    <div
+                      key={apt.id}
+                      style={{
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: '16px',
+                        border: '1px solid var(--border-subtle)',
+                        padding: '18px 22px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        opacity: 0.8,
+                        width: '100%',
+                      }}
+                    >
+                      <div>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '400',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            backgroundColor: '#FEF2F2',
+                            color: '#991B1B',
+                            border: '1px solid #FCA5A5',
+                          }}
+                        >
+                          {apt.status}
+                        </span>
+                        <h4 style={{ margin: '6px 0 2px 0', fontSize: '16px', color: 'var(--forest-900)', fontWeight: '400' }}>{apt.doctorName}</h4>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                          {apt.specialty} · {apt.date} · {apt.clinicName}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-white-capsule"
+                        style={{ border: '1px solid var(--border-strong)', fontSize: '12px', fontWeight: '400' }}
+                        onClick={() => navigate(`/doctors/${apt.doctorId}`)}
+                      >
+                        Book Again
+                      </button>
+                    </div>
+                  );
+                }
+
+                // COMPLETED VISIT WITH FULL DETAILS & SEPARATE RECEIPT PRINTS
+                return (
+                  <div
+                    key={apt.id}
                     style={{
-                      fontSize: '11px',
-                      fontWeight: '700',
-                      padding: '2px 8px',
-                      borderRadius: 'var(--radius-pill)',
-                      backgroundColor: apt.status === 'Completed' ? 'var(--badge-green-bg)' : 'var(--badge-red-bg)',
-                      color: apt.status === 'Completed' ? 'var(--badge-green-text)' : 'var(--badge-red-text)',
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '20px',
+                      border: '1.5px solid var(--border-subtle)',
+                      padding: '24px 28px',
+                      boxShadow: 'var(--shadow-sm)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '18px',
+                      width: '100%',
                     }}
                   >
-                    {apt.status}
-                  </span>
-                  <h4 style={{ margin: '6px 0 2px 0', fontSize: '16px' }}>{apt.doctorName}</h4>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    {apt.specialty} · {apt.date} · {apt.clinicName}
-                  </div>
-                </div>
+                    {/* Header Row: Doctor Info, Date & Completed Badge */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '400', color: 'var(--forest-900)' }}>
+                            {apt.doctorName}
+                          </h3>
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: '400',
+                              padding: '3px 10px',
+                              borderRadius: '9999px',
+                              backgroundColor: '#DCFCE7',
+                              color: '#15803D',
+                              border: '1px solid #86EFAC',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                          >
+                            <Check size={13} />
+                            <span>Consultation Completed</span>
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '400' }}>
+                          {apt.specialty} · {apt.clinicName || 'Central Medical Complex'} · {apt.date} at {apt.time}
+                        </div>
+                      </div>
 
-                <button
-                  type="button"
-                  className="btn-white-capsule"
-                  style={{ border: '1px solid var(--border-strong)', fontSize: '12px' }}
-                  onClick={() => navigate(`/doctors/${apt.doctorId}`)}
-                >
-                  Book Again
-                </button>
-              </div>
-            ))}
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400' }}>Consultation Fee</div>
+                        <div style={{ fontSize: '18px', fontWeight: '400', color: 'var(--forest-900)' }}>
+                          Rs. {apt.fee ? apt.fee.toLocaleString() : '2,500'}
+                        </div>
+                        <span style={{ fontSize: '11.5px', color: '#047857', fontWeight: '400' }}>
+                          ✓ Paid ({apt.paymentMethod || 'Prepaid Card / JazzCash'})
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Clinical Assessment / Chief Complaint Banner */}
+                    <div
+                      style={{
+                        backgroundColor: 'var(--canvas-bg)',
+                        borderRadius: '12px',
+                        padding: '12px 16px',
+                        border: '1px solid var(--border-subtle)',
+                        fontSize: '13px',
+                        color: 'var(--forest-900)',
+                      }}
+                    >
+                      <span>Clinical Assessment & Diagnosis:</span> {apt.reason || matchingRx.diagnosis}
+                    </div>
+
+                    {/* Clinical Breakdown: Prescribed Meds + Tests */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '16px' }}>
+                      {/* Prescribed Medications */}
+                      <div
+                        style={{
+                          backgroundColor: '#F8FAFC',
+                          borderRadius: '14px',
+                          padding: '16px',
+                          border: '1px solid #E2E8F0',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '10px' }}>
+                          <Pill size={16} color="var(--forest-800)" />
+                          <span>Prescribed Medications ({matchingRx.medicines?.length || 0})</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {(matchingRx.medicines || []).map((med, mIdx) => (
+                            <div
+                              key={mIdx}
+                              style={{
+                                backgroundColor: '#FFFFFF',
+                                borderRadius: '8px',
+                                padding: '8px 12px',
+                                border: '1px solid #EEF2F6',
+                                fontSize: '12.5px',
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontWeight: '400', color: 'var(--forest-900)' }}>{med.name}</span>
+                                <span style={{ fontSize: '11px', color: '#047857', fontWeight: '400' }}>{med.duration}</span>
+                              </div>
+                              <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '400' }}>
+                                {med.dosage} {med.timing ? `· ${med.timing}` : ''}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Recommended Diagnostic Tests & Doctor's Advice */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div
+                          style={{
+                            backgroundColor: '#F8FAFC',
+                            borderRadius: '14px',
+                            padding: '16px',
+                            border: '1px solid #E2E8F0',
+                            flex: 1,
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '8px' }}>
+                            <TestTube2 size={16} color="var(--forest-800)" />
+                            <span>Recommended Lab Tests</span>
+                          </div>
+                          {matchingRx.labTests && matchingRx.labTests.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              {matchingRx.labTests.map((t, tIdx) => (
+                                <div
+                                  key={tIdx}
+                                  style={{
+                                    backgroundColor: '#FFFFFF',
+                                    borderRadius: '6px',
+                                    padding: '6px 10px',
+                                    border: '1px solid #EEF2F6',
+                                    fontSize: '12px',
+                                    fontWeight: '400',
+                                    color: 'var(--forest-900)',
+                                  }}
+                                >
+                                  • {t}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '400' }}>No additional diagnostic investigations required.</div>
+                          )}
+                        </div>
+
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', backgroundColor: '#FEFCE8', border: '1px solid #FEF08A', padding: '10px 14px', borderRadius: '10px', fontWeight: '400' }}>
+                          <span style={{ fontWeight: '400', color: '#713F12' }}>Doctor's Advice:</span> {matchingRx.instructions || 'Maintain hydration and report if symptoms persist.'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Separate Action Buttons Bar */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        borderTop: '1px solid var(--border-subtle)',
+                        paddingTop: '16px',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          className="btn-lime-pill"
+                          onClick={() => handlePrintPaymentReceipt(apt)}
+                          style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          title="Print professional transaction receipt"
+                        >
+                          <Receipt size={14} />
+                          <span>Print Payment Receipt</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn-white-capsule"
+                          onClick={() => handlePrintPrescriptionSlip(apt, matchingRx)}
+                          style={{ border: '1.5px solid var(--forest-800)', color: 'var(--forest-800)', padding: '8px 18px', fontSize: '12.5px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          title="Print official prescription slip"
+                        >
+                          <FileText size={14} />
+                          <span>Print Prescription Slip</span>
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-white-capsule"
+                        style={{ border: '1.5px solid var(--forest-800)', color: 'var(--forest-800)', fontSize: '12.5px', padding: '8px 18px', fontWeight: '400' }}
+                        onClick={() => navigate(`/patient/follow-up/${apt.id}`)}
+                      >
+                        Book Follow-up
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         )}
 
@@ -351,10 +716,10 @@ export default function PatientDashboard() {
               <div key={rx.id} className="rx-card">
                 <div className="rx-card-header">
                   <div>
-                    <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '400', letterSpacing: '1px', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
                       PRESCRIPTION #{rx.id}
                     </span>
-                    <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '2px 0' }}>{rx.doctorName}</h3>
+                    <h3 style={{ fontSize: '17px', fontWeight: '400', margin: '2px 0' }}>{rx.doctorName}</h3>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                       {rx.specialty} · Issued on {rx.date}
                     </div>
@@ -401,347 +766,6 @@ export default function PatientDashboard() {
             ))}
           </div>
         )}
-
-        {/* TAB 4: DIAGNOSTIC LAB REPORTS */}
-        {activeTab === 'labs' && (() => {
-          const myLabOrders = labOrders.filter((o) => {
-            if (!patientUser?.name) return true;
-            const nameMatch = o.patientName?.toLowerCase() === patientUser.name.toLowerCase();
-            const mrnMatch = o.patientMrn === patientUser.mrn;
-            const idMatch = o.patientId === patientUser.id;
-            return nameMatch || mrnMatch || idMatch || patientUser.name.includes('Alex');
-          });
-
-          const readyOrder = myLabOrders.find((o) => o.status === 'Published');
-          const pendingPaymentOrder = myLabOrders.find((o) => o.paymentStatus === 'Pending');
-
-          const readyCount = myLabOrders.filter((o) => o.status === 'Published').length;
-          const processingCount = myLabOrders.filter((o) => o.status === 'In Progress' || o.status === 'Received').length;
-          const pendingPayCount = myLabOrders.filter((o) => o.paymentStatus === 'Pending').length;
-
-          const filteredLabOrders = myLabOrders.filter((o) => {
-            if (labSubFilter === 'ready') return o.status === 'Published';
-            if (labSubFilter === 'processing') return o.status === 'In Progress' || o.status === 'Received';
-            if (labSubFilter === 'pending_payment') return o.paymentStatus === 'Pending';
-            return true;
-          });
-
-          return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Notification Banner: Report Ready */}
-              {readyOrder && (
-                <div
-                  style={{
-                    backgroundColor: '#ECFDF5',
-                    border: '1.5px solid #6EE7B7',
-                    borderRadius: '16px',
-                    padding: '16px 20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '12px',
-                    boxShadow: 'var(--shadow-sm)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '10px',
-                        backgroundColor: '#10B981',
-                        color: '#FFFFFF',
-                        display: 'grid',
-                        placeItems: 'center',
-                      }}
-                    >
-                      <CheckCircle2 size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#064E3B' }}>
-                        Your official lab report is ready!
-                      </div>
-                      <div style={{ fontSize: '12.5px', color: '#047857' }}>
-                        {readyOrder.assignedLab} verified results for <b>{(readyOrder.tests || []).join(', ')}</b>.
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="btn-lime-pill"
-                    onClick={() => setSelectedOrderForReport(readyOrder)}
-                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800' }}
-                  >
-                    View Official Report
-                  </button>
-                </div>
-              )}
-
-              {/* Notification Banner: Payment Pending */}
-              {pendingPaymentOrder && (
-                <div
-                  style={{
-                    backgroundColor: '#FFFBEB',
-                    border: '1.5px solid #FCD34D',
-                    borderRadius: '16px',
-                    padding: '16px 20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '12px',
-                    boxShadow: 'var(--shadow-sm)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '10px',
-                        backgroundColor: '#F59E0B',
-                        color: '#FFFFFF',
-                        display: 'grid',
-                        placeItems: 'center',
-                      }}
-                    >
-                      <CreditCard size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#78350F' }}>
-                        Payment Pending: PKR {(pendingPaymentOrder.price || 0).toLocaleString()}
-                      </div>
-                      <div style={{ fontSize: '12.5px', color: '#92400E' }}>
-                        Invoice #{pendingPaymentOrder.invoiceNumber || 'INV-LB-8024'} for {(pendingPaymentOrder.tests || []).join(', ')}. Pay securely via JazzCash, Easypaisa, or Card.
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="btn-lime-pill"
-                    onClick={() => setSelectedOrderForPay(pendingPaymentOrder)}
-                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', backgroundColor: '#F59E0B', color: '#FFFFFF' }}
-                  >
-                    Pay Online Now
-                  </button>
-                </div>
-              )}
-
-              {/* Sub-Filter Pills */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: '4px' }}>
-                {[
-                  { id: 'all', label: `All Reports (${myLabOrders.length})` },
-                  { id: 'ready', label: `Results Ready (${readyCount})` },
-                  { id: 'processing', label: `In-Lab Analysis (${processingCount})` },
-                  { id: 'pending_payment', label: `Payment Due (${pendingPayCount})` },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => setLabSubFilter(f.id)}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: '9999px',
-                      fontSize: '12px',
-                      fontWeight: labSubFilter === f.id ? '800' : '600',
-                      cursor: 'pointer',
-                      border: labSubFilter === f.id ? '1.5px solid var(--forest-800)' : '1px solid var(--border-subtle)',
-                      backgroundColor: labSubFilter === f.id ? 'var(--forest-800)' : '#FFFFFF',
-                      color: labSubFilter === f.id ? '#FFFFFF' : 'var(--text-muted)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Lab Orders List */}
-              {filteredLabOrders.length === 0 ? (
-                <div
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '16px',
-                    padding: '48px 24px',
-                    textAlign: 'center',
-                    border: '1px dashed var(--border-strong)',
-                  }}
-                >
-                  <TestTube2 size={38} color="var(--forest-800)" style={{ margin: '0 auto 10px auto', opacity: 0.5 }} />
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)', marginBottom: '4px' }}>
-                    No Reports in this Category
-                  </div>
-                  <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', margin: 0 }}>
-                    When your consulting physician prescribes diagnostic investigations, they will appear here in real-time.
-                  </p>
-                </div>
-              ) : (
-                filteredLabOrders.map((order) => {
-                  const isPublished = order.status === 'Published';
-                  const isInProgress = order.status === 'In Progress';
-                  const isReceived = order.status === 'Received';
-                  const isPaid = order.paymentStatus === 'Paid';
-
-                  return (
-                    <div
-                      key={order.id}
-                      style={{
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: 'var(--radius-card)',
-                        border: '1px solid var(--border-subtle)',
-                        padding: '24px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        gap: '18px',
-                        boxShadow: 'var(--shadow-sm)',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <div style={{ flex: 1, minWidth: '320px' }}>
-                        {/* Top Badges */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                          <span
-                            style={{
-                              fontSize: '11px',
-                              fontWeight: '800',
-                              padding: '2px 8px',
-                              borderRadius: 'var(--radius-pill)',
-                              backgroundColor: isPublished ? '#DCFCE7' : isInProgress ? '#EFF6FF' : '#FEF3C7',
-                              color: isPublished ? '#166534' : isInProgress ? '#1E40AF' : '#92400E',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                            }}
-                          >
-                            {isPublished && <CheckCircle2 size={12} />}
-                            {isInProgress && <Clock size={12} />}
-                            {isPublished ? 'Report Ready' : isInProgress ? 'Analysis In Progress' : 'Sample Received'}
-                          </span>
-
-                          <span
-                            style={{
-                              fontSize: '11px',
-                              fontWeight: '800',
-                              padding: '2px 8px',
-                              borderRadius: 'var(--radius-pill)',
-                              backgroundColor: isPaid ? 'rgba(197, 225, 165, 0.35)' : '#FFFBEB',
-                              color: isPaid ? 'var(--forest-900)' : '#B45309',
-                              border: isPaid ? '1px solid rgba(14, 56, 44, 0.15)' : '1px solid #FCD34D',
-                            }}
-                          >
-                            {isPaid ? `● Paid (${order.paymentMethod ? order.paymentMethod.split(' ')[0] : 'Online'})` : `💳 Payment Due: PKR ${(order.price || 0).toLocaleString()}`}
-                          </span>
-
-                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)' }}>
-                            {order.assignedLab}
-                          </span>
-                        </div>
-
-                        {/* Test Name Title */}
-                        <h3 style={{ fontSize: '17.5px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--forest-900)' }}>
-                          {(order.tests || []).join(' + ')}
-                        </h3>
-
-                        {/* Details */}
-                        <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-                          Prescribed by: <b style={{ color: 'var(--forest-900)' }}>{order.doctorName || 'Attending Physician'}</b> · Date: {order.date} · Requisition #{order.orderNumber}
-                        </div>
-
-                        {/* Clinical Note / Fasting */}
-                        <div style={{ fontSize: '12px', color: '#374151', backgroundColor: 'var(--canvas-bg)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', marginBottom: '6px' }}>
-                          <b>Doctor's Instructions:</b> {order.instructions || 'Routine investigation'}
-                          {order.fastingRequired && (
-                            <span style={{ color: '#B45309', fontWeight: '700', marginLeft: '8px' }}>
-                              ⚠️ {order.fastingHours}h Overnight Fasting Required
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Findings Summary if Published */}
-                        {isPublished && order.reportSummary && (
-                          <div style={{ fontSize: '12.5px', color: 'var(--forest-900)', marginTop: '6px' }}>
-                            <b>Clinical Findings:</b> {order.reportSummary}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Interactive Actions for Patient */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        {/* If payment pending: Pay Online */}
-                        {!isPaid && (
-                          <button
-                            type="button"
-                            className="btn-lime-pill"
-                            style={{ padding: '9px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-                            onClick={() => navigate(`/patient/lab-pay/${order.id}`)}
-                          >
-                            <CreditCard size={15} />
-                            <span>Pay Online (PKR {(order.price || 0).toLocaleString()})</span>
-                          </button>
-                        )}
-
-                        {/* If report ready: View Report Modal */}
-                        {isPublished && (
-                          <>
-                            <button
-                              type="button"
-                              className="btn-lime-pill"
-                              style={{ padding: '9px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-                              onClick={() => navigate(`/labs/report/${order.id}`)}
-                            >
-                              <FileText size={15} />
-                              <span>View Report</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              className="btn-white-capsule"
-                              style={{ padding: '9px 14px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
-                              onClick={() => showToast(`Downloaded official PDF for #${order.orderNumber}.`, 'success')}
-                              title="Download official signed PDF"
-                            >
-                              <Download size={15} />
-                              <span>Download PDF</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              className="btn-white-capsule"
-                              style={{ padding: '9px 12px', fontSize: '12.5px' }}
-                              onClick={() => {
-                                navigator.clipboard?.writeText(window.location.origin + `/report-verify/${order.orderNumber}`);
-                                showToast('Secure report link copied to share with your doctor!', 'info');
-                              }}
-                              title="Share report with doctor"
-                            >
-                              <Share2 size={15} />
-                            </button>
-                          </>
-                        )}
-
-                        {/* Print Order Slip */}
-                        <button
-                          type="button"
-                          className="btn-white-capsule"
-                          style={{ padding: '9px 12px', fontSize: '12.5px' }}
-                          onClick={() => navigate(`/labs/slip/${order.id}`)}
-                          title="Print Lab Requisition Slip"
-                        >
-                          <Printer size={15} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          );
-        })()}
 
         {/* Reschedule Modal */}
         {rescheduleApt && (
@@ -849,8 +873,8 @@ export default function PatientDashboard() {
         {/* Printable Prescription Modal */}
         {viewRx && (
           <div className="modal-backdrop" onClick={() => setViewRx(null)}>
-            <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '620px' }}>
-              <div className="modal-header">
+            <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
+              <div className="modal-header no-print">
                 <div>
                   <h3 className="modal-title">Official Medical Prescription</h3>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>MedConnect Healthcare Network</div>
@@ -858,49 +882,72 @@ export default function PatientDashboard() {
                 <button className="modal-close-btn" onClick={() => setViewRx(null)}>✕</button>
               </div>
 
-              <div className="modal-body">
-                <div style={{ borderBottom: '2px solid var(--forest-800)', paddingBottom: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
+              <div className="modal-body" id="printable-prescription-slip" style={{ backgroundColor: '#FFFFFF', padding: '24px' }}>
+                <div style={{ borderBottom: '2.5px solid var(--forest-800)', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <h2 style={{ fontSize: '18px', margin: 0, color: 'var(--forest-800)' }}>{viewRx.doctorName}</h2>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{viewRx.specialty} · PMDC Verified</div>
+                    <div style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>MedConnect Healthcare Practice</div>
+                    <h2 style={{ fontSize: '20px', margin: '2px 0 0 0', color: 'var(--forest-800)', fontWeight: '400' }}>{viewRx.doctorName}</h2>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{viewRx.specialty} · PMDC Verified #{viewRx.pmdcNumber || '39482-P'}</div>
                   </div>
                   <div style={{ textAlign: 'right', fontSize: '12px' }}>
-                    <div><b>Date:</b> {viewRx.date}</div>
-                    <div><b>Patient:</b> {patientUser.name} ({patientUser.age}y / {patientUser.gender})</div>
+                    <div>Date: {viewRx.date}</div>
+                    <div>Patient: {patientUser.name} ({patientUser.age}y / {patientUser.gender})</div>
+                    <div>MRN: {patientUser.mrn || 'MC-89241'}</div>
                   </div>
                 </div>
 
-                <div style={{ fontSize: '13px', marginBottom: '14px' }}>
-                  <b>Rx Diagnosis:</b> {viewRx.diagnosis}
+                <div style={{ fontSize: '13.5px', marginBottom: '16px', backgroundColor: 'var(--canvas-bg)', padding: '10px 14px', borderRadius: '8px' }}>
+                  Rx Diagnosis: {viewRx.diagnosis}
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
-                  {viewRx.medicines.map((m, i) => (
-                    <div key={i} style={{ padding: '10px 14px', backgroundColor: 'var(--canvas-bg)', borderRadius: '8px', fontSize: '13px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <b>{i + 1}. {m.name}</b>
-                        <span style={{ fontSize: '12px', color: 'var(--forest-700)' }}>{m.duration}</span>
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '8px' }}>
+                    Rx Prescribed Medications:
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {(viewRx.medicines || []).map((m, i) => (
+                      <div key={i} style={{ padding: '10px 14px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '13px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>{i + 1}. {m.name}</span>
+                          <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '400' }}>{m.duration}</span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          Directions: {m.dosage} {m.timing ? `(${m.timing})` : ''}
+                        </div>
                       </div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        Instructions: {m.dosage}
-                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Lab Tests if prescribed */}
+                {((viewRx.labTests && viewRx.labTests.length > 0) || viewRx.labAdvice) && (
+                  <div style={{ marginBottom: '16px', backgroundColor: '#F8FAFC', borderRadius: '10px', padding: '12px 16px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '6px' }}>
+                      Recommended Diagnostic Lab Tests / Investigations:
                     </div>
-                  ))}
-                </div>
+                    {viewRx.labTests && viewRx.labTests.length > 0 ? (
+                      <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12.5px', color: 'var(--text-main)' }}>
+                        {viewRx.labTests.map((t, idx) => (
+                          <li key={idx} style={{ marginBottom: '3px', fontWeight: '400' }}>{t}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div style={{ fontSize: '12.5px', color: 'var(--text-main)', fontWeight: '400' }}>{viewRx.labAdvice}</div>
+                    )}
+                  </div>
+                )}
 
-                <div style={{ fontSize: '12px', color: 'var(--text-body)', borderTop: '1px solid var(--border-subtle)', paddingTop: '10px' }}>
-                  <b>Clinical Advice:</b> {viewRx.instructions}
-                  {viewRx.labAdvice && <div><b>Recommended Labs:</b> {viewRx.labAdvice}</div>}
+                <div style={{ fontSize: '12.5px', color: 'var(--text-body)', borderTop: '1px dashed #CBD5E1', paddingTop: '12px', marginTop: '12px' }}>
+                  <b>Clinical Advice & Follow-up:</b> {viewRx.instructions}
                 </div>
               </div>
 
-              <div className="modal-footer">
+              <div className="modal-footer no-print">
                 <button
                   type="button"
                   className="btn-lime-pill"
                   onClick={() => {
-                    showToast('Sent prescription to printer / PDF file.', 'success');
-                    setViewRx(null);
+                    handlePrintPrescriptionSlip(null, viewRx);
                   }}
                 >
                   <Printer size={15} />
@@ -910,9 +957,15 @@ export default function PatientDashboard() {
             </div>
           </div>
         )}
-
-
       </div>
+
+      {/* PROFESSIONAL THERMAL RECEIPT MODAL (Matches 2nd Image) */}
+      <ThermalReceiptModal
+        isOpen={thermalReceipt.isOpen}
+        onClose={() => setThermalReceipt((prev) => ({ ...prev, isOpen: false }))}
+        type={thermalReceipt.type}
+        data={thermalReceipt.data}
+      />
     </AppShell>
   );
 }
