@@ -119,7 +119,7 @@ export default function AdminDoctorsPage() {
         <button
           type="button"
           onClick={() => navigate('/admin')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', color: 'var(--forest-800)', marginBottom: '12px' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)', marginBottom: '12px' }}
         >
           <ArrowLeft size={16} />
           <span>Back to Operations Console</span>
@@ -127,12 +127,9 @@ export default function AdminDoctorsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0 }}>
+            <h1 style={{ fontSize: '26px', fontWeight: '700', margin: 0 }}>
               Clinician PMDC Verification & Roster
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Review doctor applications, approve/reject medical licenses, and edit clinician profiles
-            </p>
           </div>
 
           <button
@@ -161,7 +158,7 @@ export default function AdminDoctorsPage() {
                 backgroundColor: '#DC2626',
                 color: '#FFF',
                 fontSize: '11px',
-                fontWeight: '800',
+                fontWeight: '400',
                 padding: '1px 6px',
                 borderRadius: '10px',
                 marginLeft: '4px',
@@ -237,7 +234,7 @@ export default function AdminDoctorsPage() {
               }}
             >
               <CheckCircle2 size={40} color="#16A34A" style={{ margin: '0 auto 12px auto' }} />
-              <h3 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 6px 0' }}>All Applications Reviewed</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 6px 0' }}>All Applications Reviewed</h3>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
                 There are no clinician registrations awaiting PMDC verification right now.
               </p>
@@ -269,7 +266,7 @@ export default function AdminDoctorsPage() {
                       color: '#B45309',
                       display: 'grid',
                       placeItems: 'center',
-                      fontWeight: '800',
+                      fontWeight: '400',
                       fontSize: '18px',
                     }}
                   >
@@ -283,7 +280,7 @@ export default function AdminDoctorsPage() {
                           backgroundColor: 'var(--badge-amber-bg)',
                           color: 'var(--badge-amber-text)',
                           fontSize: '11px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           padding: '3px 9px',
                           borderRadius: 'var(--radius-pill)',
                         }}
@@ -295,15 +292,15 @@ export default function AdminDoctorsPage() {
                       </span>
                     </div>
 
-                    <h2 style={{ fontSize: '19px', fontWeight: '700', margin: '2px 0 4px 0', color: 'var(--text-main)' }}>
+                    <h2 style={{ fontSize: '19px', fontWeight: '400', margin: '2px 0 4px 0', color: 'var(--text-main)' }}>
                       {doc.name}
                     </h2>
-                    <div style={{ fontSize: '13px', color: 'var(--forest-700)', fontWeight: '600' }}>
+                    <div style={{ fontSize: '13px', color: 'var(--forest-700)', fontWeight: '400' }}>
                       {doc.specialty} · {doc.qualifications} · {doc.city}
                     </div>
 
                     <div style={{ marginTop: '10px', fontSize: '12.5px', color: 'var(--text-body)', backgroundColor: 'var(--canvas-bg)', padding: '10px 14px', borderRadius: '10px' }}>
-                      <b>PMDC License No:</b> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{doc.pmdcNumber}</span> · <b>Video Fee:</b> Rs. {doc.videoFee} · <b>In-Clinic Fee:</b> Rs. {doc.inClinicFee}
+                      <b>PMDC License No:</b> <span style={{ fontFamily: 'monospace', fontWeight: '400' }}>{doc.pmdcNumber}</span> · <b>Video Fee:</b> Rs. {doc.videoFee} · <b>In-Clinic Fee:</b> Rs. {doc.inClinicFee}
                       {doc.applicationNote && (
                         <div style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '12px' }}>
                           📄 <i>"{doc.applicationNote}"</i>
@@ -365,12 +362,12 @@ export default function AdminDoctorsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', textAlign: 'left' }}>
-                <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Doctor Name</th>
-                <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Specialty</th>
-                <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>PMDC License</th>
-                <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>City & Branches</th>
-                <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Status</th>
-                <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)', textAlign: 'right' }}>Actions</th>
+                <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Doctor Name</th>
+                <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Specialty</th>
+                <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>PMDC License</th>
+                <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>City & Branches</th>
+                <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Status</th>
+                <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -387,7 +384,7 @@ export default function AdminDoctorsPage() {
                           color: 'var(--lime-accent)',
                           display: 'grid',
                           placeItems: 'center',
-                          fontWeight: '700',
+                          fontWeight: '400',
                           fontSize: '13px',
                         }}
                       >
@@ -399,7 +396,7 @@ export default function AdminDoctorsPage() {
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '16px 20px', fontWeight: '600' }}>{doc.specialty}</td>
+                  <td style={{ padding: '16px 20px', fontWeight: '400' }}>{doc.specialty}</td>
                   <td style={{ padding: '16px 20px' }}>
                     <span style={{ fontFamily: 'monospace', backgroundColor: 'var(--canvas-bg)', padding: '3px 8px', borderRadius: '6px' }}>
                       {doc.pmdcNumber}
@@ -412,7 +409,7 @@ export default function AdminDoctorsPage() {
                     <span
                       style={{
                         fontSize: '11px',
-                        fontWeight: '700',
+                        fontWeight: '400',
                         padding: '3px 8px',
                         borderRadius: 'var(--radius-pill)',
                         backgroundColor: doc.verified ? 'var(--badge-green-bg)' : 'var(--badge-amber-bg)',

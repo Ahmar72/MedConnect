@@ -66,7 +66,7 @@ export default function AdminBranchesPage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             marginBottom: '12px',
           }}
@@ -77,12 +77,9 @@ export default function AdminBranchesPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0 }}>
+            <h1 style={{ fontSize: '28px', margin: 0 }}>
               Hospital & Clinic Facility Network
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Manage physical partner hospitals, OPD consultation suites, and room capacities across Pakistan
-            </p>
           </div>
 
           <button
@@ -127,17 +124,17 @@ export default function AdminBranchesPage() {
                   <Building2 size={20} />
                 </div>
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
                     {b.city} REGION
                   </span>
-                  <h3 style={{ fontSize: '16.5px', fontWeight: '700', margin: '2px 0 0 0' }}>{b.name}</h3>
+                  <h3 style={{ fontSize: '16.5px', fontWeight: '400', margin: '2px 0 0 0' }}>{b.name}</h3>
                 </div>
               </div>
 
               <span
                 style={{
                   fontSize: '11px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   padding: '3px 8px',
                   borderRadius: 'var(--radius-pill)',
                   backgroundColor: 'var(--badge-green-bg)',

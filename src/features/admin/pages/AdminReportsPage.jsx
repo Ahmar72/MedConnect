@@ -23,7 +23,7 @@ export default function AdminReportsPage() {
         <button
           type="button"
           onClick={() => navigate('/admin')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', color: 'var(--forest-800)', marginBottom: '12px' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)', marginBottom: '12px' }}
         >
           <ArrowLeft size={16} />
           <span>Back to Operations Console</span>
@@ -31,12 +31,9 @@ export default function AdminReportsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0 }}>
+            <h1 style={{ fontSize: '28px', margin: 0 }}>
               Financial Settlements & Payment Gateways
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Real-time audit of Pakistani mobile wallets (JazzCash, EasyPaisa), cards, and hospital counter collections
-            </p>
           </div>
 
           <button
@@ -53,39 +50,39 @@ export default function AdminReportsPage() {
       {/* Payment Gateway Distribution Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px', marginBottom: '28px' }}>
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             JazzCash Gateway
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '6px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--forest-800)', margin: '6px 0' }}>
             Rs. 2.3M
           </div>
-          <span style={{ fontSize: '12px', color: '#1B5E20', fontWeight: '600' }}>48% of digital consults</span>
+          <span style={{ fontSize: '12px', color: '#1B5E20', fontWeight: '400' }}>48% of digital consults</span>
         </div>
 
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             EasyPaisa Wallet
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '6px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--forest-800)', margin: '6px 0' }}>
             Rs. 1.5M
           </div>
-          <span style={{ fontSize: '12px', color: '#1B5E20', fontWeight: '600' }}>32% of digital consults</span>
+          <span style={{ fontSize: '12px', color: '#1B5E20', fontWeight: '400' }}>32% of digital consults</span>
         </div>
 
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             Debit / Credit Cards & Cash
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '6px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--forest-800)', margin: '6px 0' }}>
             Rs. 980,000
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '600' }}>20% of clinic collections</span>
+          <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '400' }}>20% of clinic collections</span>
         </div>
       </div>
 
       {/* Disbursed Clinician Payouts */}
       <div style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1px solid var(--border-subtle)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-        <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '0 0 16px 0' }}>
+        <h3 style={{ fontSize: '17px', fontWeight: '400', margin: '0 0 16px 0' }}>
           Clinician Payout Disbursements (Batch 2026-W41)
         </h3>
 
@@ -123,7 +120,7 @@ export default function AdminReportsPage() {
                     color: 'var(--badge-green-text)',
                     padding: '3px 8px',
                     borderRadius: 'var(--radius-pill)',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     fontSize: '11px',
                   }}
                 >

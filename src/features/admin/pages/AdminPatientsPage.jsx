@@ -53,7 +53,7 @@ export default function AdminPatientsPage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             marginBottom: '12px',
           }}
@@ -64,12 +64,9 @@ export default function AdminPatientsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0 }}>
+            <h1 style={{ fontSize: '26px', fontWeight: '700', margin: 0 }}>
               Registered Patient Directory
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Central medical registry of patients, Medical Record Numbers (MRN), and demographics across Pakistan
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -136,13 +133,13 @@ export default function AdminPatientsPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', textAlign: 'left' }}>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Patient</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>MRN</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Demographics</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Contact Info</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Total Visits</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Status</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)', textAlign: 'right' }}>Actions</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Patient</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>MRN</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Demographics</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Contact Info</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Total Visits</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Status</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)', textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -159,7 +156,7 @@ export default function AdminPatientsPage() {
                         color: 'var(--forest-800)',
                         display: 'grid',
                         placeItems: 'center',
-                        fontWeight: '700',
+                        fontWeight: '400',
                         fontSize: '13px',
                       }}
                     >
@@ -173,14 +170,14 @@ export default function AdminPatientsPage() {
                 </td>
 
                 <td style={{ padding: '16px 20px' }}>
-                  <span style={{ fontFamily: 'monospace', backgroundColor: 'var(--canvas-bg)', padding: '3px 8px', borderRadius: '6px', fontWeight: '600' }}>
+                  <span style={{ fontFamily: 'monospace', backgroundColor: 'var(--canvas-bg)', padding: '3px 8px', borderRadius: '6px', fontWeight: '400' }}>
                     {patient.mrn}
                   </span>
                 </td>
 
                 <td style={{ padding: '16px 20px' }}>
                   <div>{patient.age}y · {patient.gender}</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--forest-700)', fontWeight: '600' }}>Blood Group: {patient.bloodGroup}</div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--forest-700)', fontWeight: '400' }}>Blood Group: {patient.bloodGroup}</div>
                 </td>
 
                 <td style={{ padding: '16px 20px' }}>
@@ -189,7 +186,7 @@ export default function AdminPatientsPage() {
                 </td>
 
                 <td style={{ padding: '16px 20px' }}>
-                  <span style={{ fontWeight: '700', color: 'var(--forest-800)' }}>
+                  <span style={{ fontWeight: '400', color: 'var(--forest-800)' }}>
                     {patient.totalVisits} Consultations
                   </span>
                 </td>
@@ -198,7 +195,7 @@ export default function AdminPatientsPage() {
                   <span
                     style={{
                       fontSize: '11px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       padding: '3px 8px',
                       borderRadius: 'var(--radius-pill)',
                       backgroundColor: patient.status === 'Active' ? 'var(--badge-green-bg)' : 'var(--badge-amber-bg)',

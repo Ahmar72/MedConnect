@@ -444,7 +444,7 @@ export default function Landing() {
               }}
             />
           ) : (
-            <span style={{ color: '#fff', fontSize: '18px', fontWeight: '700' }}>
+            <span style={{ color: '#fff', fontSize: '18px', fontWeight: '400' }}>
               {doc.initials || doc.name.slice(0, 2)}
             </span>
           )}
@@ -454,7 +454,7 @@ export default function Landing() {
           <h3
             style={{
               fontSize: '15.5px',
-              fontWeight: '800',
+              fontWeight: '400',
               margin: '0 0 2px 0',
               color: 'var(--text-main)',
               lineHeight: '1.25',
@@ -483,7 +483,7 @@ export default function Landing() {
             <span style={{ color: '#F59E0B', fontSize: '12px', letterSpacing: '-1px' }}>
               ★★★★★
             </span>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: '#111827' }}>
+            <span style={{ fontSize: '12px', fontWeight: '400', color: '#111827' }}>
               {doc.rating || '4.8'}
             </span>
             <span style={{ fontSize: '11px', color: '#6B7280' }}>
@@ -498,7 +498,7 @@ export default function Landing() {
         <span
           style={{
             fontSize: '10.5px',
-            fontWeight: '700',
+            fontWeight: '400',
             backgroundColor: '#D1FAE5',
             color: '#065F46',
             padding: '2px 8px',
@@ -510,7 +510,7 @@ export default function Landing() {
         <span
           style={{
             fontSize: '10.5px',
-            fontWeight: '700',
+            fontWeight: '400',
             backgroundColor: '#FCE7F3',
             color: '#9D174D',
             padding: '2px 8px',
@@ -524,15 +524,15 @@ export default function Landing() {
       {/* Next Available Row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <div>
-          <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '600' }}>Next available</div>
-          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+          <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '400' }}>Next available</div>
+          <div style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-800)' }}>
             {doc.nextSlot ? doc.nextSlot : 'Monday, Oct 12'}
           </div>
         </div>
         <span
           style={{
             fontSize: '10px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: '#065F46',
             backgroundColor: '#ECFDF5',
             border: '1px solid #A7F3D0',
@@ -558,7 +558,7 @@ export default function Landing() {
               backgroundColor: sIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
               color: sIdx === 0 ? 'var(--forest-800)' : '#374151',
               fontSize: '10.5px',
-              fontWeight: '700',
+              fontWeight: '400',
               textAlign: 'center',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
@@ -589,7 +589,7 @@ export default function Landing() {
           padding: '9px',
           borderRadius: '9999px',
           fontSize: '13px',
-          fontWeight: '800',
+          fontWeight: '400',
           border: 'none',
           cursor: 'pointer',
           transition: 'background 0.15s ease',
@@ -612,7 +612,7 @@ export default function Landing() {
           border: 'none',
           color: 'var(--forest-800)',
           fontSize: '11px',
-          fontWeight: '600',
+          fontWeight: '400',
           cursor: 'pointer',
           textAlign: 'center',
           padding: '2px',
@@ -667,7 +667,7 @@ export default function Landing() {
             <h3
               style={{
                 fontSize: '15.5px',
-                fontWeight: '800',
+                fontWeight: '400',
                 margin: '0 0 2px 0',
                 color: 'var(--text-main)',
                 lineHeight: '1.25',
@@ -696,7 +696,7 @@ export default function Landing() {
               <span style={{ color: '#F59E0B', fontSize: '12px', letterSpacing: '-1px' }}>
                 ★★★★★
               </span>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: '#111827' }}>
+              <span style={{ fontSize: '12px', fontWeight: '400', color: '#111827' }}>
                 4.9
               </span>
               <span style={{ fontSize: '11px', color: '#6B7280' }}>
@@ -711,7 +711,7 @@ export default function Landing() {
           <span
             style={{
               fontSize: '10.5px',
-              fontWeight: '700',
+              fontWeight: '400',
               backgroundColor: '#D1FAE5',
               color: '#065F46',
               padding: '2px 8px',
@@ -723,7 +723,7 @@ export default function Landing() {
           <span
             style={{
               fontSize: '10.5px',
-              fontWeight: '700',
+              fontWeight: '400',
               backgroundColor: '#EFF6FF',
               color: '#1D4ED8',
               padding: '2px 8px',
@@ -737,15 +737,15 @@ export default function Landing() {
         {/* Admissions & OPD Row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <div>
-            <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '600' }}>Admissions & OPD</div>
-            <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+            <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '400' }}>Admissions & OPD</div>
+            <div style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-800)' }}>
               Today, 24/7 Active
             </div>
           </div>
           <span
             style={{
               fontSize: '10px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: 'var(--forest-800)',
               backgroundColor: 'rgba(14, 56, 44, 0.08)',
               border: '1px solid rgba(14, 56, 44, 0.2)',
@@ -774,7 +774,7 @@ export default function Landing() {
                 backgroundColor: dIdx === 0 ? 'rgba(14, 56, 44, 0.08)' : '#FFFFFF',
                 color: dIdx === 0 ? 'var(--forest-800)' : '#374151',
                 fontSize: '10.5px',
-                fontWeight: '700',
+                fontWeight: '400',
                 textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
@@ -808,7 +808,7 @@ export default function Landing() {
             padding: '9px',
             borderRadius: '9999px',
             fontSize: '13px',
-            fontWeight: '800',
+            fontWeight: '400',
             border: 'none',
             cursor: 'pointer',
             transition: 'background 0.15s ease',
@@ -828,7 +828,7 @@ export default function Landing() {
             border: 'none',
             color: 'var(--forest-800)',
             fontSize: '11px',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer',
             textAlign: 'center',
             padding: '2px',
@@ -865,10 +865,10 @@ export default function Landing() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => scrollToSection('hero')}>
             <div className="logo-badge">+</div>
             <div>
-              <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '-0.3px', display: 'block', color: '#FFF' }}>
+              <span style={{ fontSize: '18px', fontWeight: '400', letterSpacing: '-0.3px', display: 'block', color: '#FFF' }}>
                 MedConnect
               </span>
-              <span style={{ fontSize: '10px', color: 'var(--lime-accent)', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '10px', color: 'var(--lime-accent)', fontWeight: '400', letterSpacing: '1px', textTransform: 'uppercase' }}>
                 Pakistan Healthcare
               </span>
             </div>
@@ -891,7 +891,7 @@ export default function Landing() {
               padding: '6px 14px',
               borderRadius: 'var(--radius-pill)',
               fontSize: '12px',
-              fontWeight: '700',
+              fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
@@ -919,7 +919,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => scrollToSection('doctors')}
-            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '600', transition: 'color 0.2s' }}
+            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '400', transition: 'color 0.2s' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--lime-accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#E2E8F0')}
           >
@@ -929,7 +929,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => scrollToSection('specialties')}
-            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '600', transition: 'color 0.2s' }}
+            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '400', transition: 'color 0.2s' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--lime-accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#E2E8F0')}
           >
@@ -939,7 +939,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => scrollToSection('hospitals')}
-            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '600', transition: 'color 0.2s' }}
+            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '400', transition: 'color 0.2s' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--lime-accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#E2E8F0')}
           >
@@ -949,7 +949,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => scrollToSection('telehealth')}
-            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '600', transition: 'color 0.2s' }}
+            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '400', transition: 'color 0.2s' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--lime-accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#E2E8F0')}
           >
@@ -959,7 +959,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => scrollToSection('how-it-works')}
-            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '600', transition: 'color 0.2s' }}
+            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '400', transition: 'color 0.2s' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--lime-accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#E2E8F0')}
           >
@@ -969,7 +969,7 @@ export default function Landing() {
           <button
             type="button"
             onClick={() => scrollToSection('faq')}
-            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '600', transition: 'color 0.2s' }}
+            style={{ color: '#E2E8F0', fontSize: '13.5px', fontWeight: '400', transition: 'color 0.2s' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--lime-accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#E2E8F0')}
           >
@@ -1134,7 +1134,7 @@ export default function Landing() {
                           <div className="suggestion-sub">{item.sub}</div>
                         </div>
                       </div>
-                      <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '400' }}>
                         View in {item.type}s →
                       </span>
                     </div>
@@ -1160,7 +1160,7 @@ export default function Landing() {
                 { value: '4.9 ★', label: 'Patient Satisfaction' },
               ].map(({ value, label }) => (
                 <div key={label}>
-                  <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--lime-accent)', fontFamily: 'var(--font-sans)' }}>
+                  <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--lime-accent)', fontFamily: 'var(--font-sans)' }}>
                     {value}
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-white-muted)', marginTop: '2px' }}>
@@ -1333,7 +1333,7 @@ export default function Landing() {
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: '15px', fontWeight: '800', margin: '2px 0 6px 0', color: 'var(--forest-800)', textAlign: 'left', width: '100%', letterSpacing: '-0.01em' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: '400', margin: '2px 0 6px 0', color: 'var(--forest-800)', textAlign: 'left', width: '100%', letterSpacing: '-0.01em' }}>
                     {sp.name}
                   </h3>
                   <p style={{ fontSize: '12px', color: '#4A5568', margin: '0 0 12px 0', lineHeight: '1.45', textAlign: 'left', width: '100%' }}>
@@ -1356,7 +1356,7 @@ export default function Landing() {
           {/* Section Header with Title, Within 2 Hours Toggle, and See All Link */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--forest-800)', margin: 0, fontFamily: 'var(--font-sans)' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '400', color: 'var(--forest-800)', margin: 0, fontFamily: 'var(--font-sans)' }}>
                 Telehealth visit
               </h2>
 
@@ -1375,7 +1375,7 @@ export default function Landing() {
                   padding: '6px 14px',
                   borderRadius: '9999px',
                   fontSize: '13px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   fontFamily: 'var(--font-sans)',
@@ -1414,7 +1414,7 @@ export default function Landing() {
               onClick={() => setShowAllDoctors((prev) => !prev)}
               style={{
                 fontSize: '14px',
-                fontWeight: '700',
+                fontWeight: '400',
                 color: 'var(--forest-800)',
                 background: 'none',
                 border: 'none',
@@ -1496,7 +1496,7 @@ export default function Landing() {
           {/* Section Header with Title, Emergency Toggle, and See All Link */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--forest-800)', margin: 0, fontFamily: 'var(--font-sans)' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '400', color: 'var(--forest-800)', margin: 0, fontFamily: 'var(--font-sans)' }}>
                 Premier Partner Hospitals
               </h2>
 
@@ -1515,7 +1515,7 @@ export default function Landing() {
                   padding: '6px 14px',
                   borderRadius: '9999px',
                   fontSize: '13px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   fontFamily: 'var(--font-sans)',
@@ -1554,7 +1554,7 @@ export default function Landing() {
               onClick={() => setShowAllHospitals((prev) => !prev)}
               style={{
                 fontSize: '14px',
-                fontWeight: '700',
+                fontWeight: '400',
                 color: 'var(--forest-800)',
                 background: 'none',
                 border: 'none',
@@ -1725,7 +1725,7 @@ export default function Landing() {
                   padding: '8px 18px',
                   borderRadius: 'var(--radius-pill)',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   backgroundColor: howItWorksTab === 'patient' ? 'var(--forest-800)' : 'transparent',
                   color: howItWorksTab === 'patient' ? '#FFFFFF' : 'var(--text-muted)',
                 }}
@@ -1739,7 +1739,7 @@ export default function Landing() {
                   padding: '8px 18px',
                   borderRadius: 'var(--radius-pill)',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   backgroundColor: howItWorksTab === 'doctor' ? 'var(--forest-800)' : 'transparent',
                   color: howItWorksTab === 'doctor' ? '#FFFFFF' : 'var(--text-muted)',
                 }}
@@ -1752,30 +1752,30 @@ export default function Landing() {
           {howItWorksTab === 'patient' ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
               <div className="scroll-seq-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '32px 24px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--forest-800)', fontWeight: '700', marginBottom: '12px' }}>
+                <div style={{ fontSize: '32px', color: 'var(--forest-800)', fontWeight: '400', marginBottom: '12px' }}>
                   01
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0' }}>Search & Select Specialist</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '400', margin: '0 0 8px 0' }}>Search & Select Specialist</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
                   Explore PMDC-verified doctors by city, specialty, hospital affiliation, and patient satisfaction reviews.
                 </p>
               </div>
 
               <div className="scroll-seq-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '32px 24px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--forest-800)', fontWeight: '700', marginBottom: '12px' }}>
+                <div style={{ fontSize: '32px', color: 'var(--forest-800)', fontWeight: '400', marginBottom: '12px' }}>
                   02
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0' }}>Choose Clinic or Video Slot</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '400', margin: '0 0 8px 0' }}>Choose Clinic or Video Slot</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
                   Select your convenient time slot. Sign in with your verified patient account to lock in your appointment request.
                 </p>
               </div>
 
               <div className="scroll-seq-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '32px 24px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--forest-800)', fontWeight: '700', marginBottom: '12px' }}>
+                <div style={{ fontSize: '32px', color: 'var(--forest-800)', fontWeight: '400', marginBottom: '12px' }}>
                   03
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0' }}>Doctor Confirms & Issues Rx</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '400', margin: '0 0 8px 0' }}>Doctor Confirms & Issues Rx</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
                   Your doctor receives an immediate notification and confirms your slot. After your consultation, your official digital prescription is saved to your portal.
                 </p>
@@ -1784,30 +1784,30 @@ export default function Landing() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
               <div className="scroll-seq-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '32px 24px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--forest-800)', fontWeight: '700', marginBottom: '12px' }}>
+                <div style={{ fontSize: '32px', color: 'var(--forest-800)', fontWeight: '400', marginBottom: '12px' }}>
                   01
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0' }}>Submit PMDC License</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '400', margin: '0 0 8px 0' }}>Submit PMDC License</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
                   Register via the Clinician portal. Submit your PMDC license number, degrees, hospital affiliations, and consultation fees.
                 </p>
               </div>
 
               <div className="scroll-seq-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '32px 24px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--forest-800)', fontWeight: '700', marginBottom: '12px' }}>
+                <div style={{ fontSize: '32px', color: 'var(--forest-800)', fontWeight: '400', marginBottom: '12px' }}>
                   02
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0' }}>Operations Admin Verification</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '400', margin: '0 0 8px 0' }}>Operations Admin Verification</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
                   MedConnect operations administrators cross-verify your credentials with the Pakistan Medical & Dental Council within 24 hours.
                 </p>
               </div>
 
               <div className="scroll-seq-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', padding: '32px 24px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--forest-800)', fontWeight: '700', marginBottom: '12px' }}>
+                <div style={{ fontSize: '32px', color: 'var(--forest-800)', fontWeight: '400', marginBottom: '12px' }}>
                   03
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 8px 0' }}>Confirm Requests & Practice</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '400', margin: '0 0 8px 0' }}>Confirm Requests & Practice</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
                   Once approved, patient booking requests arrive in your clinician queue. Confirm slots, conduct video visits, and issue electronic prescriptions.
                 </p>
@@ -1837,7 +1837,7 @@ export default function Landing() {
                 "Booking Dr. Maya Patel for an online video consultation was a lifesaver when my mother had sudden high blood pressure late in the evening. Within 10 minutes, we were talking to the doctor, and she gave clear instructions and a prescription."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--canvas-bg)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center', fontWeight: '800', fontSize: '13px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--canvas-bg)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center', fontWeight: '400', fontSize: '13px' }}>
                   AK
                 </div>
                 <div>
@@ -1855,7 +1855,7 @@ export default function Landing() {
                 "I visited Shifa International in Islamabad through MedConnect. My slot was pre-confirmed with Dr. Theo Williams. No standing in long hospital counters. The whole appointment went smoothly."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--canvas-bg)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center', fontWeight: '800', fontSize: '13px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--canvas-bg)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center', fontWeight: '400', fontSize: '13px' }}>
                   NB
                 </div>
                 <div>
@@ -1873,7 +1873,7 @@ export default function Landing() {
                 "Dr. Sara Bilal at Hameed Latif helped manage my PCOS condition after multiple other doctors failed. Having my prescriptions and visit history saved neatly in one portal is wonderful."
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--canvas-bg)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center', fontWeight: '800', fontSize: '13px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--canvas-bg)', color: 'var(--forest-800)', display: 'grid', placeItems: 'center', fontWeight: '400', fontSize: '13px' }}>
                   MT
                 </div>
                 <div>
@@ -1924,7 +1924,7 @@ export default function Landing() {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       textAlign: 'left',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       fontSize: '15px',
                       color: 'var(--text-main)',
                       cursor: 'pointer',
@@ -1969,10 +1969,10 @@ export default function Landing() {
             marginBottom: '56px',
           }}
         >
-          <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase', marginBottom: '8px', display: 'inline-block' }}>
+          <span style={{ fontSize: '11px', fontWeight: '400', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase', marginBottom: '8px', display: 'inline-block' }}>
             JOIN THE MEDCONNECT CLINICIAN NETWORK
           </span>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '30px', margin: '6px 0 12px 0', maxWidth: '850px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '30px', margin: '6px 0 12px 0', maxWidth: '850px', textAlign: 'center' }}>
             Are you a qualified medical practitioner in Pakistan?
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--text-white-muted)', margin: '0 auto 28px auto', maxWidth: '850px', lineHeight: '1.6', textAlign: 'center' }}>
@@ -2018,14 +2018,14 @@ export default function Landing() {
               <p style={{ fontSize: '12.5px', lineHeight: '1.6', margin: '0 0 14px 0' }}>
                 Pakistan’s premier healthcare appointment network connecting patients with PMDC-verified doctors across 10 major cities for in-clinic visits and secure digital consultations.
               </p>
-              <div style={{ fontSize: '12px', color: '#DC2626', fontWeight: '700' }}>
+              <div style={{ fontSize: '12px', color: '#DC2626', fontWeight: '400' }}>
                 🚨 Medical Emergency Helpline: Call 1122 or visit nearest ER immediately.
               </div>
             </div>
 
             {/* Col 2: Top Specialties */}
             <div>
-              <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-main)', marginBottom: '12px', textTransform: 'uppercase' }}>
+              <h4 style={{ fontSize: '13px', fontWeight: '400', color: 'var(--text-main)', marginBottom: '12px', textTransform: 'uppercase' }}>
                 Specialties
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px' }}>
@@ -2039,7 +2039,7 @@ export default function Landing() {
 
             {/* Col 3: Cities Covered */}
             <div>
-              <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-main)', marginBottom: '12px', textTransform: 'uppercase' }}>
+              <h4 style={{ fontSize: '13px', fontWeight: '400', color: 'var(--text-main)', marginBottom: '12px', textTransform: 'uppercase' }}>
                 Cities
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px' }}>
@@ -2053,7 +2053,7 @@ export default function Landing() {
 
             {/* Col 4: Clinician Access */}
             <div>
-              <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-main)', marginBottom: '12px', textTransform: 'uppercase' }}>
+              <h4 style={{ fontSize: '13px', fontWeight: '400', color: 'var(--text-main)', marginBottom: '12px', textTransform: 'uppercase' }}>
                 Clinicians & Staff
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px' }}>
@@ -2064,7 +2064,7 @@ export default function Landing() {
                       setSignupRoleTab('doctor');
                       setIsSignupModalOpen(true);
                     }}
-                    style={{ color: 'var(--forest-800)', fontWeight: '700' }}
+                    style={{ color: 'var(--forest-800)', fontWeight: '400' }}
                   >
                     Join as Clinician ↗
                   </button>
@@ -2088,7 +2088,7 @@ export default function Landing() {
                       setLoginRoleTab('admin');
                       setIsLoginModalOpen(true);
                     }}
-                    style={{ color: 'var(--forest-800)', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    style={{ color: 'var(--forest-800)', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px' }}
                   >
                     <ShieldCheck size={13} />
                     <span>Operations Admin Portal</span>
@@ -2125,7 +2125,7 @@ export default function Landing() {
                 style={{
                   color: 'var(--forest-800)',
                   fontSize: '11.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px',
@@ -2155,7 +2155,7 @@ export default function Landing() {
                 <span
                   style={{
                     fontSize: '11px',
-                    fontWeight: '800',
+                    fontWeight: '400',
                     color: loginRoleTab === 'admin' ? '#991B1B' : 'var(--forest-700)',
                     textTransform: 'uppercase',
                     letterSpacing: '1px',
@@ -2163,7 +2163,7 @@ export default function Landing() {
                 >
                   {loginRoleTab === 'admin' ? '🛡️ OPERATIONS CONSOLE' : '🏥 MEDCONNECT ACCESS'}
                 </span>
-                <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '22px', margin: '4px 0 0 0', color: 'var(--text-main)', fontWeight: '800' }}>
+                <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '22px', margin: '4px 0 0 0', color: 'var(--text-main)', fontWeight: '400' }}>
                   Sign in to MedConnect
                 </h2>
               </div>
@@ -2209,7 +2209,7 @@ export default function Landing() {
                   border: '1px solid var(--border-subtle)',
                 }}
               >
-                <div style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ fontSize: '10.5px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
                   ⚡ ONE-CLICK DEMO SIGN-IN
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -2300,7 +2300,7 @@ export default function Landing() {
                 Don't have an account yet?{' '}
                 <button
                   type="button"
-                  style={{ color: 'var(--forest-800)', fontWeight: '700', textDecoration: 'underline' }}
+                  style={{ color: 'var(--forest-800)', fontWeight: '400', textDecoration: 'underline' }}
                   onClick={() => {
                     setIsLoginModalOpen(false);
                     setSignupRoleTab('patient');
@@ -2328,10 +2328,10 @@ export default function Landing() {
           >
             <div className="modal-interactive-header">
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   MEDCONNECT HEALTHCARE MEMBERSHIP
                 </span>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
+                <h2 style={{ fontSize: '22px', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
                   {signupRoleTab === 'doctor' ? 'Clinician PMDC Application' : 'Create Verified Patient Account'}
                 </h2>
               </div>
@@ -2394,7 +2394,7 @@ export default function Landing() {
                       <ShieldCheck size={26} />
                     </div>
 
-                    <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
                       Verify Mobile Number
                     </h3>
                     <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 18px 0', lineHeight: '1.5' }}>
@@ -2419,7 +2419,7 @@ export default function Landing() {
                       </span>
                       <button
                         type="button"
-                        style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--forest-700)', textDecoration: 'underline' }}
+                        style={{ fontSize: '11.5px', fontWeight: '400', color: 'var(--forest-700)', textDecoration: 'underline' }}
                         onClick={() => setSignupOtp(simulatedOtp)}
                       >
                         Auto-Fill {simulatedOtp}
@@ -2439,7 +2439,7 @@ export default function Landing() {
                           textAlign: 'center',
                           fontSize: '24px',
                           letterSpacing: '8px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           padding: '10px',
                           borderRadius: '12px',
                           border: '2px solid var(--forest-800)',
@@ -2723,7 +2723,7 @@ export default function Landing() {
                 Already registered with MedConnect?{' '}
                 <button
                   type="button"
-                  style={{ color: 'var(--forest-800)', fontWeight: '700', textDecoration: 'underline' }}
+                  style={{ color: 'var(--forest-800)', fontWeight: '400', textDecoration: 'underline' }}
                   onClick={() => {
                     setIsSignupModalOpen(false);
                     setIsLoginModalOpen(true);
@@ -2760,7 +2760,7 @@ export default function Landing() {
                     display: 'grid',
                     placeItems: 'center',
                     fontSize: '22px',
-                    fontWeight: '800',
+                    fontWeight: '400',
                     flexShrink: 0,
                   }}
                 >
@@ -2771,7 +2771,7 @@ export default function Landing() {
                     <span
                       style={{
                         fontSize: '11px',
-                        fontWeight: '800',
+                        fontWeight: '400',
                         color: '#15803D',
                         backgroundColor: '#DCFCE7',
                         padding: '2px 8px',
@@ -2784,15 +2784,15 @@ export default function Landing() {
                       <ShieldCheck size={12} />
                       <span>PMDC #{selectedDoctorModal.pmdcNumber}</span>
                     </span>
-                    <span style={{ fontSize: '11px', color: '#B45309', fontWeight: '700' }}>
+                    <span style={{ fontSize: '11px', color: '#B45309', fontWeight: '400' }}>
                       ★ {selectedDoctorModal.rating || 4.9} ({selectedDoctorModal.reviewsCount || 120}+ reviews)
                     </span>
                   </div>
 
-                  <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>
+                  <h2 style={{ fontSize: '20px', fontWeight: '400', margin: 0, color: 'var(--text-main)' }}>
                     {selectedDoctorModal.name}
                   </h2>
-                  <div style={{ fontSize: '13px', color: 'var(--forest-700)', fontWeight: '700' }}>
+                  <div style={{ fontSize: '13px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     {selectedDoctorModal.specialty} · {selectedDoctorModal.city}
                   </div>
                 </div>
@@ -2815,7 +2815,7 @@ export default function Landing() {
                 style={{
                   padding: '12px 16px',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   color: doctorModalTab === 'overview' ? 'var(--forest-800)' : 'var(--text-muted)',
                   borderBottom: `2.5px solid ${doctorModalTab === 'overview' ? 'var(--forest-800)' : 'transparent'}`,
                   cursor: 'pointer',
@@ -2830,7 +2830,7 @@ export default function Landing() {
                 style={{
                   padding: '12px 16px',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   color: doctorModalTab === 'schedule' ? 'var(--forest-800)' : 'var(--text-muted)',
                   borderBottom: `2.5px solid ${doctorModalTab === 'schedule' ? 'var(--forest-800)' : 'transparent'}`,
                   cursor: 'pointer',
@@ -2845,7 +2845,7 @@ export default function Landing() {
                 style={{
                   padding: '12px 16px',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   color: doctorModalTab === 'reviews' ? 'var(--forest-800)' : 'var(--text-muted)',
                   borderBottom: `2.5px solid ${doctorModalTab === 'reviews' ? 'var(--forest-800)' : 'transparent'}`,
                   cursor: 'pointer',
@@ -2858,7 +2858,7 @@ export default function Landing() {
             <div className="modal-interactive-body">
               {doctorModalTab === 'overview' && (
                 <div>
-                  <h4 style={{ fontSize: '12.5px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '8px' }}>
+                  <h4 style={{ fontSize: '12.5px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '8px' }}>
                     Clinical Profile & Experience
                   </h4>
                   <p style={{ fontSize: '13.5px', color: 'var(--text-body)', lineHeight: '1.6', margin: '0 0 16px 0' }}>
@@ -2879,7 +2879,7 @@ export default function Landing() {
 
                   {selectedDoctorModal.services && (
                     <div>
-                      <h4 style={{ fontSize: '12.5px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '8px' }}>
+                      <h4 style={{ fontSize: '12.5px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '8px' }}>
                         Specialized Treatments Offered
                       </h4>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -2890,7 +2890,7 @@ export default function Landing() {
                               backgroundColor: 'rgba(14, 56, 44, 0.06)',
                               color: 'var(--forest-800)',
                               fontSize: '11.5px',
-                              fontWeight: '700',
+                              fontWeight: '400',
                               padding: '4px 10px',
                               borderRadius: 'var(--radius-pill)',
                             }}
@@ -2906,7 +2906,7 @@ export default function Landing() {
 
               {doctorModalTab === 'schedule' && (
                 <div>
-                  <h4 style={{ fontSize: '12.5px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '10px' }}>
+                  <h4 style={{ fontSize: '12.5px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '10px' }}>
                     Active Hospital Locations & Timetable
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -2929,14 +2929,14 @@ export default function Landing() {
                             <b style={{ fontSize: '13.5px' }}>{p.hospital}</b>
                           </div>
                           <div style={{ color: 'var(--text-muted)', fontSize: '11.5px' }}>{p.address}</div>
-                          <div style={{ color: 'var(--forest-700)', fontWeight: '700', fontSize: '12px', marginTop: '4px' }}>
+                          <div style={{ color: 'var(--forest-700)', fontWeight: '400', fontSize: '12px', marginTop: '4px' }}>
                             ⏰ {p.days}: {p.timing}
                           </div>
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Consultation Status</span>
-                          <span style={{ color: 'var(--forest-800)', fontSize: '13px', fontWeight: '800' }}>Slots Open</span>
+                          <span style={{ color: 'var(--forest-800)', fontSize: '13px', fontWeight: '400' }}>Slots Open</span>
                         </div>
                       </div>
                     ))}
@@ -2946,7 +2946,7 @@ export default function Landing() {
 
               {doctorModalTab === 'reviews' && (
                 <div>
-                  <h4 style={{ fontSize: '12.5px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '10px' }}>
+                  <h4 style={{ fontSize: '12.5px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '10px' }}>
                     Patient Feedback & Verified Testimonials
                   </h4>
                   {selectedDoctorModal.reviews?.length > 0 ? (
@@ -3013,10 +3013,10 @@ export default function Landing() {
           >
             <div className="modal-interactive-header">
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
                   {selectedHospitalModal.city} TERTIARY MEDICAL CENTER
                 </span>
-                <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
+                <h2 style={{ fontSize: '20px', fontWeight: '400', margin: '4px 0 0 0', color: 'var(--text-main)' }}>
                   {selectedHospitalModal.name}
                 </h2>
               </div>
@@ -3052,7 +3052,7 @@ export default function Landing() {
                 )}
               </div>
 
-              <h4 style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '8px' }}>
+              <h4 style={{ fontSize: '12px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', marginBottom: '8px' }}>
                 Key Clinical Specialties & Departments
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '24px' }}>
@@ -3064,7 +3064,7 @@ export default function Landing() {
                       padding: '4px 10px',
                       borderRadius: 'var(--radius-pill)',
                       fontSize: '11.5px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       border: '1px solid var(--border-subtle)',
                     }}
                   >
@@ -3117,7 +3117,7 @@ export default function Landing() {
                 >
                   <ShieldCheck size={26} />
                 </div>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', margin: 0 }}>
+                <h2 style={{ fontSize: '20px', margin: 0 }}>
                   Patient Verification Required
                 </h2>
               </div>
@@ -3198,7 +3198,7 @@ export default function Landing() {
                   <ShieldCheck size={22} />
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--forest-800)', letterSpacing: '-0.01em' }}>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '400', color: 'var(--forest-800)', letterSpacing: '-0.01em' }}>
                     Admin Operations Sign-In
                   </h3>
                   <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -3245,7 +3245,7 @@ export default function Landing() {
                   border: '1px solid var(--border-subtle)',
                 }}
               >
-                <div style={{ fontSize: '10.5px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ fontSize: '10.5px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
                   ⚡ ONE-CLICK DEMO ACCESS
                 </div>
                 <button
@@ -3322,7 +3322,7 @@ export default function Landing() {
                     color: '#FFFFFF',
                     borderRadius: 'var(--radius-pill)',
                     border: 'none',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',

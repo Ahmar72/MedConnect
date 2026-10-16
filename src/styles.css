@@ -59,8 +59,8 @@
   --radius-sm: 8px;
 
   /* Fonts - Pure Sans-Serif System Wide */
-  --font-serif: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 *, *::before, *::after {
@@ -74,6 +74,7 @@ html, body {
   background-color: var(--canvas-bg);
   color: var(--text-main);
   font-family: var(--font-sans) !important;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -81,6 +82,30 @@ html, body {
 h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, div {
   font-family: var(--font-sans) !important;
 }
+
+/* Main Page Heading ONLY is bold */
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h1 * {
+  font-weight: inherit;
+}
+
+/* Secondary headings, subheadings, and section headers are clean normal weight */
+h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+/* All body text, descriptions, links, divs, spans, and labels are normal weight */
+p, span, div, li, td, th, label, input, select, textarea, button, a {
+  font-weight: 400;
+}
+
+/* Make b and strong tags normal so inline bolding does not overwhelm text */
+b, strong, em, i { font-weight: 400; }
 
 a {
   color: inherit;
@@ -161,7 +186,7 @@ button {
   display: grid;
   place-items: center;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 400;
   box-shadow: 0 4px 12px rgba(197, 225, 165, 0.3);
 }
 
@@ -171,7 +196,7 @@ button {
 }
 
 .logo-title {
-  font-weight: 700;
+  font-weight: 400;
   font-size: 18px;
   letter-spacing: -0.4px;
   color: #FFFFFF;
@@ -185,7 +210,7 @@ button {
 
 .sidebar-section-title {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 1.4px;
   text-transform: uppercase;
   color: var(--text-white-muted);
@@ -207,7 +232,7 @@ button {
   border-radius: var(--radius-pill);
   color: var(--text-white-muted);
   font-size: 13.5px;
-  font-weight: 500;
+  font-weight: 400;
   transition: all 0.2s ease;
   text-decoration: none;
 }
@@ -220,7 +245,7 @@ button {
 .sidebar-item.active {
   background-color: var(--forest-active);
   color: #FFFFFF;
-  font-weight: 600;
+  font-weight: 400;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
@@ -262,7 +287,7 @@ button {
   padding: 10px 14px;
   border-radius: var(--radius-pill);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 400;
   transition: all 0.2s ease;
 }
 
@@ -322,7 +347,7 @@ button {
 
 .preview-state-label {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-body);
   padding-left: 4px;
 }
@@ -336,7 +361,7 @@ button {
   padding: 6px 12px;
   border-radius: var(--radius-pill);
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-muted);
   border: 1px solid transparent;
   transition: all 0.2s ease;
@@ -371,7 +396,7 @@ button {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--forest-800);
   transition: all 0.2s ease;
 }
@@ -404,7 +429,7 @@ button {
   color: var(--lime-accent);
   display: grid;
   place-items: center;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 12px;
 }
 
@@ -415,7 +440,7 @@ button {
 
 .chip-name {
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
   line-height: 1.2;
 }
@@ -503,7 +528,7 @@ button {
   border: 1px solid rgba(197, 225, 165, 0.3);
   color: var(--lime-accent);
   font-size: 11.5px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 1px;
   text-transform: uppercase;
   margin-bottom: 24px;
@@ -513,7 +538,7 @@ button {
   font-family: var(--font-sans);
   font-size: 44px;
   line-height: 1.18;
-  font-weight: 800;
+  font-weight: 400;
   margin: 0 0 16px 0;
   max-width: 680px;
   letter-spacing: -0.5px;
@@ -546,7 +571,7 @@ button {
   background-color: var(--lime-accent);
   color: var(--forest-800);
   border-radius: var(--radius-pill);
-  font-weight: 700;
+  font-weight: 400;
   font-size: 14.5px;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(197, 225, 165, 0.35);
@@ -568,7 +593,7 @@ button {
   background-color: #FFFFFF;
   color: var(--forest-800);
   border-radius: var(--radius-pill);
-  font-weight: 600;
+  font-weight: 400;
   font-size: 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
@@ -606,7 +631,7 @@ button {
 
 .role-card-badge {
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--forest-600);
@@ -615,7 +640,7 @@ button {
 
 .role-card-desc {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-main);
   line-height: 1.5;
   margin: 0 0 24px 0;
@@ -630,7 +655,7 @@ button {
   padding: 10px 22px;
   border-radius: var(--radius-pill);
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   border: 1px solid var(--border-strong);
   color: var(--text-main);
   background-color: transparent;
@@ -684,7 +709,7 @@ button {
 
 .search-city-label {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -692,7 +717,7 @@ button {
 
 .search-city-val {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
 }
 
@@ -726,7 +751,7 @@ button {
   border-radius: var(--radius-pill);
   background-color: var(--forest-800);
   color: #FFFFFF;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 13.5px;
   display: flex;
   align-items: center;
@@ -756,7 +781,7 @@ button {
 
 .suggestion-group-title {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -796,7 +821,7 @@ button {
 
 .suggestion-name {
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-main);
 }
 
@@ -868,7 +893,7 @@ button {
   align-items: center;
   gap: 5px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   background-color: var(--badge-green-bg);
   color: var(--badge-green-text);
   padding: 3px 8px;
@@ -917,7 +942,7 @@ button {
 
 .service-title {
   font-size: 16.5px;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--forest-800);
   margin: 0 0 10px 0;
   min-height: 44px;
@@ -940,7 +965,7 @@ button {
 
 .service-action-link {
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
   background: rgba(14, 56, 44, 0.05);
   border: 1px solid rgba(14, 56, 44, 0.1);
@@ -980,7 +1005,7 @@ button {
 .section-heading-wrap h2 {
   font-family: var(--font-sans);
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 400;
   margin: 0 0 4px 0;
   color: var(--text-main);
   letter-spacing: -0.02em;
@@ -994,7 +1019,7 @@ button {
 
 .link-see-all {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
   display: flex;
   align-items: center;
@@ -1036,7 +1061,7 @@ button {
 
 .specialty-urdu-badge {
   font-size: 11.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
   background: rgba(14, 56, 44, 0.05);
   border: 1px solid rgba(14, 56, 44, 0.12);
@@ -1052,7 +1077,7 @@ button {
   gap: 4px;
   align-self: flex-end;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
   background: rgba(197, 225, 165, 0.38);
   border: 1px solid rgba(14, 56, 44, 0.15);
@@ -1080,7 +1105,7 @@ button {
 
 .specialty-name {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
   margin-bottom: 2px;
 }
@@ -1110,7 +1135,27 @@ button {
   border-radius: var(--radius-card);
   padding: 24px;
   position: sticky;
-  top: 90px;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  align-self: flex-start;
+  z-index: 10;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+  transition: top 0.2s ease;
+}
+
+.filter-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.filter-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb {
+  background-color: #D1D5DB;
+  border-radius: 9999px;
 }
 
 .filter-sidebar-header {
@@ -1124,13 +1169,13 @@ button {
 
 .filter-sidebar-title {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
 }
 
 .filter-reset-btn {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--forest-700);
 }
 
@@ -1140,7 +1185,7 @@ button {
 
 .filter-group-title {
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
   margin-bottom: 10px;
 }
@@ -1170,7 +1215,7 @@ button {
 .filter-radio-pill.active {
   background-color: rgba(14, 56, 44, 0.08);
   color: var(--forest-800);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* Range Slider */
@@ -1184,7 +1229,7 @@ button {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-body);
 }
 
@@ -1226,7 +1271,7 @@ button {
   display: grid;
   place-items: center;
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 400;
   flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(14, 56, 44, 0.15);
 }
@@ -1251,7 +1296,7 @@ button {
   background-color: var(--badge-green-bg);
   color: var(--badge-green-text);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   padding: 3px 8px;
   border-radius: var(--radius-pill);
 }
@@ -1263,14 +1308,14 @@ button {
   background-color: rgba(197, 225, 165, 0.35);
   color: var(--forest-800);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   padding: 3px 9px;
   border-radius: var(--radius-pill);
 }
 
 .doctor-card-name {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
   margin: 2px 0 4px 0;
 }
@@ -1294,7 +1339,7 @@ button {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-weight: 700;
+  font-weight: 400;
   color: #B45309;
 }
 
@@ -1304,11 +1349,11 @@ button {
 }
 
 .metric-experience {
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .metric-satisfaction {
-  font-weight: 600;
+  font-weight: 400;
   color: #1B5E20;
 }
 
@@ -1333,12 +1378,12 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-main);
 }
 
 .practice-fee-wrap {
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
 }
 
@@ -1363,7 +1408,7 @@ button {
 
 .doctor-next-val {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
 }
 
@@ -1379,7 +1424,7 @@ button {
   background-color: var(--lime-accent);
   color: var(--forest-800);
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1396,7 +1441,7 @@ button {
   border: 1px solid var(--forest-800);
   color: var(--forest-800);
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1442,39 +1487,41 @@ button {
   display: flex;
   align-items: center;
   background-color: var(--canvas-bg);
-  padding: 14px 32px;
+  padding: 16px 36px;
   border-bottom: 1px solid var(--border-subtle);
   overflow-x: auto;
+  gap: 12px;
 }
 
 .step-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-faint);
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #6B7280;
   flex-shrink: 0;
 }
 
 .step-item.active {
-  color: var(--forest-800);
-  font-weight: 700;
+  color: var(--forest-900);
 }
 
 .step-item.completed {
-  color: #2E7D32;
+  color: #15803D;
 }
 
 .step-number-circle {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 11px;
+  font-size: 11.5px;
   background-color: #FFFFFF;
-  border: 1px solid var(--border-strong);
+  border: 1.5px solid var(--border-strong);
+  color: #6B7280;
+  flex-shrink: 0;
 }
 
 .step-item.active .step-number-circle {
@@ -1484,16 +1531,24 @@ button {
 }
 
 .step-item.completed .step-number-circle {
-  background-color: #2E7D32;
+  background-color: #15803D;
   color: #FFFFFF;
-  border-color: #2E7D32;
+  border-color: #15803D;
+}
+
+.step-connector {
+  width: 32px;
+  height: 1.5px;
+  background-color: var(--border-strong);
+  flex-shrink: 0;
+  margin: 0 4px;
 }
 
 .step-divider {
   width: 32px;
-  height: 1px;
+  height: 1.5px;
   background-color: var(--border-strong);
-  margin: 0 12px;
+  margin: 0 8px;
 }
 
 .booking-body-pane {
@@ -1546,7 +1601,7 @@ button {
   border: 1px solid var(--border-subtle);
   background-color: #FFFFFF;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-main);
   text-align: center;
   cursor: pointer;
@@ -1562,7 +1617,7 @@ button {
   background-color: var(--lime-accent);
   color: var(--forest-800);
   border-color: var(--lime-accent);
-  font-weight: 700;
+  font-weight: 400;
   box-shadow: 0 2px 8px rgba(197, 225, 165, 0.4);
 }
 
@@ -1682,7 +1737,7 @@ button {
   padding: 0 24px;
   border-radius: var(--radius-pill);
   height: 48px;
-  font-weight: 700;
+  font-weight: 400;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1719,7 +1774,7 @@ button {
 .tab-nav-btn {
   padding: 12px 20px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-muted);
   border-bottom: 2px solid transparent;
   margin-bottom: -4px;
@@ -1736,7 +1791,7 @@ button {
 
 .tab-nav-btn.active {
   color: var(--forest-800);
-  font-weight: 700;
+  font-weight: 400;
   border-bottom-color: var(--forest-800);
 }
 
@@ -1866,7 +1921,7 @@ button {
   padding: 8px 16px;
   border-radius: var(--radius-pill);
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   border: 1.5px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -1903,7 +1958,7 @@ button {
 
 .modal-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
 }
 
@@ -1973,7 +2028,7 @@ button {
 .form-label {
   display: block;
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-main);
   margin-bottom: 2px;
   letter-spacing: -0.01em;
@@ -1991,6 +2046,18 @@ button {
   line-height: 1.5;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px 16px;
+  padding-right: 44px;
+  cursor: pointer;
 }
 
 .form-input::placeholder, .form-textarea::placeholder {
@@ -2026,7 +2093,7 @@ button {
   gap: 12px;
   z-index: 200;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   animation: toast-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2143,7 +2210,7 @@ button {
   align-items: center;
   gap: 6px;
   font-size: 11.5px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--forest-800);
@@ -2157,7 +2224,7 @@ button {
 .section-main-heading {
   font-family: var(--font-sans);
   font-size: clamp(32px, 3.4vw, 40px);
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1.2;
   color: #08281F;
   letter-spacing: -0.025em;
@@ -2170,7 +2237,7 @@ button {
   max-width: 680px;
   line-height: 1.5;
   margin: 0;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* ==========================================================================
@@ -2370,7 +2437,7 @@ button {
   display: grid;
   place-items: center;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 400;
   color: #FFFFFF;
   background-color: var(--forest-800);
 }
@@ -2392,7 +2459,7 @@ button {
 
 .img2-doc-name {
   font-size: 16.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: #111827;
   margin: 0;
   white-space: nowrap;
@@ -2409,7 +2476,7 @@ button {
   background-color: #F3F4F6;
   color: #1F2937;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   border: 1px solid #E5E7EB;
   flex-shrink: 0;
 }
@@ -2417,7 +2484,7 @@ button {
 .img2-specialty-clinic {
   font-size: 13.5px;
   color: #4B5563;
-  font-weight: 500;
+  font-weight: 400;
   margin-bottom: 6px;
   line-height: 1.4;
 }
@@ -2447,7 +2514,7 @@ button {
   border-radius: 9999px;
   padding: 7px 18px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.18s ease;
   outline: none;
@@ -2466,7 +2533,7 @@ button {
   border-radius: 9999px;
   padding: 7px 22px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.18s ease;
   outline: none;
@@ -2516,7 +2583,7 @@ button {
   display: grid;
   place-items: center;
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 400;
   box-shadow: 0 4px 12px rgba(14, 56, 44, 0.2);
   flex-shrink: 0;
 }
@@ -2541,7 +2608,7 @@ button {
 
 .profile-input-group label {
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: #374151;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2591,7 +2658,7 @@ button {
   border: 1.5px solid var(--border-subtle);
   color: var(--text-muted);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -2655,7 +2722,7 @@ button {
   display: grid;
   place-items: center;
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 400;
   border: 3px solid var(--lime-accent);
 }
 
@@ -2683,7 +2750,7 @@ button {
 
 .instacare-doc-name {
   font-size: 19px;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--forest-800);
   margin: 0;
   letter-spacing: -0.01em;
@@ -2696,7 +2763,7 @@ button {
   background-color: #FEF3C7;
   color: #B45309;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 400;
   padding: 3px 8px;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(217, 119, 6, 0.3);
@@ -2704,7 +2771,7 @@ button {
 
 .instacare-specialty-line {
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1F2937;
   margin: 2px 0 1px 0;
 }
@@ -2733,7 +2800,7 @@ button {
 }
 
 .instacare-metric-val {
-  font-weight: 800;
+  font-weight: 400;
   color: var(--forest-800);
 }
 
@@ -2751,7 +2818,7 @@ button {
   padding: 4px 10px;
   border-radius: 8px;
   font-size: 11.5px;
-  font-weight: 700;
+  font-weight: 400;
   border: 1px solid rgba(14, 56, 44, 0.14);
 }
 
@@ -2785,7 +2852,7 @@ button {
   align-items: center;
   gap: 6px;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--forest-800);
 }
 
@@ -2798,7 +2865,7 @@ button {
 
 .instacare-consult-fee {
   font-size: 13.5px;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--forest-800);
 }
 
@@ -2819,7 +2886,7 @@ button {
   background-color: #FFFFFF;
   color: var(--forest-800);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
@@ -2837,7 +2904,7 @@ button {
   background-color: var(--forest-800);
   color: #FFFFFF;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   text-align: center;
   box-shadow: 0 4px 12px rgba(14, 56, 44, 0.2);
@@ -2848,3 +2915,113 @@ button {
   background-color: var(--forest-700);
   transform: translateY(-1px);
 }
+
+/* ==========================================================================
+   DEDICATED RECEIPT / SLIP / INVOICE / RX PRINT ISOLATION
+   Ensures that only the dedicated document is printed, never the outer chrome.
+   ========================================================================== */
+@media print {
+  @page {
+    margin: 10mm 12mm;
+    size: auto;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Universal hide for non-printable elements */
+  .no-print,
+  .no-print *,
+  .sidebar,
+  .app-sidebar,
+  .sidebar-footer,
+  .mobile-menu-backdrop,
+  header,
+  nav,
+  aside,
+  button,
+  .btn-lime-pill,
+  .btn-white-capsule,
+  .patient-nav-tabs,
+  .dashboard-tabs-bar,
+  .modal-close-btn,
+  .modal-header,
+  .modal-footer {
+    display: none !important;
+  }
+
+  /* Hide all regular body contents */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Make ONLY dedicated printable documents and their contents visible */
+  #printable-receipt,
+  #printable-receipt *,
+  #printable-invoice,
+  #printable-invoice *,
+  #printable-prescription,
+  #printable-prescription *,
+  #printable-prescription-slip,
+  #printable-prescription-slip *,
+  #printable-statement-modal,
+  #printable-statement-modal *,
+  #printable-thermal-receipt,
+  #printable-thermal-receipt *,
+  .printable-target,
+  .printable-target *,
+  .printable-receipt,
+  .printable-receipt *,
+  .printable-slip,
+  .printable-slip * {
+    visibility: visible !important;
+  }
+
+  /* Position dedicated printable document to fill page cleanly */
+  #printable-receipt,
+  #printable-invoice,
+  #printable-prescription,
+  #printable-prescription-slip,
+  #printable-statement-modal,
+  #printable-thermal-receipt,
+  .printable-target,
+  .printable-receipt,
+  .printable-slip {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+    right: 0 !important;
+    padding: 16px 20px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #D1D5DB !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    z-index: 9999999 !important;
+  }
+
+  /* Ensure inputs and textareas show as plain clean text */
+  input, textarea, select {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    color: #000000 !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    box-shadow: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+}
+

@@ -19,12 +19,11 @@ import {
   Activity,
   FileText,
   UserCheck,
-  TestTube2,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { doctorsList, patientsList, branchesList, appointments, labOrders = [], activityLog, showToast } = useDemo();
+  const { doctorsList, patientsList, branchesList, appointments, activityLog, showToast } = useDemo();
 
   const pendingDoctorsCount = doctorsList.filter((d) => d.status === 'pending').length;
   const pendingAppointmentsCount = appointments.filter((a) => a.status === 'Pending Doctor Confirmation').length;
@@ -34,10 +33,10 @@ export default function AdminDashboard() {
       {/* Admin Operations Banner */}
       <div className="patient-welcome-banner" style={{ marginBottom: '28px' }}>
         <div>
-          <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '11px', fontWeight: '400', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
             OPERATIONS & FACILITY CONTROL CONSOLE
           </div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '4px 0 6px 0' }}>
+          <h1 style={{ fontSize: '26px', fontWeight: '700', margin: '4px 0 6px 0' }}>
             MedConnect Hospital Network
           </h1>
           <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
@@ -65,16 +64,6 @@ export default function AdminDashboard() {
             <Users size={16} />
             <span>Manage Patients ({patientsList.length})</span>
           </button>
-
-          <button
-            type="button"
-            className="btn-white-capsule"
-            onClick={() => navigate('/admin/labs')}
-            style={{ padding: '12px 18px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <TestTube2 size={16} />
-            <span>Lab Operations ({labOrders.length})</span>
-          </button>
         </div>
       </div>
 
@@ -91,13 +80,13 @@ export default function AdminDashboard() {
           }}
           onClick={() => navigate('/admin/patients')}
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             Registered Patients
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '4px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--forest-800)', margin: '4px 0' }}>
             {patientsList.length * 3200 + 40}
           </div>
-          <span style={{ fontSize: '12px', color: '#1B5E20', fontWeight: '600' }}>
+          <span style={{ fontSize: '12px', color: '#1B5E20', fontWeight: '400' }}>
             View {patientsList.length} local profiles →
           </span>
         </div>
@@ -113,13 +102,13 @@ export default function AdminDashboard() {
           }}
           onClick={() => navigate('/admin/doctors')}
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             Verified Doctors
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--text-main)', margin: '4px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--text-main)', margin: '4px 0' }}>
             {doctorsList.filter((d) => d.status === 'verified').length} Active
           </div>
-          <span style={{ fontSize: '12px', color: pendingDoctorsCount > 0 ? '#B45309' : 'var(--forest-700)', fontWeight: '600' }}>
+          <span style={{ fontSize: '12px', color: pendingDoctorsCount > 0 ? '#B45309' : 'var(--forest-700)', fontWeight: '400' }}>
             {pendingDoctorsCount > 0 ? `⏳ ${pendingDoctorsCount} pending approval` : '✓ All PMDC verified'}
           </span>
         </div>
@@ -135,10 +124,10 @@ export default function AdminDashboard() {
           }}
           onClick={() => navigate('/admin/branches')}
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             Partner Hospital Clinics
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: '#1B5E20', margin: '4px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: '#1B5E20', margin: '4px 0' }}>
             {branchesList.length} Facilities
           </div>
           <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -157,10 +146,10 @@ export default function AdminDashboard() {
           }}
           onClick={() => navigate('/admin/queue')}
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
             Active Appointments
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '4px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '400', color: 'var(--forest-800)', margin: '4px 0' }}>
             {appointments.length}
           </div>
           <span style={{ fontSize: '12px', color: pendingAppointmentsCount > 0 ? '#B45309' : 'var(--text-muted)' }}>
@@ -242,7 +231,7 @@ export default function AdminDashboard() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className="live-pulse-dot" />
-                <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0 }}>
+                <h3 style={{ fontSize: '17px', fontWeight: '400', margin: 0 }}>
                   Real-Time System Activity & Audit Trail
                 </h3>
               </div>
@@ -317,7 +306,7 @@ export default function AdminDashboard() {
                     {act.details}
                   </div>
 
-                  <div style={{ fontSize: '11.5px', color: 'var(--forest-700)', fontWeight: '600', marginTop: '4px' }}>
+                  <div style={{ fontSize: '11.5px', color: 'var(--forest-700)', fontWeight: '400', marginTop: '4px' }}>
                     Actor: {act.actor}
                   </div>
                 </div>
@@ -341,7 +330,7 @@ export default function AdminDashboard() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px' }}>
             <AlertTriangle size={18} color="#B45309" />
-            <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0 }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0 }}>
               Action Items Requiring Attention
             </h3>
           </div>
@@ -392,7 +381,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => navigate('/admin/patients')}
-                style={{ fontSize: '12px', color: 'var(--forest-800)', fontWeight: '700' }}
+                style={{ fontSize: '12px', color: 'var(--forest-800)', fontWeight: '400' }}
               >
                 Open Patient Directory →
               </button>
@@ -417,7 +406,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => navigate('/admin/branches')}
-                style={{ fontSize: '12px', color: 'var(--forest-800)', fontWeight: '700' }}
+                style={{ fontSize: '12px', color: 'var(--forest-800)', fontWeight: '400' }}
               >
                 Manage Facility Capacities →
               </button>

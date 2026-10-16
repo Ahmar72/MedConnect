@@ -204,7 +204,7 @@ export function Auth({ type = 'login' }) {
         <button
           type="button"
           onClick={() => navigate('/')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', fontWeight: '700', color: 'var(--forest-800)' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', fontWeight: '400', color: 'var(--forest-800)' }}
         >
           <ArrowLeft size={16} />
           <span>Back to MedConnect Home</span>
@@ -244,7 +244,7 @@ export function Auth({ type = 'login' }) {
               {isReset ? <KeyRound size={22} /> : isSignup ? <UserPlus size={22} /> : <LogIn size={22} />}
             </div>
 
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '26px', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
               {isReset ? 'Reset Password' : isSignup ? 'Join MedConnect' : 'Sign in to MedConnect'}
             </h1>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
@@ -285,7 +285,7 @@ export function Auth({ type = 'login' }) {
                 <Lock size={18} />
               </div>
               <div>
-                <div style={{ fontSize: '12px', fontWeight: '800', color: '#991B1B', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '12px', fontWeight: '400', color: '#991B1B', textTransform: 'uppercase' }}>
                   RESTRICTED HOSPITAL STAFF PORTAL
                 </div>
                 <div style={{ fontSize: '11.5px', color: '#7F1D1D' }}>
@@ -306,7 +306,7 @@ export function Auth({ type = 'login' }) {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
+              <div style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', marginBottom: '8px' }}>
                 ⚡ ONE-CLICK DEMO SIGN-IN
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: role === 'admin' ? '1fr' : '1fr 1fr', gap: '8px' }}>
@@ -370,7 +370,7 @@ export function Auth({ type = 'login' }) {
                   border: `1.5px solid ${role === 'patient' ? 'var(--forest-800)' : 'var(--border-subtle)'}`,
                   backgroundColor: role === 'patient' ? 'rgba(14, 56, 44, 0.05)' : '#FFFFFF',
                   color: role === 'patient' ? 'var(--forest-800)' : 'var(--text-muted)',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '12.5px',
                 }}
               >
@@ -387,7 +387,7 @@ export function Auth({ type = 'login' }) {
                   border: `1.5px solid ${role === 'doctor' ? 'var(--forest-800)' : 'var(--border-subtle)'}`,
                   backgroundColor: role === 'doctor' ? 'rgba(14, 56, 44, 0.05)' : '#FFFFFF',
                   color: role === 'doctor' ? 'var(--forest-800)' : 'var(--text-muted)',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '12.5px',
                 }}
               >
@@ -420,7 +420,7 @@ export function Auth({ type = 'login' }) {
                   <ShieldCheck size={28} />
                 </div>
 
-                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 6px 0', color: 'var(--text-main)' }}>
                   Verify Mobile Number
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 20px 0', lineHeight: '1.5' }}>
@@ -445,7 +445,7 @@ export function Auth({ type = 'login' }) {
                   </span>
                   <button
                     type="button"
-                    style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--forest-700)', textDecoration: 'underline' }}
+                    style={{ fontSize: '11.5px', fontWeight: '400', color: 'var(--forest-700)', textDecoration: 'underline' }}
                     onClick={() => setOtpCode(simulatedOtp)}
                   >
                     Auto-Fill {simulatedOtp}
@@ -468,7 +468,7 @@ export function Auth({ type = 'login' }) {
                       textAlign: 'center',
                       fontSize: '24px',
                       letterSpacing: '8px',
-                      fontWeight: '800',
+                      fontWeight: '400',
                       padding: '10px',
                       borderRadius: '12px',
                       border: formErrors.otpCode ? '2px solid #DC2626' : '2px solid var(--forest-800)',
@@ -807,7 +807,7 @@ export function Auth({ type = 'login' }) {
             {isSignup ? (
               <span>
                 Already have an account?{' '}
-                <Link to="/login" style={{ color: 'var(--forest-800)', fontWeight: '700' }}>
+                <Link to="/login" style={{ color: 'var(--forest-800)', fontWeight: '400' }}>
                   Log In
                 </Link>
               </span>
@@ -818,7 +818,7 @@ export function Auth({ type = 'login' }) {
                 </Link>
                 <span>
                   New to MedConnect?{' '}
-                  <Link to="/signup" style={{ color: 'var(--forest-800)', fontWeight: '700' }}>
+                  <Link to="/signup" style={{ color: 'var(--forest-800)', fontWeight: '400' }}>
                     Sign Up
                   </Link>
                 </span>
@@ -839,7 +839,7 @@ export function MFA() {
     <div style={{ backgroundColor: 'var(--canvas-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ backgroundColor: '#FFF', borderRadius: '24px', padding: '36px', maxWidth: '440px', textAlign: 'center', boxShadow: 'var(--shadow-md)' }}>
         <ShieldCheck size={40} color="var(--forest-800)" style={{ margin: '0 auto 12px auto' }} />
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', margin: '0 0 8px 0' }}>Two-Factor Security</h2>
+        <h2 style={{ fontSize: '24px', margin: '0 0 8px 0' }}>Two-Factor Security</h2>
         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '20px' }}>
           Verification code dispatched to your registered phone number.
         </p>

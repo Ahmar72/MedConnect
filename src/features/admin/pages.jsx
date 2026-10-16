@@ -4,4 +4,3 @@ export { default as AdminPatientsPage } from './pages/AdminPatientsPage';
 export { default as AdminBranchesPage } from './pages/AdminBranchesPage';
 export { default as AdminQueuePage } from './pages/AdminQueuePage';
 export { default as AdminReportsPage } from './pages/AdminReportsPage';
-export { default as AdminLabManagementPage } from './pages/AdminLabManagementPage';

@@ -36,7 +36,7 @@ export default function AdminQueuePage() {
         <button
           type="button"
           onClick={() => navigate('/admin')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', color: 'var(--forest-800)', marginBottom: '12px' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)', marginBottom: '12px' }}
         >
           <ArrowLeft size={16} />
           <span>Back to Operations Console</span>
@@ -44,12 +44,9 @@ export default function AdminQueuePage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0 }}>
+            <h1 style={{ fontSize: '28px', margin: 0 }}>
               Master Appointment & Queue Triage
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Real-time central registry of all active bookings across patients and doctors
-            </p>
           </div>
 
           <button
@@ -113,19 +110,19 @@ export default function AdminQueuePage() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', textAlign: 'left' }}>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Booking ID</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Patient</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Doctor & Facility</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Slot Time</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Payment</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)' }}>Status</th>
-              <th style={{ padding: '14px 20px', fontWeight: '700', color: 'var(--forest-800)', textAlign: 'right' }}>Triage</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Booking ID</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Patient</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Doctor & Facility</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Slot Time</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Payment</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)' }}>Status</th>
+              <th style={{ padding: '14px 20px', fontWeight: '400', color: 'var(--forest-800)', textAlign: 'right' }}>Triage</th>
             </tr>
           </thead>
           <tbody>
             {filteredAppointments.map((apt) => (
               <tr key={apt.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                <td style={{ padding: '16px 20px', fontFamily: 'monospace', fontWeight: '700', color: 'var(--forest-800)' }}>
+                <td style={{ padding: '16px 20px', fontFamily: 'monospace', fontWeight: '400', color: 'var(--forest-800)' }}>
                   #{apt.id}
                 </td>
                 <td style={{ padding: '16px 20px' }}>
@@ -133,7 +130,7 @@ export default function AdminQueuePage() {
                   <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{apt.patientPhone}</div>
                 </td>
                 <td style={{ padding: '16px 20px' }}>
-                  <div style={{ fontWeight: '600' }}>{apt.doctorName}</div>
+                  <div style={{ fontWeight: '400' }}>{apt.doctorName}</div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{apt.clinicName}</div>
                 </td>
                 <td style={{ padding: '16px 20px' }}>
@@ -141,14 +138,14 @@ export default function AdminQueuePage() {
                   <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{apt.time}</div>
                 </td>
                 <td style={{ padding: '16px 20px' }}>
-                  <div style={{ fontWeight: '700', color: 'var(--forest-800)' }}>Rs. {apt.fee}</div>
+                  <div style={{ fontWeight: '400', color: 'var(--forest-800)' }}>Rs. {apt.fee}</div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{apt.paymentMethod}</div>
                 </td>
                 <td style={{ padding: '16px 20px' }}>
                   <span
                     style={{
                       fontSize: '11px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       padding: '3px 8px',
                       borderRadius: 'var(--radius-pill)',
                       backgroundColor: apt.status === 'Confirmed' ? 'var(--badge-green-bg)' : 'var(--badge-amber-bg)',
@@ -175,7 +172,7 @@ export default function AdminQueuePage() {
                     )}
                     <button
                       type="button"
-                      style={{ fontSize: '11.5px', color: '#DC2626', fontWeight: '700', padding: '4px 8px' }}
+                      style={{ fontSize: '11.5px', color: '#DC2626', fontWeight: '400', padding: '4px 8px' }}
                       onClick={() => cancelAppointment(apt.id)}
                     >
                       Cancel

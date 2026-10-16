@@ -113,7 +113,7 @@ export function FieldError({ error }) {
         fontSize: '11.5px',
         marginTop: '5px',
         lineHeight: '1.3',
-        fontWeight: '500',
+        fontWeight: '400',
         animation: 'fadeIn 0.2s ease',
       }}
     >

@@ -33,7 +33,8 @@ import {
   Clock,
   Search,
   TrendingUp,
-  TestTube2,
+  Bell,
+  Video,
 } from 'lucide-react';
 
 export default function AppShell({ children }) {
@@ -48,6 +49,10 @@ export default function AppShell({ children }) {
     doctorsList,
     appointments,
     labReports,
+    patientNotifications = [],
+    markNotificationAsRead,
+    clearAllNotifications,
+    unreadNotificationsCount = 0,
   } = useDemo();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -205,40 +210,43 @@ export default function AppShell({ children }) {
                 <span>My Appointments</span>
               </NavLink>
 
+              {/* Patient Notifications Link */}
               <NavLink
-                to="/appointments?tab=labs"
-                className={({ isActive }) => `sidebar-item ${location.search.includes('labs') ? 'active' : ''}`}
+                to="/notifications"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Activity size={17} />
-                <span>Lab Test Reports</span>
-                {pendingLabCount > 0 ? (
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Bell size={17} />
+                  {unreadNotificationsCount > 0 && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '-3px',
+                        right: '-3px',
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#EF4444',
+                        border: '1.5px solid #0E382C',
+                      }}
+                    />
+                  )}
+                </div>
+                <span>Notifications</span>
+                {unreadNotificationsCount > 0 && (
                   <span
                     style={{
                       marginLeft: 'auto',
-                      backgroundColor: '#F59E0B',
-                      color: '#0E382C',
-                      fontSize: '10.5px',
-                      fontWeight: '800',
+                      backgroundColor: '#EF4444',
+                      color: '#FFFFFF',
+                      fontSize: '11px',
+                      fontWeight: '400',
                       padding: '2px 7px',
                       borderRadius: '10px',
                     }}
                   >
-                    {pendingLabCount} Pending
-                  </span>
-                ) : (
-                  <span
-                    style={{
-                      marginLeft: 'auto',
-                      backgroundColor: 'rgba(197, 225, 165, 0.25)',
-                      color: 'var(--lime-accent)',
-                      fontSize: '10px',
-                      fontWeight: '700',
-                      padding: '2px 6px',
-                      borderRadius: '10px',
-                    }}
-                  >
-                    {labReports?.length || 0} Reports
+                    {unreadNotificationsCount}
                   </span>
                 )}
               </NavLink>
@@ -255,7 +263,7 @@ export default function AppShell({ children }) {
           </>
         )}
 
-        {/* 2. DOCTOR NAVIGATION (Only visible to Doctor) */}
+        {/* 2. DOCTOR NAVIGATION (Concise 1-2 words without ampersands) */}
         {isDoctor && (
           <>
             <div className="sidebar-section-title">Clinician Practice</div>
@@ -267,7 +275,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Stethoscope size={17} />
-                <span>Dashboard & Queue</span>
+                <span>Dashboard</span>
                 {pendingRequestsCount > 0 && (
                   <span
                     style={{
@@ -275,7 +283,7 @@ export default function AppShell({ children }) {
                       backgroundColor: '#F59E0B',
                       color: '#0E382C',
                       fontSize: '11px',
-                      fontWeight: '800',
+                      fontWeight: '400',
                       padding: '2px 7px',
                       borderRadius: '10px',
                     }}
@@ -291,7 +299,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Clock size={17} />
-                <span>Manage Patients & Schedule</span>
+                <span>Manage Schedule</span>
               </NavLink>
 
               <NavLink
@@ -300,7 +308,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Calendar size={17} />
-                <span>Practice Timetables & Fees</span>
+                <span>Timetables</span>
               </NavLink>
 
               <NavLink
@@ -309,16 +317,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Users size={17} />
-                <span>Patient Records & History</span>
-              </NavLink>
-
-              <NavLink
-                to="/doctor/lab-orders"
-                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <TestTube2 size={17} />
-                <span>Lab Orders & Reports</span>
+                <span>Patient Records</span>
               </NavLink>
 
               <NavLink
@@ -327,7 +326,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <TrendingUp size={17} />
-                <span>Earnings & Settlements</span>
+                <span>Earnings</span>
               </NavLink>
 
               <NavLink
@@ -336,7 +335,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <User size={17} />
-                <span>My Clinician Profile</span>
+                <span>Doctor Profile</span>
               </NavLink>
             </nav>
           </>
@@ -371,7 +370,7 @@ export default function AppShell({ children }) {
                       backgroundColor: '#DC2626',
                       color: '#FFF',
                       fontSize: '11px',
-                      fontWeight: '800',
+                      fontWeight: '400',
                       padding: '2px 7px',
                       borderRadius: '10px',
                     }}
@@ -416,15 +415,6 @@ export default function AppShell({ children }) {
                 <TrendingUp size={17} />
                 <span>Financial Ledger</span>
               </NavLink>
-
-              <NavLink
-                to="/admin/labs"
-                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <TestTube2 size={17} />
-                <span>Lab Operations &amp; Reports</span>
-              </NavLink>
             </nav>
           </>
         )}
@@ -432,10 +422,10 @@ export default function AppShell({ children }) {
         {/* Sidebar Footer with Logout & Role info */}
         <div className="sidebar-footer">
           <div style={{ padding: '0 8px 12px 8px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', marginBottom: '12px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--lime-accent)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block' }}>
+            <span style={{ fontSize: '11px', color: 'var(--lime-accent)', fontWeight: '400', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block' }}>
               Logged in as
             </span>
-            <span style={{ fontSize: '13.5px', color: '#FFF', fontWeight: '700', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ fontSize: '13.5px', color: '#FFF', fontWeight: '400', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {currentUser?.name || (isAdmin ? 'Operations Admin' : isDoctor ? 'Dr. Maya Patel' : 'Alex Khan')}
             </span>
             <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.6)' }}>
@@ -443,48 +433,7 @@ export default function AppShell({ children }) {
             </span>
           </div>
 
-          {/* Dedicated My Profile button at the bottom of the sidebar for patient */}
-          {isPatient && (
-            <button
-              type="button"
-              className="sidebar-item"
-              style={{
-                color: '#FFFFFF',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                padding: '9px 12px',
-                marginBottom: '8px',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                width: '100%',
-                fontWeight: '700',
-                fontSize: '13px',
-              }}
-              onClick={() => {
-                setIsProfileModalOpen(true);
-                setMobileMenuOpen(false);
-              }}
-            >
-              <User size={16} color="var(--lime-accent)" />
-              <span>My Profile</span>
-              <span
-                style={{
-                  marginLeft: 'auto',
-                  fontSize: '10px',
-                  backgroundColor: 'rgba(197, 225, 165, 0.25)',
-                  color: 'var(--lime-accent)',
-                  padding: '2px 7px',
-                  borderRadius: '6px',
-                  fontWeight: '800',
-                }}
-              >
-                Edit
-              </span>
-            </button>
-          )}
+
 
 
           <button
@@ -547,7 +496,7 @@ export default function AppShell({ children }) {
               <span
                 style={{
                   fontSize: '11px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
                   padding: '4px 10px',
@@ -567,7 +516,7 @@ export default function AppShell({ children }) {
                     onClick={() => setRoleSwitcherOpen(!roleSwitcherOpen)}
                     style={{
                       fontSize: '11.5px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       color: 'var(--forest-800)',
                       backgroundColor: 'var(--canvas-bg)',
                       border: '1px solid var(--border-strong)',
@@ -616,7 +565,7 @@ export default function AppShell({ children }) {
                       <button
                         type="button"
                         onClick={() => handleRoleSwitch('admin')}
-                        style={{ width: '100%', textAlign: 'left', padding: '8px 12px', fontSize: '12.5px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700' }}
+                        style={{ width: '100%', textAlign: 'left', padding: '8px 12px', fontSize: '12.5px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '400' }}
                       >
                         <ShieldCheck size={14} />
                         <span>Super Administrator</span>
@@ -646,7 +595,7 @@ export default function AppShell({ children }) {
                   display: 'grid',
                   placeItems: 'center',
                   fontSize: '15px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   boxShadow: '0 3px 12px rgba(14, 56, 44, 0.25)',
                   transition: 'all 0.2s ease',
@@ -696,7 +645,7 @@ export default function AppShell({ children }) {
                   display: 'grid',
                   placeItems: 'center',
                   fontSize: '15px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   boxShadow: '0 3px 12px rgba(14, 56, 44, 0.25)',
                   transition: 'all 0.2s ease',
@@ -798,7 +747,7 @@ export default function AppShell({ children }) {
         </header>
 
         {/* Dynamic Page Content */}
-        <main style={{ flex: 1, padding: '32px 40px', maxWidth: '1360px', width: '100%', margin: '0 auto' }}>
+        <main style={{ flex: 1, padding: '32px 40px', width: '100%', boxSizing: 'border-box' }}>
           {children}
         </main>
       </div>
