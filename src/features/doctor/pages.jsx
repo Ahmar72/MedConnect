@@ -8,4 +8,4 @@ export { default as DoctorPatientDetailPage } from './pages/DoctorPatientDetailP
 export { default as DoctorReceiptSlipPage } from './pages/DoctorReceiptSlipPage';
 export { default as DoctorInvoiceStatementPage } from './pages/DoctorInvoiceStatementPage';
 export { default as DoctorManageSchedulePage } from './pages/DoctorManageSchedulePage';
-export { default as DoctorLabOrdersPage } from './pages/DoctorLabOrdersPage';
+export { default as DoctorPatientRequestDetailPage } from './pages/DoctorPatientRequestDetailPage';

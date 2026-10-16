@@ -20,11 +20,9 @@ import {
   MapPin,
   AlertTriangle,
   Plus,
-  Video,
   Building2,
   Filter,
   CheckCircle2,
-  Sparkles,
 } from 'lucide-react';
 
 export default function DoctorPatientsPage() {
@@ -35,17 +33,15 @@ export default function DoctorPatientsPage() {
     appointments = [],
     prescriptions = [],
     labReports = [],
-    showToast,
   } = useDemo();
 
   const [search, setSearch] = useState('');
-  const [activeFilterTab, setActiveFilterTab] = useState('all'); // 'all' | 'recent' | 'prescriptions' | 'chronic'
+  const [activeFilterTab, setActiveFilterTab] = useState('all'); // 'all' | 'recent' | 'allergies'
   const [sortBy, setSortBy] = useState('recent'); // 'recent' | 'name' | 'visits'
   const [selectedPatientForRecord, setSelectedPatientForRecord] = useState(null);
 
   // Compile unified patient roster enriched with consultation, prescription, and lab records
   const enrichedPatients = useMemo(() => {
-    // Map of patients initialized from patientsList
     const patientMap = new Map();
 
     patientsList.forEach((pat) => {
@@ -155,14 +151,9 @@ export default function DoctorPatientsPage() {
 
     if (activeFilterTab === 'recent') {
       result = result.filter((p) => p.appointments.length > 0);
-    } else if (activeFilterTab === 'prescriptions') {
-      result = result.filter((p) => p.prescriptions.length > 0);
-    } else if (activeFilterTab === 'chronic') {
+    } else if (activeFilterTab === 'allergies') {
       result = result.filter(
-        (p) =>
-          p.allergies.toLowerCase() !== 'none reported' ||
-          p.totalVisits >= 2 ||
-          p.labReports.length > 0
+        (p) => p.allergies && p.allergies.toLowerCase() !== 'none reported'
       );
     }
 
@@ -175,546 +166,383 @@ export default function DoctorPatientsPage() {
     return result;
   }, [enrichedPatients, search, activeFilterTab, sortBy]);
 
-  // Aggregate stats
-  const totalPatientsCount = enrichedPatients.length;
-  const totalEncountersCount = appointments.length;
-  const totalPrescriptionsCount = prescriptions.length;
-  const totalLabsCount = labReports.length;
-
   return (
     <AppShell>
-      {/* Top Breadcrumb & Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <button
-          type="button"
-          onClick={() => navigate('/doctor')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '13px',
-            fontWeight: '700',
-            color: 'var(--forest-800)',
-            backgroundColor: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-            marginBottom: '12px',
-          }}
-        >
-          <ArrowLeft size={16} />
-          <span>Back to Clinician Workspace</span>
-        </button>
+      <div style={{ maxWidth: '1040px', margin: '0 auto', paddingBottom: '70px' }}>
+        {/* Top Header & Breadcrumb */}
+        <div style={{ marginBottom: '20px' }}>
+          <button
+            type="button"
+            onClick={() => navigate('/doctor')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: 'var(--forest-800)',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              marginBottom: '10px',
+            }}
+          >
+            <ArrowLeft size={15} />
+            <span>Back to Clinician Workspace</span>
+          </button>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--forest-800)',
+                    color: 'var(--lime-accent)',
+                    display: 'grid',
+                    placeItems: 'center',
+                  }}
+                >
+                  <Users size={18} />
+                </div>
+                <h1 style={{ fontSize: '22px', fontWeight: '700', margin: 0, color: 'var(--forest-900)' }}>
+                  Patient Records & Clinical Directory
+                </h1>
+              </div>
+              <p style={{ margin: '4px 0 0 46px', fontSize: '13px', color: '#64748B' }}>
+                Search and review verified patient histories, prior consultations, and clinical records.
+              </p>
+            </div>
+
+            {/* Clean Summary Metric Badges */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span
                 style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '12px',
-                  backgroundColor: 'var(--forest-800)',
-                  color: 'var(--lime-accent)',
-                  display: 'grid',
-                  placeItems: 'center',
+                  fontSize: '12.5px',
+                  fontWeight: '600',
+                  color: 'var(--forest-900)',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '999px',
+                  padding: '5px 14px',
                 }}
               >
-                <Users size={20} />
-              </div>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0, color: 'var(--forest-900)' }}>
-                Patient Medical Records & Clinical History
-              </h1>
+                {enrichedPatients.length} Total Patients
+              </span>
+              <span
+                style={{
+                  fontSize: '12.5px',
+                  fontWeight: '600',
+                  color: '#065F46',
+                  backgroundColor: '#ECFDF5',
+                  border: '1px solid #A7F3D0',
+                  borderRadius: '999px',
+                  padding: '5px 14px',
+                }}
+              >
+                {appointments.length} Consultations
+              </span>
             </div>
-            <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: '6px 0 0 48px' }}>
-              Comprehensive electronic health records (EHR), clinical encounter timelines, active prescriptions, and lab diagnostics.
-            </p>
           </div>
         </div>
-      </div>
 
-      {/* KPI Overview Banner Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '16px',
-          marginBottom: '28px',
-        }}
-      >
+        {/* Search & Filter Toolbar */}
         <div
           style={{
             backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '18px 22px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
+            borderRadius: '14px',
+            padding: '14px 20px',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+            marginBottom: '18px',
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
           }}
         >
-          <div>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              Total Registered
-            </span>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--forest-900)', marginTop: '2px' }}>
-              {totalPatientsCount} Patients
-            </div>
-            <span style={{ fontSize: '11px', color: '#059669', fontWeight: '700' }}>
-              ● Verified in Clinic System
-            </span>
-          </div>
-          <div
-            style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(197, 225, 165, 0.25)',
-              color: 'var(--forest-800)',
-              display: 'grid',
-              placeItems: 'center',
-            }}
-          >
-            <Users size={22} />
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '18px 22px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              Clinical Encounters
-            </span>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--forest-900)', marginTop: '2px' }}>
-              {totalEncountersCount} Visits
-            </div>
-            <span style={{ fontSize: '11px', color: 'var(--forest-700)', fontWeight: '700' }}>
-              In-Clinic & Video OPD
-            </span>
-          </div>
-          <div
-            style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              backgroundColor: '#EFF6FF',
-              color: '#1D4ED8',
-              display: 'grid',
-              placeItems: 'center',
-            }}
-          >
-            <Activity size={22} />
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '18px 22px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              Electronic Prescriptions
-            </span>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--forest-900)', marginTop: '2px' }}>
-              {totalPrescriptionsCount} Issued
-            </div>
-            <span style={{ fontSize: '11px', color: '#059669', fontWeight: '700' }}>
-              PMDC Compliant Digital Rx
-            </span>
-          </div>
-          <div
-            style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              backgroundColor: '#ECFDF5',
-              color: '#059669',
-              display: 'grid',
-              placeItems: 'center',
-            }}
-          >
-            <Pill size={22} />
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '18px 22px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              Diagnostic Reports
-            </span>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--forest-900)', marginTop: '2px' }}>
-              {totalLabsCount} Tests
-            </div>
-            <span style={{ fontSize: '11px', color: '#B45309', fontWeight: '700' }}>
-              Chughtai, IDC & Shaukat Khanum
-            </span>
-          </div>
-          <div
-            style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              backgroundColor: '#FEF3C7',
-              color: '#B45309',
-              display: 'grid',
-              placeItems: 'center',
-            }}
-          >
-            <FileText size={22} />
-          </div>
-        </div>
-      </div>
-
-      {/* Search & Filter Toolbar */}
-      <div
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '18px',
-          padding: '18px 24px',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-sm)',
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        {/* Live Search Input */}
-        <div style={{ position: 'relative', width: '380px', maxWidth: '100%' }}>
-          <Search size={17} style={{ position: 'absolute', left: '14px', top: '12px', color: 'var(--text-muted)' }} />
-          <input
-            type="text"
-            className="form-input"
-            style={{ paddingLeft: '40px', fontSize: '13.5px', borderRadius: '12px' }}
-            placeholder="Search by name, MRN, phone, diagnosis..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch('')}
+          {/* Live Search Input */}
+          <div style={{ position: 'relative', width: '360px', maxWidth: '100%' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: '#94A3B8' }} />
+            <input
+              type="text"
               style={{
-                position: 'absolute',
-                right: '12px',
-                top: '11px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: '12px',
-                fontWeight: '700',
+                width: '100%',
+                padding: '8px 12px 8px 36px',
+                fontSize: '13px',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                boxSizing: 'border-box',
+                outline: 'none',
               }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-
-        {/* Filter Pills */}
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {[
-            { id: 'all', label: 'All Patients' },
-            { id: 'recent', label: 'Recent Visits' },
-            { id: 'prescriptions', label: 'With Rx' },
-            { id: 'chronic', label: 'Allergies & Follow-ups' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveFilterTab(tab.id)}
-              style={{
-                fontSize: '12.5px',
-                fontWeight: activeFilterTab === tab.id ? '800' : '600',
-                padding: '7px 16px',
-                borderRadius: '9999px',
-                cursor: 'pointer',
-                border: activeFilterTab === tab.id ? '1.5px solid var(--forest-800)' : '1px solid var(--border-subtle)',
-                backgroundColor: activeFilterTab === tab.id ? 'var(--forest-800)' : 'var(--canvas-bg)',
-                color: activeFilterTab === tab.id ? '#FFFFFF' : 'var(--text-muted)',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-
-          <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--border-subtle)', margin: '0 4px' }} />
-
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            style={{
-              padding: '7px 14px',
-              borderRadius: '10px',
-              border: '1px solid var(--border-subtle)',
-              fontSize: '12.5px',
-              fontWeight: '600',
-              color: 'var(--forest-900)',
-              backgroundColor: '#FFFFFF',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="recent">Sort: Most Recent</option>
-            <option value="name">Sort: Name (A - Z)</option>
-            <option value="visits">Sort: Most Visits</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Patient Records List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {filteredPatients.length === 0 ? (
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '20px',
-              padding: '60px 24px',
-              textAlign: 'center',
-              border: '1px dashed var(--border-strong)',
-            }}
-          >
-            <Users size={44} color="var(--forest-800)" style={{ margin: '0 auto 14px auto', opacity: 0.6 }} />
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
-              No Matching Patient Records Found
-            </h3>
-            <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', maxWidth: '420px', margin: '0 auto 18px auto' }}>
-              {search
-                ? `No clinical records match "${search}". Try clearing your search keyword or selecting a different filter.`
-                : 'Your patient roster will automatically populate as patients book consultations with you.'}
-            </p>
+              placeholder="Search by name, MRN, phone, diagnosis..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
             {search && (
               <button
                 type="button"
-                className="btn-white-capsule"
                 onClick={() => setSearch('')}
-                style={{ padding: '8px 20px', fontSize: '13px' }}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '8px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#94A3B8',
+                  fontSize: '12px',
+                }}
               >
-                Reset Search
+                Clear
               </button>
             )}
           </div>
-        ) : (
-          filteredPatients.map((patient) => {
-            const initials = (patient.patientName || 'Patient')
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .slice(0, 2)
-              .toUpperCase();
 
-            const hasAllergies = patient.allergies && patient.allergies.toLowerCase() !== 'none reported';
-
-            return (
-              <div
-                key={patient.id}
-                onClick={() => navigate(`/doctor/patients/${patient.id}`)}
+          {/* Clean Filter Tabs & Sort */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {[
+              { id: 'all', label: 'All Patients' },
+              { id: 'recent', label: 'Recent Encounters' },
+              { id: 'allergies', label: 'Allergies Noted' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveFilterTab(tab.id)}
                 style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '18px',
-                  border: '1.5px solid var(--border-subtle)',
-                  padding: '22px 26px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  boxShadow: 'var(--shadow-sm)',
-                  flexWrap: 'wrap',
-                  gap: '20px',
+                  fontSize: '12px',
+                  fontWeight: activeFilterTab === tab.id ? '600' : '500',
+                  padding: '6px 14px',
+                  borderRadius: '999px',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--forest-800)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(14, 56, 44, 0.08)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  border: activeFilterTab === tab.id ? '1px solid var(--forest-800)' : '1px solid #E2E8F0',
+                  backgroundColor: activeFilterTab === tab.id ? 'var(--forest-800)' : '#FFFFFF',
+                  color: activeFilterTab === tab.id ? '#FFFFFF' : '#64748B',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                {/* Left: Identity & Clinical Snapshot */}
-                <div style={{ display: 'flex', gap: '18px', alignItems: 'flex-start', flex: 1, minWidth: '320px' }}>
-                  <div
-                    style={{
-                      width: '54px',
-                      height: '54px',
-                      borderRadius: '16px',
-                      backgroundColor: 'var(--forest-800)',
-                      color: 'var(--lime-accent)',
-                      display: 'grid',
-                      placeItems: 'center',
-                      fontWeight: '800',
-                      fontSize: '18px',
-                      flexShrink: 0,
-                      boxShadow: '0 2px 8px rgba(14, 56, 44, 0.18)',
-                    }}
-                  >
-                    {initials}
-                  </div>
+                {tab.label}
+              </button>
+            ))}
 
-                  <div style={{ flex: 1 }}>
-                    {/* Header Row: Name, MRN, Blood Group */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                      <h3
-                        style={{
-                          fontSize: '18px',
-                          fontWeight: '800',
-                          color: 'var(--forest-900)',
-                          margin: 0,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => navigate(`/doctor/patients/${patient.id}`)}
-                      >
-                        {patient.patientName}
-                      </h3>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                fontSize: '12px',
+                color: 'var(--forest-900)',
+                backgroundColor: '#FFFFFF',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="recent">Sort: Most Recent</option>
+              <option value="name">Sort: Name (A - Z)</option>
+              <option value="visits">Sort: Most Visits</option>
+            </select>
+          </div>
+        </div>
 
-                      <span
-                        style={{
-                          fontSize: '11.5px',
-                          fontWeight: '700',
-                          backgroundColor: '#FEF3C7',
-                          color: '#78350F',
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                          border: '1px solid #FCD34D',
-                        }}
-                      >
-                        MRN: {patient.mrn}
-                      </span>
+        {/* Patient Directory List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {filteredPatients.length === 0 ? (
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '14px',
+                padding: '48px 20px',
+                textAlign: 'center',
+                border: '1px dashed #CBD5E1',
+              }}
+            >
+              <Users size={36} color="var(--forest-800)" style={{ margin: '0 auto 10px auto', opacity: 0.5 }} />
+              <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--forest-900)', margin: '0 0 4px 0' }}>
+                No Patient Records Found
+              </h3>
+              <p style={{ fontSize: '13px', color: '#64748B', margin: '0 auto', maxWidth: '380px' }}>
+                {search
+                  ? `No patients match "${search}". Try checking your spelling or clearing filters.`
+                  : 'Patient profiles will appear here as consultations are booked and attended.'}
+              </p>
+            </div>
+          ) : (
+            filteredPatients.map((patient) => {
+              const initials = (patient.patientName || 'Patient')
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase();
 
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          backgroundColor: '#EFF6FF',
-                          color: '#1D4ED8',
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                        }}
-                      >
-                        Blood: {patient.bloodGroup}
-                      </span>
+              const hasAllergies =
+                patient.allergies &&
+                patient.allergies.toLowerCase() !== 'none reported' &&
+                patient.allergies.toLowerCase() !== 'none';
 
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          backgroundColor: 'rgba(197, 225, 165, 0.3)',
-                          color: 'var(--forest-800)',
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                        }}
-                      >
-                        {patient.totalVisits} {patient.totalVisits === 1 ? 'Visit' : 'Visits'}
-                      </span>
-
-                      {hasAllergies && (
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            backgroundColor: '#FEF2F2',
-                            color: '#991B1B',
-                            fontWeight: '700',
-                            padding: '2px 8px',
-                            borderRadius: '6px',
-                            border: '1px solid #FCA5A5',
-                            fontSize: '11px',
-                          }}
-                        >
-                          <AlertTriangle size={11} />
-                          <span>Allergies: {patient.allergies}</span>
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Demographics & Contact */}
+              return (
+                <div
+                  key={patient.id}
+                  onClick={() => navigate(`/doctor/patient-record/${patient.id}`)}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                    flexWrap: 'wrap',
+                    gap: '14px',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--forest-800)';
+                    e.currentTarget.style.boxShadow = '0 3px 12px rgba(14, 56, 44, 0.06)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)';
+                  }}
+                >
+                  {/* Left: Patient Avatar & Key Info */}
+                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                        fontSize: '13px',
-                        color: 'var(--text-muted)',
-                        flexWrap: 'wrap',
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '12px',
+                        backgroundColor: 'var(--forest-800)',
+                        color: 'var(--lime-accent)',
+                        display: 'grid',
+                        placeItems: 'center',
+                        fontWeight: '700',
+                        fontSize: '15px',
+                        flexShrink: 0,
                       }}
                     >
-                      <span>{patient.age} yrs · {patient.gender}</span>
-                      <span>·</span>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--forest-900)', fontWeight: '600' }}>
-                        <Phone size={13} color="var(--forest-800)" />
-                        {patient.phone}
-                      </span>
-                      <span>·</span>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <MapPin size={13} />
-                        {patient.city}
-                      </span>
+                      {initials}
+                    </div>
+
+                    <div>
+                      {/* Name, MRN, Badges */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                        <span style={{ fontSize: '15px', fontWeight: '600', color: 'var(--forest-900)' }}>
+                          {patient.patientName}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            backgroundColor: '#F1F5F9',
+                            color: '#475569',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          MRN #{patient.mrn}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '500',
+                            backgroundColor: '#ECFDF5',
+                            color: '#065F46',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          {patient.totalVisits} {patient.totalVisits === 1 ? 'Visit' : 'Visits'}
+                        </span>
+                        {hasAllergies && (
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              backgroundColor: '#FEF2F2',
+                              color: '#991B1B',
+                              padding: '1px 6px',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                            }}
+                          >
+                            <AlertTriangle size={11} color="#DC2626" />
+                            <span>{patient.allergies}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Demographics & Contact Row */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#64748B', flexWrap: 'wrap' }}>
+                        <span>{patient.age} yrs · {patient.gender}</span>
+                        <span>•</span>
+                        <span>Blood: <b style={{ color: '#0F172A' }}>{patient.bloodGroup}</b></span>
+                        <span>•</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Phone size={11} color="var(--forest-800)" />
+                          <span>{patient.phone}</span>
+                        </span>
+                        <span>•</span>
+                        <span>{patient.city}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Right: Interactive Action Button */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                  <button
-                    type="button"
-                    className="btn-lime-pill"
-                    style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/doctor/patients/${patient.id}`);
-                    }}
-                    title="Inspect complete electronic medical record, lab results, and history on dedicated page"
-                  >
-                    <FileText size={14} />
-                    <span>Inspect Record</span>
-                  </button>
+                  {/* Middle / Right: Latest Visit & Action */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                    <div style={{ textAlign: 'right', display: 'none', minWidth: '160px', '@media (minWidth: 768px)': { display: 'block' } }}>
+                      <div style={{ fontSize: '11px', color: '#94A3B8' }}>Last Encounter</div>
+                      <div style={{ fontSize: '12.5px', fontWeight: '500', color: '#334155' }}>
+                        {patient.latestVisitDate || 'Recent'}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn-lime-pill"
+                      style={{
+                        padding: '6px 16px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        cursor: 'pointer',
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/doctor/patient-record/${patient.id}`);
+                      }}
+                    >
+                      <FileText size={13} />
+                      <span>View Record</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })
+          )}
+        </div>
+
+        {/* Modal fallback */}
+        {selectedPatientForRecord && (
+          <PatientMedicalRecordModal
+            isOpen={Boolean(selectedPatientForRecord)}
+            onClose={() => setSelectedPatientForRecord(null)}
+            patient={selectedPatientForRecord}
+          />
         )}
       </div>
-
-      {/* Full Patient Medical Record & History Modal */}
-      <PatientMedicalRecordModal
-        isOpen={Boolean(selectedPatientForRecord)}
-        onClose={() => setSelectedPatientForRecord(null)}
-        patient={selectedPatientForRecord}
-      />
     </AppShell>
   );
 }

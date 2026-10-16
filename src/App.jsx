@@ -10,6 +10,9 @@ import BookingFlowPage from './features/patient/pages/BookingFlowPage';
 import TelehealthWaitingRoom from './features/patient/pages/TelehealthWaitingRoom';
 import PatientDashboard from './features/patient/pages/PatientDashboard';
 import PatientProfileSettingsPage from './features/patient/pages/PatientProfileSettingsPage';
+import PatientAppointmentDetailPage from './features/patient/pages/PatientAppointmentDetailPage';
+import PatientFollowUpBookingPage from './features/patient/pages/PatientFollowUpBookingPage';
+import PatientNotificationsPage from './features/patient/pages/PatientNotificationsPage';
 import {
   DoctorDashboard,
   DoctorConsultationRoom,
@@ -21,7 +24,7 @@ import {
   DoctorReceiptSlipPage,
   DoctorInvoiceStatementPage,
   DoctorManageSchedulePage,
-  DoctorLabOrdersPage,
+  DoctorPatientRequestDetailPage,
 } from './features/doctor/pages';
 import {
   AdminDashboard,
@@ -30,15 +33,7 @@ import {
   AdminBranchesPage,
   AdminQueuePage,
   AdminReportsPage,
-  AdminLabManagementPage,
 } from './features/admin/pages';
-import {
-  DoctorOrderLabPage,
-  LabOrderSlipPage,
-  LabReportDetailPage,
-  AdminUploadReportPage,
-  LabPaymentPage,
-} from './features/labs/pages';
 
 import ProtectedRoute from './shared/components/ProtectedRoute';
 
@@ -105,7 +100,23 @@ export default function App() {
           path="/appointments/:id"
           element={
             <ProtectedRoute allowedRoles={['patient']}>
-              <PatientDashboard />
+              <PatientAppointmentDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patient/appointments/:id"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientAppointmentDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patient/follow-up/:id"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientFollowUpBookingPage />
             </ProtectedRoute>
           }
         />
@@ -113,7 +124,15 @@ export default function App() {
           path="/notifications"
           element={
             <ProtectedRoute allowedRoles={['patient']}>
-              <PatientDashboard />
+              <PatientNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patient/notifications"
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <PatientNotificationsPage />
             </ProtectedRoute>
           }
         />
@@ -179,7 +198,15 @@ export default function App() {
           path="/doctor/patient-record/:id"
           element={
             <ProtectedRoute allowedRoles={['doctor']}>
-              <DoctorPatientDetailPage />
+              <DoctorPatientRequestDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/requests/:id"
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorPatientRequestDetailPage />
             </ProtectedRoute>
           }
         />
@@ -220,88 +247,6 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['doctor']}>
               <DoctorProfileSettingsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/doctor/lab-orders"
-          element={
-            <ProtectedRoute allowedRoles={['doctor']}>
-              <DoctorLabOrdersPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/doctor/lab-orders/new"
-          element={
-            <ProtectedRoute allowedRoles={['doctor', 'admin']}>
-              <DoctorOrderLabPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/doctor/lab-orders/new/:patientId"
-          element={
-            <ProtectedRoute allowedRoles={['doctor', 'admin']}>
-              <DoctorOrderLabPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Diagnostic Labs Pages (Universal Requisitions, Slips & Official Reports) */}
-        <Route
-          path="/labs/slip/:id"
-          element={
-            <ProtectedRoute allowedRoles={['doctor', 'patient', 'admin']}>
-              <LabOrderSlipPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/labs/report/:id"
-          element={
-            <ProtectedRoute allowedRoles={['doctor', 'patient', 'admin']}>
-              <LabReportDetailPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/labs/pay/:id"
-          element={
-            <ProtectedRoute allowedRoles={['patient', 'admin', 'doctor']}>
-              <LabPaymentPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/patient/lab-pay/:id"
-          element={
-            <ProtectedRoute allowedRoles={['patient', 'admin', 'doctor']}>
-              <LabPaymentPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/labs/pay/:id"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <LabPaymentPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/labs/upload/:id"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminUploadReportPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/labs/order"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <DoctorOrderLabPage />
             </ProtectedRoute>
           }
         />
@@ -360,14 +305,6 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminReportsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/labs"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminLabManagementPage />
             </ProtectedRoute>
           }
         />
