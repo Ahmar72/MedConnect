@@ -126,7 +126,7 @@ export default function DoctorInvoiceStatementPage() {
 
   return (
     <AppShell>
-      <div style={{ maxWidth: '920px', margin: '0 auto', paddingBottom: '60px' }}>
+      <div style={{ width: '100%', margin: '0 auto', paddingBottom: '60px' }}>
         {/* Top Navigation & Controls Bar (No print) */}
         <div
           className="no-print"
@@ -147,7 +147,7 @@ export default function DoctorInvoiceStatementPage() {
               alignItems: 'center',
               gap: '8px',
               fontSize: '13px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: 'var(--forest-800)',
               backgroundColor: 'transparent',
               border: 'none',
@@ -174,7 +174,7 @@ export default function DoctorInvoiceStatementPage() {
               type="button"
               className="btn-lime-pill"
               onClick={handlePrint}
-              style={{ padding: '9px 22px', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ padding: '9px 22px', fontSize: '13px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Printer size={15} />
               <span>Print Invoice</span>
@@ -202,7 +202,7 @@ export default function DoctorInvoiceStatementPage() {
         >
           {/* Preset Buttons: All Time, This Month, This Week */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-900)', marginRight: '4px' }}>
+            <span style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-900)', marginRight: '4px' }}>
               Invoice Period:
             </span>
 
@@ -224,7 +224,7 @@ export default function DoctorInvoiceStatementPage() {
                     padding: '7px 16px',
                     borderRadius: '9999px',
                     fontSize: '12.5px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     border: '1.5px solid',
                     borderColor: isActive ? 'var(--forest-800)' : '#E5E7EB',
                     backgroundColor: isActive ? 'var(--forest-800)' : '#FFFFFF',
@@ -256,7 +256,7 @@ export default function DoctorInvoiceStatementPage() {
                   backgroundColor: filterMode === 'specific' ? '#ECFDF5' : '#FFFFFF',
                   color: filterMode === 'specific' ? 'var(--forest-900)' : '#374151',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                 }}
               >
@@ -278,7 +278,7 @@ export default function DoctorInvoiceStatementPage() {
                     border: 'none',
                     color: '#DC2626',
                     fontSize: '12px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     cursor: 'pointer',
                     textDecoration: 'underline',
                   }}
@@ -319,7 +319,7 @@ export default function DoctorInvoiceStatementPage() {
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)' }}>
                     {MONTH_NAMES[calendarMonth]} {calendarYear}
                   </span>
                   <button
@@ -338,7 +338,7 @@ export default function DoctorInvoiceStatementPage() {
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', fontSize: '11px', fontWeight: '700', color: '#9CA3AF', marginBottom: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', fontSize: '11px', fontWeight: '400', color: '#9CA3AF', marginBottom: '8px' }}>
                   {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
                     <div key={d}>{d}</div>
                   ))}
@@ -407,17 +407,17 @@ export default function DoctorInvoiceStatementPage() {
                     color: 'var(--lime-accent)',
                     display: 'grid',
                     placeItems: 'center',
-                    fontWeight: '900',
+                    fontWeight: '400',
                     fontSize: '20px',
                   }}
                 >
                   +
                 </div>
                 <div>
-                  <h1 style={{ fontSize: '24px', fontWeight: '900', margin: 0, color: 'var(--forest-900)', letterSpacing: '-0.02em' }}>
+                  <h1 style={{ fontSize: '24px', fontWeight: '700', margin: 0, color: 'var(--forest-900)', letterSpacing: '-0.02em' }}>
                     MedConnect Healthcare
                   </h1>
-                  <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '700' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '400' }}>
                     Clinical Practice & Billing Statement
                   </span>
                 </div>
@@ -425,10 +425,10 @@ export default function DoctorInvoiceStatementPage() {
             </div>
 
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--forest-900)' }}>
+              <div style={{ fontSize: '18px', fontWeight: '400', color: 'var(--forest-900)' }}>
                 STATEMENT OF ACCOUNT
               </div>
-              <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-800)', marginTop: '4px' }}>
+              <div style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)', marginTop: '4px' }}>
                 Ref #{invoiceRefNumber}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -440,10 +440,10 @@ export default function DoctorInvoiceStatementPage() {
           {/* Clinician & Practice Details Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px', marginBottom: '32px' }}>
             <div>
-              <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
+              <div style={{ fontSize: '11px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
                 Clinician Practice
               </div>
-              <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--forest-900)' }}>
+              <div style={{ fontSize: '18px', fontWeight: '400', color: 'var(--forest-900)' }}>
                 {doctorName}
               </div>
               <div style={{ fontSize: '13px', color: 'var(--text-body)', marginTop: '2px' }}>
@@ -455,20 +455,20 @@ export default function DoctorInvoiceStatementPage() {
             </div>
 
             <div style={{ backgroundColor: 'var(--canvas-bg)', padding: '16px 20px', borderRadius: '14px', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
+              <div style={{ fontSize: '11px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
                 Statement Summary
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--text-body)' }}>Total Consultations:</span>
-                <span style={{ fontWeight: '800', color: 'var(--forest-900)' }}>{filteredTransactions.length} Visits</span>
+                <span style={{ fontWeight: '400', color: 'var(--forest-900)' }}>{filteredTransactions.length} Visits</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--text-body)' }}>Platform Commission:</span>
-                <span style={{ fontWeight: '800', color: '#166534' }}>0% (Promotional Waiver)</span>
+                <span style={{ fontWeight: '400', color: '#166534' }}>0% (Promotional Waiver)</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: 'var(--text-body)' }}>Payout Status:</span>
-                <span style={{ fontWeight: '800', color: '#166534' }}>✓ 100% Settled</span>
+                <span style={{ fontWeight: '400', color: '#166534' }}>✓ 100% Settled</span>
               </div>
             </div>
           </div>
@@ -477,36 +477,36 @@ export default function DoctorInvoiceStatementPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '32px' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '2px solid #E5E7EB', textAlign: 'left', fontSize: '12px', textTransform: 'uppercase', color: 'var(--forest-900)' }}>
-                <th style={{ padding: '12px 14px', fontWeight: '800' }}>Txn #</th>
-                <th style={{ padding: '12px 14px', fontWeight: '800' }}>Patient Name & MRN</th>
-                <th style={{ padding: '12px 14px', fontWeight: '800' }}>Date & Time</th>
-                <th style={{ padding: '12px 14px', fontWeight: '800' }}>Mode</th>
-                <th style={{ padding: '12px 14px', fontWeight: '800' }}>Channel</th>
-                <th style={{ padding: '12px 14px', fontWeight: '800', textAlign: 'right' }}>Amount (PKR)</th>
+                <th style={{ padding: '12px 14px', fontWeight: '400' }}>Txn #</th>
+                <th style={{ padding: '12px 14px', fontWeight: '400' }}>Patient Name & MRN</th>
+                <th style={{ padding: '12px 14px', fontWeight: '400' }}>Date & Time</th>
+                <th style={{ padding: '12px 14px', fontWeight: '400' }}>Mode</th>
+                <th style={{ padding: '12px 14px', fontWeight: '400' }}>Channel</th>
+                <th style={{ padding: '12px 14px', fontWeight: '400', textAlign: 'right' }}>Amount (PKR)</th>
               </tr>
             </thead>
             <tbody>
               {filteredTransactions.map((item) => (
                 <tr key={item.id} style={{ borderBottom: '1px solid #F3F4F6', fontSize: '13px' }}>
-                  <td style={{ padding: '12px 14px', fontWeight: '700', color: 'var(--text-muted)' }}>
+                  <td style={{ padding: '12px 14px', fontWeight: '400', color: 'var(--text-muted)' }}>
                     #{item.id}
                   </td>
                   <td style={{ padding: '12px 14px' }}>
-                    <div style={{ fontWeight: '800', color: 'var(--forest-900)' }}>{item.patient}</div>
+                    <div style={{ fontWeight: '400', color: 'var(--forest-900)' }}>{item.patient}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>MRN: {item.mrn}</div>
                   </td>
                   <td style={{ padding: '12px 14px', color: 'var(--text-body)' }}>
                     {item.rawDate} · {item.time}
                   </td>
                   <td style={{ padding: '12px 14px' }}>
-                    <span style={{ fontSize: '11.5px', fontWeight: '700', backgroundColor: item.mode.includes('Video') ? '#D1FAE5' : '#DBEAFE', color: item.mode.includes('Video') ? '#065F46' : '#1E40AF', padding: '2px 8px', borderRadius: '6px' }}>
+                    <span style={{ fontSize: '11.5px', fontWeight: '400', backgroundColor: item.mode.includes('Video') ? '#D1FAE5' : '#DBEAFE', color: item.mode.includes('Video') ? '#065F46' : '#1E40AF', padding: '2px 8px', borderRadius: '6px' }}>
                       {item.mode.includes('Video') ? 'Video' : 'In-Clinic'}
                     </span>
                   </td>
                   <td style={{ padding: '12px 14px', color: 'var(--text-muted)' }}>
                     {item.payment}
                   </td>
-                  <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: '400', color: 'var(--forest-900)' }}>
                     Rs. {item.fee.toLocaleString()}
                   </td>
                 </tr>
@@ -514,10 +514,10 @@ export default function DoctorInvoiceStatementPage() {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={5} style={{ padding: '18px 14px', fontSize: '15px', fontWeight: '900', color: 'var(--forest-900)', textAlign: 'right' }}>
+                <td colSpan={5} style={{ padding: '18px 14px', fontSize: '15px', fontWeight: '400', color: 'var(--forest-900)', textAlign: 'right' }}>
                   Total Settlement Amount:
                 </td>
-                <td style={{ padding: '18px 14px', textAlign: 'right', fontSize: '20px', fontWeight: '900', color: 'var(--forest-800)' }}>
+                <td style={{ padding: '18px 14px', textAlign: 'right', fontSize: '20px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   Rs. {totalGross.toLocaleString()}
                 </td>
               </tr>
@@ -537,10 +537,10 @@ export default function DoctorInvoiceStatementPage() {
             </div>
 
             <div style={{ textAlign: 'center', padding: '10px 24px', border: '1.5px dashed var(--forest-800)', borderRadius: '12px', backgroundColor: 'var(--canvas-bg)' }}>
-              <div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--forest-800)', letterSpacing: '1px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-800)', letterSpacing: '1px' }}>
                 OFFICIAL STATEMENT
               </div>
-              <div style={{ fontSize: '10.5px', color: 'var(--forest-700)', fontWeight: '700' }}>
+              <div style={{ fontSize: '10.5px', color: 'var(--forest-700)', fontWeight: '400' }}>
                 PMDC & SECP COMPLIANT
               </div>
             </div>

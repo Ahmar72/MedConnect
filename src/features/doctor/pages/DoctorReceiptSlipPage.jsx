@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDemo } from '../../../context/DemoContext';
 import AppShell from '../../shell/AppShell';
+import ThermalReceiptModal from '../../../shared/components/ThermalReceiptModal';
 import {
   ArrowLeft,
   Printer,
@@ -25,6 +26,7 @@ export default function DoctorReceiptSlipPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast, currentUser, appointments, patientsList } = useDemo();
+  const [isThermalReceiptOpen, setIsThermalReceiptOpen] = useState(false);
 
   // Synthetic or matched transaction data based on id
   const targetApt = appointments.find((a) => a.id === id || `#TXN-${id}`.includes(a.id) || a.patientId === id);
@@ -52,12 +54,11 @@ export default function DoctorReceiptSlipPage() {
   const clinicalReason = targetApt?.reason || 'Routine Health Review & Seasonal Allergy Advice';
 
   const handlePrint = () => {
-    window.print();
+    setIsThermalReceiptOpen(true);
   };
 
   const handleDownload = () => {
-    showToast(`Payment receipt slip #${txnNumber} prepared as PDF!`, 'success');
-    window.print();
+    setIsThermalReceiptOpen(true);
   };
 
   const handleShare = () => {
@@ -71,7 +72,7 @@ export default function DoctorReceiptSlipPage() {
 
   return (
     <AppShell>
-      <div style={{ maxWidth: '860px', margin: '0 auto', paddingBottom: '80px' }}>
+      <div style={{ width: '100%', margin: '0 auto', paddingBottom: '80px' }}>
         {/* Top Back Navigation (Hidden on print) */}
         <div className="no-print" style={{ marginBottom: '20px' }}>
           <button
@@ -82,7 +83,7 @@ export default function DoctorReceiptSlipPage() {
               alignItems: 'center',
               gap: '8px',
               fontSize: '13px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: 'var(--forest-800)',
               backgroundColor: 'transparent',
               border: 'none',
@@ -131,17 +132,17 @@ export default function DoctorReceiptSlipPage() {
                     color: 'var(--lime-accent)',
                     display: 'grid',
                     placeItems: 'center',
-                    fontWeight: '900',
+                    fontWeight: '400',
                     fontSize: '22px',
                   }}
                 >
                   +
                 </div>
                 <div>
-                  <span style={{ fontSize: '22px', fontWeight: '900', color: 'var(--forest-900)', letterSpacing: '-0.02em', display: 'block' }}>
+                  <span style={{ fontSize: '22px', fontWeight: '400', color: 'var(--forest-900)', letterSpacing: '-0.02em', display: 'block' }}>
                     MedConnect Healthcare Network
                   </span>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
                     Clinical Settlement & Patient Billing Authority
                   </span>
                 </div>
@@ -155,7 +156,7 @@ export default function DoctorReceiptSlipPage() {
               <div
                 style={{
                   fontSize: '12px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   color: '#166534',
                   backgroundColor: '#DCFCE7',
                   border: '1px solid #86EFAC',
@@ -169,7 +170,7 @@ export default function DoctorReceiptSlipPage() {
                 <CheckCircle2 size={14} />
                 <span>Payment Reconciled & Settled</span>
               </div>
-              <div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--forest-900)', marginTop: '8px' }}>
+              <div style={{ fontSize: '16px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '8px' }}>
                 Receipt Voucher #{txnNumber}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -189,13 +190,13 @@ export default function DoctorReceiptSlipPage() {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', letterSpacing: '0.5px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', letterSpacing: '0.5px' }}>
                 ATTENDING CLINICIAN
               </span>
-              <div style={{ fontSize: '17px', fontWeight: '900', color: 'var(--forest-900)', marginTop: '4px' }}>
+              <div style={{ fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '4px' }}>
                 {doctorName}
               </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-body)', marginTop: '2px', fontWeight: '600' }}>
+              <div style={{ fontSize: '13px', color: 'var(--text-body)', marginTop: '2px', fontWeight: '400' }}>
                 {doctorSpecialty} · <b>PMDC #{pmdcNumber}</b>
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -213,10 +214,10 @@ export default function DoctorReceiptSlipPage() {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--forest-700)', letterSpacing: '0.5px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '400', textTransform: 'uppercase', color: 'var(--forest-700)', letterSpacing: '0.5px' }}>
                 PATIENT INFORMATION
               </span>
-              <div style={{ fontSize: '17px', fontWeight: '900', color: 'var(--forest-900)', marginTop: '4px' }}>
+              <div style={{ fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '4px' }}>
                 {patientName}
               </div>
               <div style={{ fontSize: '13px', color: 'var(--text-body)', marginTop: '2px' }}>
@@ -260,29 +261,29 @@ export default function DoctorReceiptSlipPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '26px' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--forest-800)', textAlign: 'left', fontSize: '12px', textTransform: 'uppercase', color: 'var(--forest-900)' }}>
-                <th style={{ padding: '12px 8px', fontWeight: '800' }}>Item Description</th>
-                <th style={{ padding: '12px 8px', fontWeight: '800' }}>Payment Channel</th>
-                <th style={{ padding: '12px 8px', fontWeight: '800' }}>Rate / Payout</th>
-                <th style={{ padding: '12px 8px', fontWeight: '800', textAlign: 'right' }}>Total (PKR)</th>
+                <th style={{ padding: '12px 8px', fontWeight: '400' }}>Item Description</th>
+                <th style={{ padding: '12px 8px', fontWeight: '400' }}>Payment Channel</th>
+                <th style={{ padding: '12px 8px', fontWeight: '400' }}>Rate / Payout</th>
+                <th style={{ padding: '12px 8px', fontWeight: '400', textAlign: 'right' }}>Total (PKR)</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ borderBottom: '1px solid #F1F5F9', fontSize: '13.5px' }}>
                 <td style={{ padding: '14px 8px' }}>
-                  <div style={{ fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <div style={{ fontWeight: '400', color: 'var(--forest-900)' }}>
                     Standard Clinical Consultation & Diagnostic Review
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
                     Attending Clinician Fee · Direct Payout to Doctor Account
                   </div>
                 </td>
-                <td style={{ padding: '14px 8px', color: '#334155', fontSize: '13px', fontWeight: '600' }}>
+                <td style={{ padding: '14px 8px', color: '#334155', fontSize: '13px', fontWeight: '400' }}>
                   {paymentChannel}
                 </td>
                 <td style={{ padding: '14px 8px', color: '#334155', fontSize: '13px' }}>
                   100% Retained
                 </td>
-                <td style={{ padding: '14px 8px', textAlign: 'right', fontWeight: '800', color: 'var(--forest-900)', fontSize: '14.5px' }}>
+                <td style={{ padding: '14px 8px', textAlign: 'right', fontWeight: '400', color: 'var(--forest-900)', fontSize: '14.5px' }}>
                   Rs. {grossFee.toLocaleString()}
                 </td>
               </tr>
@@ -291,7 +292,7 @@ export default function DoctorReceiptSlipPage() {
                 <td style={{ padding: '10px 8px' }}>MedConnect Platform Processing Commission</td>
                 <td style={{ padding: '10px 8px' }}>0% Promotional Waiver</td>
                 <td style={{ padding: '10px 8px' }}>Free</td>
-                <td style={{ padding: '10px 8px', textAlign: 'right', color: '#059669', fontWeight: '700' }}>Rs. 0</td>
+                <td style={{ padding: '10px 8px', textAlign: 'right', color: '#059669', fontWeight: '400' }}>Rs. 0</td>
               </tr>
 
               <tr style={{ borderBottom: '1px solid #F1F5F9', fontSize: '13px', color: 'var(--text-muted)' }}>
@@ -303,10 +304,10 @@ export default function DoctorReceiptSlipPage() {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={3} style={{ padding: '20px 8px 0 8px', fontSize: '16px', fontWeight: '900', color: 'var(--forest-900)' }}>
+                <td colSpan={3} style={{ padding: '20px 8px 0 8px', fontSize: '16px', fontWeight: '400', color: 'var(--forest-900)' }}>
                   Total Settlement Amount Credited
                 </td>
-                <td style={{ padding: '20px 8px 0 8px', textAlign: 'right', fontSize: '24px', fontWeight: '900', color: 'var(--forest-800)' }}>
+                <td style={{ padding: '20px 8px 0 8px', textAlign: 'right', fontSize: '24px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   Rs. {grossFee.toLocaleString()}
                 </td>
               </tr>
@@ -327,7 +328,7 @@ export default function DoctorReceiptSlipPage() {
           >
             {/* Regulatory Verification Statement */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-900)', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '4px' }}>
                 <ShieldCheck size={16} color="var(--forest-800)" />
                 <span>Verified Official Digital Receipt · PMDC Compliant</span>
               </div>
@@ -352,13 +353,13 @@ export default function DoctorReceiptSlipPage() {
                   minWidth: '220px',
                 }}
               >
-                <div style={{ fontFamily: 'cursive', fontSize: '18px', color: 'var(--forest-800)', fontWeight: '700' }}>
+                <div style={{ fontFamily: 'cursive', fontSize: '18px', color: 'var(--forest-800)', fontWeight: '400' }}>
                   {doctorName}
                 </div>
-                <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-900)', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '2px' }}>
                   Authorized Medical Signature
                 </div>
-                <div style={{ fontSize: '10.5px', color: '#059669', fontWeight: '700' }}>
+                <div style={{ fontSize: '10.5px', color: '#059669', fontWeight: '400' }}>
                   PMC / PMDC Lic: #{pmdcNumber}
                 </div>
               </div>
@@ -384,7 +385,7 @@ export default function DoctorReceiptSlipPage() {
           }}
         >
           <div>
-            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: 'var(--forest-900)' }}>
+            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '400', color: 'var(--forest-900)' }}>
               Print or Export Consultation Receipt
             </h4>
             <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
@@ -407,7 +408,7 @@ export default function DoctorReceiptSlipPage() {
               type="button"
               className="btn-white-capsule"
               onClick={handleDownload}
-              style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', padding: '10px 18px', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', padding: '10px 18px', fontSize: '13px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Download size={16} />
               <span>Save PDF</span>
@@ -417,7 +418,7 @@ export default function DoctorReceiptSlipPage() {
               type="button"
               className="btn-lime-pill"
               onClick={handlePrint}
-              style={{ padding: '11px 26px', fontSize: '13.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ padding: '11px 26px', fontSize: '13.5px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <Printer size={17} />
               <span>Print Official Slip</span>
@@ -425,6 +426,32 @@ export default function DoctorReceiptSlipPage() {
           </div>
         </div>
       </div>
+
+      <ThermalReceiptModal
+        isOpen={isThermalReceiptOpen}
+        onClose={() => setIsThermalReceiptOpen(false)}
+        type="payment"
+        data={{
+          patientName,
+          patientMrn,
+          patientPhone,
+          doctorName,
+          doctorSpecialty,
+          clinicName: hospital,
+          date: dateStr,
+          time: timeStr,
+          refNumber: txnNumber,
+          paymentMethod: paymentChannel,
+          fee: grossFee,
+          items: [
+            { name: `1x Consultation Fee (${mode})`, price: grossFee },
+            { name: '1x EMR Digital File & Verification', price: 150 },
+          ],
+          subtotal: grossFee + 150,
+          tax: Math.round((grossFee + 150) * 0.05),
+          total: Math.round((grossFee + 150) * 1.05),
+        }}
+      />
     </AppShell>
   );
 }

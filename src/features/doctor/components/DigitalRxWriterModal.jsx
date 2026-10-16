@@ -97,7 +97,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
 
           {/* Quick Medicine Suggestions */}
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '400', letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: '8px' }}>
               Quick Prescribe Common Formulations
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -113,7 +113,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
                     backgroundColor: 'var(--canvas-bg)',
                     border: '1px solid var(--border-strong)',
                     color: 'var(--forest-800)',
-                    fontWeight: '600',
+                    fontWeight: '400',
                     cursor: 'pointer',
                   }}
                 >
@@ -125,7 +125,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
 
           {/* Current Medicines Table */}
           <div style={{ marginBottom: '18px' }}>
-            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-body)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--text-body)', marginBottom: '8px' }}>
               Prescribed Medicines ({medicines.length}):
             </div>
             {medicines.length > 0 ? (
@@ -147,7 +147,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
                     <div>
                       <b style={{ color: 'var(--text-main)' }}>{med.name}</b>
                       <div style={{ color: 'var(--text-muted)', fontSize: '11.5px' }}>
-                        {med.dosage} · <span style={{ color: 'var(--forest-700)', fontWeight: '600' }}>Duration: {med.duration}</span>
+                        {med.dosage} · <span style={{ color: 'var(--forest-700)', fontWeight: '400' }}>Duration: {med.duration}</span>
                       </div>
                     </div>
                     <button
@@ -178,7 +178,7 @@ export default function DigitalRxWriterModal({ isOpen, onClose, defaultPatient }
               marginBottom: '18px',
             }}
           >
-            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--forest-800)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-800)', marginBottom: '8px' }}>
               + Add Custom Medication
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr auto', gap: '8px', alignItems: 'end' }}>

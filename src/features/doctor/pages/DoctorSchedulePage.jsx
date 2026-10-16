@@ -342,7 +342,7 @@ export default function DoctorSchedulePage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             background: 'none',
             border: 'none',
@@ -357,7 +357,7 @@ export default function DoctorSchedulePage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0, color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '26px', fontWeight: '700', margin: 0, color: 'var(--text-main)' }}>
               Practice Timetable & Consultation Fees
             </h1>
           </div>
@@ -380,7 +380,7 @@ export default function DoctorSchedulePage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <DollarSign size={20} color="var(--forest-800)" />
-              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
                 Consultation Fee Schedule
               </h2>
             </div>
@@ -392,7 +392,7 @@ export default function DoctorSchedulePage() {
           <button
             type="submit"
             className="btn-lime-pill"
-            style={{ padding: '9px 24px', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ padding: '9px 24px', fontSize: '13px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Save size={15} />
             <span>{isSavingFees ? 'Saving...' : 'Save & Publish Fees'}</span>
@@ -403,11 +403,11 @@ export default function DoctorSchedulePage() {
           {/* In-Clinic OPD Fee */}
           <div style={{ backgroundColor: 'var(--canvas-bg)', borderRadius: '16px', padding: '18px', border: '1px solid var(--border-subtle)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Building2 size={16} color="var(--forest-800)" />
                 In-Clinic OPD Fee (PKR)
               </span>
-              <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--forest-800)', backgroundColor: '#FFFFFF', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-800)', backgroundColor: '#FFFFFF', padding: '2px 8px', borderRadius: '6px' }}>
                 Per Visit
               </span>
             </div>
@@ -419,7 +419,7 @@ export default function DoctorSchedulePage() {
               placeholder="e.g. 2500"
               value={feeSettings.inClinicFee}
               onChange={(e) => setFeeSettings({ ...feeSettings, inClinicFee: e.target.value })}
-              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '800', color: 'var(--forest-900)', marginBottom: '10px' }}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '10px' }}
               required
             />
 
@@ -431,7 +431,7 @@ export default function DoctorSchedulePage() {
                   onClick={() => setFeeSettings({ ...feeSettings, inClinicFee: preset })}
                   style={{
                     fontSize: '11px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     padding: '3px 8px',
                     borderRadius: '6px',
                     border: '1px solid #D1D5DB',
@@ -449,11 +449,11 @@ export default function DoctorSchedulePage() {
           {/* Video Telehealth Fee */}
           <div style={{ backgroundColor: 'var(--canvas-bg)', borderRadius: '16px', padding: '18px', border: '1px solid var(--border-subtle)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Video size={16} color="var(--forest-800)" />
                 Video Telehealth Fee (PKR)
               </span>
-              <span style={{ fontSize: '11px', fontWeight: '700', color: '#059669', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '400', color: '#059669', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '6px' }}>
                 Online Prepaid
               </span>
             </div>
@@ -465,7 +465,7 @@ export default function DoctorSchedulePage() {
               placeholder="e.g. 1500"
               value={feeSettings.videoFee}
               onChange={(e) => setFeeSettings({ ...feeSettings, videoFee: e.target.value })}
-              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '800', color: 'var(--forest-900)', marginBottom: '10px' }}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '400', color: 'var(--forest-900)', marginBottom: '10px' }}
               required
             />
 
@@ -477,7 +477,7 @@ export default function DoctorSchedulePage() {
                   onClick={() => setFeeSettings({ ...feeSettings, videoFee: preset })}
                   style={{
                     fontSize: '11px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     padding: '3px 8px',
                     borderRadius: '6px',
                     border: '1px solid #D1D5DB',
@@ -494,7 +494,7 @@ export default function DoctorSchedulePage() {
 
           {/* Follow-up Policy */}
           <div style={{ backgroundColor: 'var(--canvas-bg)', borderRadius: '16px', padding: '18px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--forest-900)', display: 'block', marginBottom: '8px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', display: 'block', marginBottom: '8px' }}>
               Follow-Up & Lab Review Policy
             </span>
 
@@ -542,7 +542,7 @@ export default function DoctorSchedulePage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Clock size={20} color="var(--forest-800)" />
-              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
                 Weekly Operating Schedule Matrix
               </h2>
             </div>
@@ -556,7 +556,7 @@ export default function DoctorSchedulePage() {
               type="button"
               className="btn-white-capsule"
               onClick={handleEnableAllDays}
-              style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', padding: '8px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '700' }}
+              style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', padding: '8px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '400' }}
               title="Activate Monday through Sunday"
             >
               <CheckCircle2 size={14} color="var(--forest-800)" />
@@ -567,7 +567,7 @@ export default function DoctorSchedulePage() {
               type="button"
               className="btn-lime-pill"
               onClick={handleSaveWeeklySchedule}
-              style={{ padding: '8px 20px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ padding: '8px 20px', fontSize: '12.5px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Check size={15} />
               <span>Save Timetable</span>
@@ -580,11 +580,11 @@ export default function DoctorSchedulePage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1px solid var(--border-subtle)', color: 'var(--forest-900)' }}>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Day</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Status</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Shift / Availability</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Slot Interval</th>
-                <th style={{ padding: '12px 16px', fontWeight: '800', fontSize: '11.5px', textTransform: 'uppercase' }}>Consultation Mode</th>
+                <th style={{ padding: '12px 16px', fontWeight: '400', fontSize: '11.5px', textTransform: 'uppercase' }}>Day</th>
+                <th style={{ padding: '12px 16px', fontWeight: '400', fontSize: '11.5px', textTransform: 'uppercase' }}>Status</th>
+                <th style={{ padding: '12px 16px', fontWeight: '400', fontSize: '11.5px', textTransform: 'uppercase' }}>Shift / Availability</th>
+                <th style={{ padding: '12px 16px', fontWeight: '400', fontSize: '11.5px', textTransform: 'uppercase' }}>Slot Interval</th>
+                <th style={{ padding: '12px 16px', fontWeight: '400', fontSize: '11.5px', textTransform: 'uppercase' }}>Consultation Mode</th>
               </tr>
             </thead>
             <tbody>
@@ -598,11 +598,11 @@ export default function DoctorSchedulePage() {
                   }}
                 >
                   {/* Day Name */}
-                  <td style={{ padding: '14px 16px', fontWeight: '800', color: item.active ? 'var(--forest-900)' : '#6B7280' }}>
+                  <td style={{ padding: '14px 16px', fontWeight: '400', color: item.active ? 'var(--forest-900)' : '#6B7280' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span>{item.day}</span>
                       {item.day === 'Sunday' && item.active && (
-                        <span style={{ fontSize: '10px', backgroundColor: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                        <span style={{ fontSize: '10px', backgroundColor: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', fontWeight: '400' }}>
                           Weekend OPD
                         </span>
                       )}
@@ -618,7 +618,7 @@ export default function DoctorSchedulePage() {
                         padding: '6px 16px',
                         borderRadius: '8px',
                         fontSize: '12px',
-                        fontWeight: '800',
+                        fontWeight: '400',
                         border: 'none',
                         cursor: 'pointer',
                         backgroundColor: item.active ? '#059669' : '#E5E7EB',
@@ -638,7 +638,7 @@ export default function DoctorSchedulePage() {
                   <td style={{ padding: '14px 16px' }}>
                     {item.active ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>From:</span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400' }}>From:</span>
                         <select
                           value={item.morningStart !== 'Closed' ? item.morningStart : '10:00 AM'}
                           onChange={(e) => handleScheduleChange(idx, 'morningStart', e.target.value)}
@@ -649,7 +649,7 @@ export default function DoctorSchedulePage() {
                             fontSize: '12px',
                             backgroundColor: '#FFFFFF',
                             color: 'var(--forest-900)',
-                            fontWeight: '700',
+                            fontWeight: '400',
                             cursor: 'pointer',
                           }}
                         >
@@ -659,7 +659,7 @@ export default function DoctorSchedulePage() {
                             </option>
                           ))}
                         </select>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>To:</span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400' }}>To:</span>
                         <select
                           value={item.eveningEnd !== 'Closed' ? item.eveningEnd : (item.morningEnd !== 'Closed' ? item.morningEnd : '06:00 PM')}
                           onChange={(e) => {
@@ -673,7 +673,7 @@ export default function DoctorSchedulePage() {
                             fontSize: '12px',
                             backgroundColor: '#FFFFFF',
                             color: 'var(--forest-900)',
-                            fontWeight: '700',
+                            fontWeight: '400',
                             cursor: 'pointer',
                           }}
                         >
@@ -735,7 +735,7 @@ export default function DoctorSchedulePage() {
       <div style={{ marginBottom: '36px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
               Hospital & Clinic Practice Locations ({practices.length})
             </h2>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '3px 0 0 0' }}>
@@ -747,7 +747,7 @@ export default function DoctorSchedulePage() {
             type="button"
             className="btn-lime-pill"
             onClick={() => setIsAddPracticeModalOpen(true)}
-            style={{ padding: '9px 20px', fontSize: '12.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ padding: '9px 20px', fontSize: '12.5px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Plus size={15} />
             <span>Add Facility</span>
@@ -795,7 +795,7 @@ export default function DoctorSchedulePage() {
                     <span
                       style={{
                         fontSize: '11px',
-                        fontWeight: '800',
+                        fontWeight: '400',
                         padding: '2px 8px',
                         borderRadius: '6px',
                         backgroundColor: p.active ? '#DCFCE7' : '#FEF3C7',
@@ -811,13 +811,13 @@ export default function DoctorSchedulePage() {
                     )}
                   </div>
 
-                  <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 2px 0', color: 'var(--text-main)' }}>
+                  <h3 style={{ fontSize: '17px', fontWeight: '400', margin: '0 0 2px 0', color: 'var(--text-main)' }}>
                     {p.hospital}
                   </h3>
                   <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: '6px' }}>
                     {p.address} {p.city ? `· ${p.city}` : ''}
                   </div>
-                  <div style={{ fontSize: '13px', color: 'var(--forest-800)', fontWeight: '700' }}>
+                  <div style={{ fontSize: '13px', color: 'var(--forest-800)', fontWeight: '400' }}>
                     🗓 {p.days} · ⏰ {p.timing}
                   </div>
                 </div>
@@ -849,7 +849,7 @@ export default function DoctorSchedulePage() {
                     backgroundColor: p.active ? '#FFFFFF' : 'var(--forest-800)',
                     color: p.active ? '#374151' : '#FFFFFF',
                     fontSize: '12px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     cursor: 'pointer',
                   }}
                   onClick={() => handleToggleActive(p.id)}
@@ -879,10 +879,10 @@ export default function DoctorSchedulePage() {
           <div className="interactive-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px', width: '100%', borderRadius: '24px', overflow: 'hidden', backgroundColor: '#FFFFFF', boxShadow: 'var(--shadow-lg)' }}>
             <div style={{ padding: '24px 28px', backgroundColor: 'var(--forest-800)', color: '#FFFFFF', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
                   BRANCH CONFIGURATION
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '19px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '19px', fontWeight: '400', color: '#FFFFFF' }}>
                   Edit Branch Schedule & Chamber
                 </h3>
               </div>
@@ -898,7 +898,7 @@ export default function DoctorSchedulePage() {
 
             <form onSubmit={handleSaveEditBranch} style={{ padding: '26px 28px' }}>
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Hospital / Branch Name
                 </label>
                 <input
@@ -912,7 +912,7 @@ export default function DoctorSchedulePage() {
               </div>
 
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Address & Room / Chamber Details
                 </label>
                 <input
@@ -927,7 +927,7 @@ export default function DoctorSchedulePage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                     Consulting Days
                   </label>
                   <input
@@ -941,7 +941,7 @@ export default function DoctorSchedulePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                     Consulting Hours
                   </label>
                   <input
@@ -956,7 +956,7 @@ export default function DoctorSchedulePage() {
               </div>
 
               <div className="form-group" style={{ marginBottom: '22px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Consultation Fee (PKR)
                 </label>
                 <input
@@ -965,7 +965,7 @@ export default function DoctorSchedulePage() {
                   onChange={(e) => setEditPractice({ ...editPractice, fee: Number(e.target.value) })}
                   placeholder="e.g. 2500"
                   required
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #D1D5DB', fontSize: '14px', fontWeight: '700' }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #D1D5DB', fontSize: '14px', fontWeight: '400' }}
                 />
               </div>
 
@@ -978,7 +978,7 @@ export default function DoctorSchedulePage() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-lime-pill" style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '800' }}>
+                <button type="submit" className="btn-lime-pill" style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '400' }}>
                   Save Schedule
                 </button>
               </div>
@@ -993,10 +993,10 @@ export default function DoctorSchedulePage() {
           <div className="interactive-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px', width: '100%', borderRadius: '24px', overflow: 'hidden', backgroundColor: '#FFFFFF', boxShadow: 'var(--shadow-lg)' }}>
             <div style={{ padding: '24px 28px', backgroundColor: 'var(--forest-800)', color: '#FFFFFF', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
                   NEW PRACTICE LOCATION
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '19px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '19px', fontWeight: '400', color: '#FFFFFF' }}>
                   Add Hospital / Clinic Branch
                 </h3>
               </div>
@@ -1012,7 +1012,7 @@ export default function DoctorSchedulePage() {
 
             <form onSubmit={handleAddBranchSubmit} style={{ padding: '26px 28px' }}>
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Hospital / Facility Name
                 </label>
                 <input
@@ -1027,7 +1027,7 @@ export default function DoctorSchedulePage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                     Street Address
                   </label>
                   <input
@@ -1041,7 +1041,7 @@ export default function DoctorSchedulePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                     City
                   </label>
                   <input
@@ -1057,7 +1057,7 @@ export default function DoctorSchedulePage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                     OPD Days
                   </label>
                   <input
@@ -1071,7 +1071,7 @@ export default function DoctorSchedulePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                  <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                     OPD Timings
                   </label>
                   <input
@@ -1086,7 +1086,7 @@ export default function DoctorSchedulePage() {
               </div>
 
               <div className="form-group" style={{ marginBottom: '22px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Consultation Fee for this Branch (PKR)
                 </label>
                 <input
@@ -1095,7 +1095,7 @@ export default function DoctorSchedulePage() {
                   onChange={(e) => setNewPracticeForm({ ...newPracticeForm, fee: Number(e.target.value) })}
                   placeholder="e.g. 2500"
                   required
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #D1D5DB', fontSize: '14px', fontWeight: '700' }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #D1D5DB', fontSize: '14px', fontWeight: '400' }}
                 />
               </div>
 
@@ -1108,7 +1108,7 @@ export default function DoctorSchedulePage() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-lime-pill" style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '800' }}>
+                <button type="submit" className="btn-lime-pill" style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '400' }}>
                   Register Branch
                 </button>
               </div>

@@ -69,7 +69,7 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
                 color: 'var(--lime-accent)',
                 display: 'grid',
                 placeItems: 'center',
-                fontWeight: '800',
+                fontWeight: '400',
                 fontSize: '18px',
                 overflow: 'hidden',
                 flexShrink: 0,
@@ -93,7 +93,7 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
                     backgroundColor: 'rgba(197, 225, 165, 0.25)',
                     color: 'var(--lime-accent)',
                     fontSize: '11px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     padding: '2px 8px',
                     borderRadius: '6px',
                   }}
@@ -104,7 +104,7 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
                   Registered Patient Record
                 </span>
               </div>
-              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '400', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
                 {patientName}
               </h2>
               <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.75)', marginTop: '2px' }}>
@@ -149,32 +149,32 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
             }}
           >
             <div>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Phone</span>
-              <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>Phone</span>
+              <div style={{ fontSize: '13.5px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Phone size={13} color="var(--forest-800)" />
                 <span>{patient.patientPhone || patient.phone || '+92 300 1234567'}</span>
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Email</span>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>Email</span>
+              <div style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Mail size={13} color="var(--forest-800)" />
                 <span>{patient.patientEmail || patient.email || 'alex.khan@medconnect.pk'}</span>
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>City / Location</span>
-              <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>City / Location</span>
+              <div style={{ fontSize: '13.5px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <MapPin size={13} color="var(--forest-800)" />
                 <span>{patient.patientCity || patient.city || 'Lahore'}</span>
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Emergency Contact</span>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--forest-900)', marginTop: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>Emergency Contact</span>
+              <div style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '2px' }}>
                 {patient.patientEmergencyContact || patient.emergencyContact || '+92 321 9876543 (Family)'}
               </div>
             </div>
@@ -190,11 +190,11 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
                 border: '1.5px solid #FCA5A5',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#991B1B', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#991B1B', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', marginBottom: '6px' }}>
                 <AlertTriangle size={15} />
                 <span>Known Drug Allergies</span>
               </div>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: '#7F1D1D' }}>
+              <div style={{ fontSize: '14px', fontWeight: '400', color: '#7F1D1D' }}>
                 {patient.patientAllergies || patient.allergies || 'Penicillin, Dust Mites'}
               </div>
             </div>
@@ -207,11 +207,11 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
                 border: '1.5px solid #BFDBFE',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1E40AF', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1E40AF', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', marginBottom: '6px' }}>
                 <Heart size={15} />
                 <span>Chronic Conditions / History</span>
               </div>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: '#1E3A8A' }}>
+              <div style={{ fontSize: '14px', fontWeight: '400', color: '#1E3A8A' }}>
                 {patient.patientConditions || patient.conditions || 'None reported · Regular seasonal checkups'}
               </div>
             </div>
@@ -228,42 +228,42 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
               boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
             }}
           >
-            <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
+            <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
               ✦ APPOINTMENT REQUEST DETAILS
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', marginBottom: '14px' }}>
               <div>
                 <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Requested Slot</span>
-                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                <div style={{ fontSize: '14px', fontWeight: '400', color: 'var(--forest-900)' }}>
                   🗓 {patient.date || 'Today'} at ⏰ {patient.time || '4:30 PM'}
                 </div>
               </div>
 
               <div>
                 <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Consultation Mode</span>
-                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                <div style={{ fontSize: '14px', fontWeight: '400', color: 'var(--forest-900)' }}>
                   {patient.type || 'In-Clinic Hospital Visit'}
                 </div>
               </div>
 
               <div>
                 <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Facility / Location</span>
-                <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--forest-900)' }}>
+                <div style={{ fontSize: '13.5px', fontWeight: '400', color: 'var(--forest-900)' }}>
                   {patient.hospitalName || patient.clinicName || 'Specialty Medical Center'}
                 </div>
               </div>
 
               <div>
                 <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Fee</span>
-                <div style={{ fontSize: '14.5px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                <div style={{ fontSize: '14.5px', fontWeight: '400', color: 'var(--forest-800)' }}>
                   Rs. {patient.fee || 2500}
                 </div>
               </div>
             </div>
 
             <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '12px' }}>
-              <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
                 Reported Reason for Visit / Symptoms:
               </span>
               <p style={{ margin: '4px 0 0 0', fontSize: '13.5px', color: 'var(--text-main)', fontStyle: 'italic', lineHeight: '1.5' }}>
@@ -274,7 +274,7 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
 
           {/* Diagnostic Lab Summary */}
           <div>
-            <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
+            <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
               ✦ ATTACHED DIAGNOSTIC LAB RECORDS
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -324,7 +324,7 @@ export default function PatientMedicalRecordModal({ isOpen, onClose, patient, on
             <button
               type="button"
               className="btn-lime-pill"
-              style={{ padding: '10px 24px', fontSize: '13.5px', fontWeight: '800' }}
+              style={{ padding: '10px 24px', fontSize: '13.5px', fontWeight: '400' }}
               onClick={() => {
                 onClose();
                 onOpenConfirmWithRemarks(patient);

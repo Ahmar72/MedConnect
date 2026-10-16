@@ -201,7 +201,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
                 color: 'var(--lime-accent)',
                 display: 'grid',
                 placeItems: 'center',
-                fontWeight: '800',
+                fontWeight: '400',
                 fontSize: '18px',
                 overflow: 'hidden',
                 flexShrink: 0,
@@ -219,7 +219,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '400', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
                   Edit Clinician Profile & Practice Settings
                 </h2>
                 <span
@@ -227,7 +227,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
                     backgroundColor: 'rgba(197, 225, 165, 0.25)',
                     color: 'var(--lime-accent)',
                     fontSize: '11px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     padding: '3px 8px',
                     borderRadius: '6px',
                   }}
@@ -290,7 +290,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
                     display: 'grid',
                     placeItems: 'center',
                     fontSize: '24px',
-                    fontWeight: '800',
+                    fontWeight: '400',
                     overflow: 'hidden',
                     border: '3px solid var(--lime-accent)',
                     boxShadow: '0 4px 12px rgba(14, 56, 44, 0.2)',
@@ -308,7 +308,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
                   )}
                 </div>
                 <div>
-                  <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '400', color: 'var(--forest-900)' }}>
                     Clinician Profile Photo
                   </h4>
                   <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
@@ -351,7 +351,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
 
             {/* Section 1: Basic & Professional Details */}
             <div style={{ marginBottom: '26px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '14px' }}>
                 ✦ PROFESSIONAL IDENTIFICATION
               </div>
 
@@ -430,7 +430,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
 
             {/* Section 2: Hospital Practice, Schedule & Fees */}
             <div style={{ marginBottom: '26px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '14px' }}>
                 ✦ PRACTICE LOCATION, TIMETABLE & FEES
               </div>
 
@@ -542,7 +542,7 @@ export default function DoctorProfileModal({ isOpen, onClose }) {
               <button
                 type="submit"
                 className="btn-lime-pill"
-                style={{ padding: '12px 30px', fontSize: '14px', fontWeight: '800' }}
+                style={{ padding: '12px 30px', fontSize: '14px', fontWeight: '400' }}
               >
                 <Save size={16} />
                 <span>Save Profile Changes</span>

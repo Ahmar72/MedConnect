@@ -143,12 +143,9 @@ export default function DoctorProfileSettingsPage() {
       {/* Top Breadcrumb & Actions Bar */}
       <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', color: 'var(--forest-900)', margin: '0 0 4px 0' }}>
+          <h1 style={{ fontSize: '26px', fontWeight: '700', color: 'var(--forest-900)', margin: 0 }}>
             My Clinician Profile
           </h1>
-          <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: 0 }}>
-            Manage your credentials, photo, consultation fees, and public presence across MedConnect patient searches.
-          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -161,17 +158,6 @@ export default function DoctorProfileSettingsPage() {
           >
             <ExternalLink size={15} />
             <span>View Public Page</span>
-          </button>
-
-          <button
-            type="button"
-            className="btn-lime-pill"
-            onClick={handleSave}
-            disabled={isSaving}
-            style={{ padding: '10px 22px', fontSize: '13.5px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <Save size={16} />
-            <span>{isSaving ? 'Saving...' : 'Save Profile Changes'}</span>
           </button>
         </div>
       </div>
@@ -217,7 +203,7 @@ export default function DoctorProfileSettingsPage() {
                     display: 'grid',
                     placeItems: 'center',
                     fontSize: '36px',
-                    fontWeight: '800',
+                    fontWeight: '400',
                     border: '3px solid var(--forest-900)',
                   }}
                 >
@@ -266,7 +252,7 @@ export default function DoctorProfileSettingsPage() {
                   border: 'none',
                   color: '#DC2626',
                   fontSize: '11.5px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   marginBottom: '12px',
                   display: 'inline-flex',
@@ -279,10 +265,10 @@ export default function DoctorProfileSettingsPage() {
               </button>
             )}
 
-            <h2 style={{ fontSize: '19px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
+            <h2 style={{ fontSize: '19px', fontWeight: '400', margin: '0 0 4px 0', color: 'var(--forest-900)' }}>
               {formData.name}
             </h2>
-            <p style={{ fontSize: '12.5px', color: 'var(--forest-700)', fontWeight: '600', margin: '0 0 10px 0' }}>
+            <p style={{ fontSize: '12.5px', color: 'var(--forest-700)', fontWeight: '400', margin: '0 0 10px 0' }}>
               {formData.specialty}
             </p>
 
@@ -297,7 +283,7 @@ export default function DoctorProfileSettingsPage() {
                 padding: '4px 12px',
                 borderRadius: '9999px',
                 fontSize: '11.5px',
-                fontWeight: '800',
+                fontWeight: '400',
                 marginBottom: '16px',
               }}
             >
@@ -344,7 +330,7 @@ export default function DoctorProfileSettingsPage() {
               }}
             >
               <div style={{ textAlign: 'left' }}>
-                <span style={{ fontSize: '12px', fontWeight: '800', color: isAcceptingPatients ? '#065F46' : '#991B1B', display: 'block' }}>
+                <span style={{ fontSize: '12px', fontWeight: '400', color: isAcceptingPatients ? '#065F46' : '#991B1B', display: 'block' }}>
                   {isAcceptingPatients ? 'Accepting Patients' : 'Taking a Break / Off'}
                 </span>
                 <span style={{ fontSize: '11px', color: isAcceptingPatients ? '#047857' : '#B91C1C' }}>
@@ -364,7 +350,7 @@ export default function DoctorProfileSettingsPage() {
                   padding: '4px 10px',
                   borderRadius: '9999px',
                   fontSize: '11px',
-                  fontWeight: '800',
+                  fontWeight: '400',
                   border: 'none',
                   cursor: 'pointer',
                   backgroundColor: isAcceptingPatients ? '#059669' : '#DC2626',
@@ -388,7 +374,7 @@ export default function DoctorProfileSettingsPage() {
               lineHeight: '1.5',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--forest-900)', fontWeight: '800', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--forest-900)', fontWeight: '400', marginBottom: '4px' }}>
               <ShieldCheck size={14} color="var(--forest-800)" />
               <span>PMDC Registry Integration</span>
             </div>
@@ -460,7 +446,7 @@ export default function DoctorProfileSettingsPage() {
             {/* TAB 1: CREDENTIALS & IDENTIFICATION */}
             {activeTab === 'credentials' && (
               <div>
-                <h3 style={{ fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
                   Professional Identification & Licenses
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 24px 0' }}>
@@ -469,7 +455,7 @@ export default function DoctorProfileSettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Full Clinician Name
                     </label>
                     <input
@@ -482,7 +468,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Primary Specialty
                     </label>
                     <select
@@ -503,7 +489,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       PMDC Registration Number
                     </label>
                     <input
@@ -516,7 +502,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Years of Clinical Experience
                     </label>
                     <input
@@ -529,7 +515,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div style={{ gridColumn: 'span 2' }}>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Professional Title & Subtitle
                     </label>
                     <input
@@ -542,7 +528,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div style={{ gridColumn: 'span 2' }}>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Medical Degrees & Certifications
                     </label>
                     <input
@@ -560,7 +546,7 @@ export default function DoctorProfileSettingsPage() {
             {/* TAB 2: PRACTICES & HOSPITAL OPD */}
             {activeTab === 'practices' && (
               <div>
-                <h3 style={{ fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
                   Hospital Location & Clinical Address
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 24px 0' }}>
@@ -569,7 +555,7 @@ export default function DoctorProfileSettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Primary Hospital / Medical Centre
                     </label>
                     <input
@@ -582,7 +568,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       City
                     </label>
                     <input
@@ -595,7 +581,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div style={{ gridColumn: 'span 2' }}>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Clinic Street Address
                     </label>
                     <input
@@ -608,7 +594,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       Consultation Days Summary
                     </label>
                     <input
@@ -621,7 +607,7 @@ export default function DoctorProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
                       OPD Timings Summary
                     </label>
                     <input
@@ -639,7 +625,7 @@ export default function DoctorProfileSettingsPage() {
             {/* TAB 3: CONSULTATION FEES */}
             {activeTab === 'fees' && (
               <div>
-                <h3 style={{ fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
                   Consultation Pricing & Payment Structure
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 24px 0' }}>
@@ -651,7 +637,7 @@ export default function DoctorProfileSettingsPage() {
                   <div style={{ backgroundColor: 'var(--canvas-bg)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-subtle)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                       <Building2 size={18} color="var(--forest-800)" />
-                      <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '400', color: 'var(--forest-900)' }}>
                         In-Clinic Visit Fee (PKR)
                       </span>
                     </div>
@@ -663,7 +649,7 @@ export default function DoctorProfileSettingsPage() {
                       placeholder="e.g. 2000"
                       step="100"
                       min="0"
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '800', marginBottom: '10px' }}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '400', marginBottom: '10px' }}
                     />
 
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -674,7 +660,7 @@ export default function DoctorProfileSettingsPage() {
                           onClick={() => setFormData({ ...formData, inClinicFee: preset })}
                           style={{
                             fontSize: '11.5px',
-                            fontWeight: '700',
+                            fontWeight: '400',
                             padding: '4px 10px',
                             borderRadius: '6px',
                             border: '1px solid #D1D5DB',
@@ -693,7 +679,7 @@ export default function DoctorProfileSettingsPage() {
                   <div style={{ backgroundColor: 'var(--canvas-bg)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-subtle)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                       <Video size={18} color="var(--forest-800)" />
-                      <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '400', color: 'var(--forest-900)' }}>
                         Video Telehealth Fee (PKR)
                       </span>
                     </div>
@@ -705,7 +691,7 @@ export default function DoctorProfileSettingsPage() {
                       placeholder="e.g. 1500"
                       step="100"
                       min="0"
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '800', marginBottom: '10px' }}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border-strong)', fontSize: '16px', fontWeight: '400', marginBottom: '10px' }}
                     />
 
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -716,7 +702,7 @@ export default function DoctorProfileSettingsPage() {
                           onClick={() => setFormData({ ...formData, videoFee: preset })}
                           style={{
                             fontSize: '11.5px',
-                            fontWeight: '700',
+                            fontWeight: '400',
                             padding: '4px 10px',
                             borderRadius: '6px',
                             border: '1px solid #D1D5DB',
@@ -737,7 +723,7 @@ export default function DoctorProfileSettingsPage() {
             {/* TAB 4: BIO & PHILOSOPHY */}
             {activeTab === 'bio' && (
               <div>
-                <h3 style={{ fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', margin: '0 0 6px 0' }}>
                   Biography & Patient Care Philosophy
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 20px 0' }}>
@@ -786,7 +772,7 @@ export default function DoctorProfileSettingsPage() {
                 className="btn-lime-pill"
                 onClick={handleSave}
                 disabled={isSaving}
-                style={{ padding: '12px 28px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{ padding: '12px 28px', fontSize: '14px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 <Check size={16} />
                 <span>{isSaving ? 'Saving Updates...' : 'Save Profile Changes'}</span>

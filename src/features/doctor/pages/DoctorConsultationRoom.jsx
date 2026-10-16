@@ -79,7 +79,7 @@ export default function DoctorConsultationRoom() {
         <button
           type="button"
           onClick={() => navigate('/doctor')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', color: 'var(--forest-800)' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)' }}
         >
           <ArrowLeft size={16} />
           <span>Exit Call / Return to Queue</span>
@@ -90,7 +90,7 @@ export default function DoctorConsultationRoom() {
             <ShieldCheck size={12} />
             <span>PMC Telehealth Active Session</span>
           </span>
-          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--forest-800)' }}>
+          <span style={{ fontSize: '13px', fontWeight: '400', color: 'var(--forest-800)' }}>
             Call Duration: {formatTime(callDuration)}
           </span>
         </div>
@@ -105,7 +105,7 @@ export default function DoctorConsultationRoom() {
             <div className="queue-status-banner">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className="live-pulse-dot" />
-                <span style={{ fontSize: '13px', fontWeight: '700' }}>
+                <span style={{ fontSize: '13px', fontWeight: '400' }}>
                   Patient: {patient.patientName} (MRN: {patient.mrn})
                 </span>
               </div>
@@ -202,7 +202,7 @@ export default function DoctorConsultationRoom() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px' }}>
             <Stethoscope size={18} color="var(--forest-800)" />
-            <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0 }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0 }}>
               Live Clinical Encounter Record
             </h3>
           </div>
@@ -235,7 +235,7 @@ export default function DoctorConsultationRoom() {
 
           {/* Real-time Medicine Rx Builder */}
           <div>
-            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--forest-800)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-800)', marginBottom: '8px' }}>
               Prescribed Medicines ({medicines.length}):
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>

@@ -45,6 +45,7 @@ export default function DoctorDashboard() {
     updateQueueStatus,
     editDoctorProfile,
     showToast,
+    callNextPatientInQueue,
   } = useDemo();
 
   const [selectedPatientForRx, setSelectedPatientForRx] = useState(null);
@@ -163,31 +164,36 @@ export default function DoctorDashboard() {
   };
 
   const handleCallNextPatient = () => {
-    const activeConfirmed = confirmedAppointments.find((a) => a.status === 'Confirmed');
-    const targetApt = activeConfirmed || confirmedAppointments[0] || myAppointments[0] || appointments[0];
+    // Robustly find next active confirmed appointment
+    const targetApt =
+      confirmedAppointments.find((a) => a.status === 'Confirmed' && !a.isCompleted) ||
+      confirmedAppointments[0] ||
+      myAppointments.find((a) => a.status === 'Confirmed' && !a.isCompleted) ||
+      myAppointments[0] ||
+      appointments.find((a) => a.status === 'Confirmed' && !a.isCompleted) ||
+      appointments[0];
 
     if (!targetApt) {
-      showToast('No patients currently waiting in queue.', 'info');
+      showToast('No patients currently in your consultation schedule.', 'info');
       return;
+    }
+
+    // Dispatch real-time notification to patient's notification portal
+    if (callNextPatientInQueue) {
+      callNextPatientInQueue(targetApt);
     }
 
     const pName = targetApt.patientName || 'Patient';
     const slotInfo = targetApt.time ? `${targetApt.date || 'Today'} at ${targetApt.time}` : 'upcoming slot';
-    const isVideo = targetApt.type && targetApt.type.toLowerCase().includes('video');
 
     setCalledPatientAlert({
       patientName: pName,
       slotInfo,
-      isVideo,
       id: targetApt.id,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     });
 
-    if (isVideo) {
-      showToast(`Notified ${pName} about their turn! Patient alerted to join Telehealth Room.`, 'success');
-    } else {
-      showToast(`Notified ${pName} about their turn! Patient alerted via SMS to proceed to OPD Room.`, 'success');
-    }
+    showToast(`Called next patient: ${pName} has been notified for consultation (${slotInfo})!`, 'success');
   };
 
   // IF DOCTOR IS PENDING PMDC VERIFICATION: SHOW STATUS SCREEN
@@ -223,7 +229,7 @@ export default function DoctorDashboard() {
             <span
               style={{
                 fontSize: '11px',
-                fontWeight: '800',
+                fontWeight: '400',
                 letterSpacing: '1px',
                 color: '#B45309',
                 textTransform: 'uppercase',
@@ -234,7 +240,7 @@ export default function DoctorDashboard() {
               APPLICATION STATUS: UNDER PMDC REVIEW
             </span>
 
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '0 0 10px 0', color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '28px', margin: '0 0 10px 0', color: 'var(--text-main)' }}>
               Welcome, {currentUser?.name}
             </h1>
 
@@ -302,28 +308,82 @@ export default function DoctorDashboard() {
 
   return (
     <AppShell>
-      {/* Doctor Header Banner */}
-      <div className="patient-welcome-banner" style={{ marginBottom: '28px' }}>
-        <div>
-          <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '1px', color: 'var(--lime-accent)', textTransform: 'uppercase' }}>
-            CLINICIAN WORKSPACE · {currentUser?.city || 'LAHORE'} CLINICS
+      {/* Executive Doctor Header Banner */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, var(--forest-900) 0%, #064E3B 100%)',
+          borderRadius: '24px',
+          padding: '28px 32px',
+          color: '#FFFFFF',
+          marginBottom: '28px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          boxShadow: '0 12px 32px rgba(14, 56, 44, 0.18)',
+          flexWrap: 'wrap',
+          gap: '20px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(197, 225, 165, 0.2)',
+                color: 'var(--lime-accent)',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '11px',
+                fontWeight: '400',
+                letterSpacing: '0.8px',
+                textTransform: 'uppercase',
+              }}
+            >
+              <span className="live-pulse-dot" style={{ width: '7px', height: '7px' }} />
+              CLINICIAN SUITE · OPD IN-SESSION
+            </span>
+            <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }}>
+              {currentUser?.city || 'Lahore'} Practice
+            </span>
           </div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: '4px 0 6px 0' }}>
-            Welcome back, {currentUser?.name || 'Dr. Maya Patel'}
+
+          <h1 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>
+            Welcome back, {currentUser?.name || 'Dr. Amina Shah'}
           </h1>
-          <div style={{ fontSize: '13px', color: 'var(--text-white-muted)' }}>
-            {currentUser?.specialty || 'General Physician'} · <b>PMC/PMDC #{currentUser?.pmdcNumber || '39482-P'}</b>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', flexWrap: 'wrap' }}>
+            <span>{currentUser?.specialty || 'General Physician'}</span>
+            <span>•</span>
+            <span style={{ color: 'var(--lime-accent)' }}>PMDC License #{currentUser?.pmdcNumber || '39482-P'}</span>
+            <span>•</span>
+            <span>{currentUser?.practices?.[0]?.hospital || 'National Hospital & Medical Centre'}</span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        {/* Action Controls */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', zIndex: 1 }}>
           <button
             type="button"
             className="btn-lime-pill"
             onClick={handleCallNextPatient}
-            style={{ padding: '12px 22px', fontSize: '13.5px' }}
+            style={{
+              padding: '13px 26px',
+              fontSize: '14px',
+              fontWeight: '400',
+              boxShadow: '0 4px 18px rgba(197, 225, 165, 0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            title="Notify the next patient in queue to proceed to consultation room"
           >
-            <Play size={16} fill="var(--forest-800)" />
+            <Play size={17} fill="var(--forest-800)" />
             <span>Call Next Patient in Queue</span>
           </button>
         </div>
@@ -362,31 +422,21 @@ export default function DoctorDashboard() {
               <CheckCircle2 size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: '800', color: '#065F46' }}>
-                Turn Alert Sent: {calledPatientAlert.patientName} has been notified!
+              <div style={{ fontSize: '14px', fontWeight: '400', color: '#065F46' }}>
+                Next Patient Called: <b>{calledPatientAlert.patientName}</b> has been alerted!
               </div>
               <div style={{ fontSize: '12px', color: '#047857', marginTop: '2px' }}>
-                Notified at {calledPatientAlert.timestamp} for slot {calledPatientAlert.slotInfo}. Patient has received the push alert to proceed to consultation.
+                Notification dispatched at {calledPatientAlert.timestamp} for slot {calledPatientAlert.slotInfo}. Patient has received the push alert to proceed to consultation.
               </div>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {calledPatientAlert.isVideo && (
-              <button
-                type="button"
-                className="btn-lime-pill"
-                onClick={() => navigate(`/doctor/consultation/${calledPatientAlert.id}`)}
-                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '800' }}
-              >
-                Join Video Session
-              </button>
-            )}
             <button
               type="button"
               className="btn-white-capsule"
               onClick={() => navigate(`/doctor/patients/${calledPatientAlert.id}`)}
-              style={{ border: '1px solid #10B981', color: '#065F46', fontSize: '12px', padding: '7px 14px', fontWeight: '700' }}
+              style={{ border: '1px solid #10B981', color: '#065F46', fontSize: '12px', padding: '7px 14px', fontWeight: '400' }}
             >
               View Record & Rx
             </button>
@@ -402,110 +452,218 @@ export default function DoctorDashboard() {
         </div>
       )}
 
-      {/* KPI Stats Row matching Canva Style */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+      {/* KPI Stats Row (Flexible, Responsive, and Interactive) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '16px',
+          marginBottom: '28px',
+          width: '100%',
+        }}
+      >
+        {/* Card 1: Confirmed Bookings */}
         <div
+          onClick={() => {
+            const el = document.getElementById('confirmed-schedule-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
           style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '16px',
-            padding: '20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
+            padding: '20px 22px',
+            border: '1.5px solid var(--border-subtle)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+            cursor: 'pointer',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--forest-800)';
+            e.currentTarget.style.boxShadow = '0 10px 24px rgba(14, 56, 44, 0.1)';
+            e.currentTarget.style.transform = 'translateY(-3px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-subtle)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+          title="Click to view confirmed appointments schedule"
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
-            Confirmed Bookings
-          </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '4px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+              Confirmed Bookings
+            </span>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: 'rgba(14, 56, 44, 0.08)', display: 'grid', placeItems: 'center', color: 'var(--forest-800)' }}>
+              <Calendar size={16} />
+            </div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: '700', color: 'var(--forest-800)', margin: '10px 0 4px 0', letterSpacing: '-0.02em' }}>
             {confirmedAppointments.length}
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '600' }}>
-            Active in schedule
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(14, 56, 44, 0.06)', paddingTop: '10px', marginTop: '6px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '500' }}>
+              Active in today's OPD
+            </span>
+            <span style={{ fontSize: '11.5px', color: 'var(--forest-800)', fontWeight: '600' }}>View schedule →</span>
+          </div>
         </div>
 
+        {/* Card 2: Pending Confirmation */}
         <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
+          onClick={() => {
+            if (pendingRequests.length > 0) {
+              const el = document.getElementById('pending-requests-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            } else {
+              showToast('All consultation requests have been accepted. Zero pending.', 'info');
+            }
           }}
+          style={{
+            backgroundColor: pendingRequests.length > 0 ? '#FFFDF5' : '#FFFFFF',
+            borderRadius: '16px',
+            padding: '20px 22px',
+            border: pendingRequests.length > 0 ? '1.5px solid #F59E0B' : '1.5px solid var(--border-subtle)',
+            boxShadow: pendingRequests.length > 0 ? '0 4px 14px rgba(245, 158, 11, 0.12)' : '0 2px 8px rgba(0,0,0,0.03)',
+            cursor: 'pointer',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = pendingRequests.length > 0 ? '#D97706' : 'var(--forest-800)';
+            e.currentTarget.style.boxShadow = '0 10px 24px rgba(245, 158, 11, 0.18)';
+            e.currentTarget.style.transform = 'translateY(-3px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = pendingRequests.length > 0 ? '#F59E0B' : 'var(--border-subtle)';
+            e.currentTarget.style.boxShadow = pendingRequests.length > 0 ? '0 4px 14px rgba(245, 158, 11, 0.12)' : '0 2px 8px rgba(0,0,0,0.03)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+          title={pendingRequests.length > 0 ? 'Click to review pending requests' : 'Zero pending requests'}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {pendingRequests.length > 0 && <span className="live-pulse-dot" />}
-            <span style={{ fontSize: '11.5px', color: pendingRequests.length > 0 ? '#B45309' : 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
-              Pending Confirmation
-            </span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {pendingRequests.length > 0 && <span className="live-pulse-dot" />}
+              <span style={{ fontSize: '11.5px', color: pendingRequests.length > 0 ? '#B45309' : '#64748B', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                Pending Requests
+              </span>
+            </div>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: pendingRequests.length > 0 ? 'rgba(245, 158, 11, 0.18)' : 'rgba(0, 0, 0, 0.04)', display: 'grid', placeItems: 'center', color: pendingRequests.length > 0 ? '#B45309' : 'var(--text-muted)' }}>
+              <Clock size={16} />
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: pendingRequests.length > 0 ? '#B45309' : 'var(--text-main)', margin: '4px 0' }}>
+          <div style={{ fontSize: '32px', fontWeight: '700', color: pendingRequests.length > 0 ? '#B45309' : 'var(--text-main)', margin: '10px 0 4px 0', letterSpacing: '-0.02em' }}>
             {pendingRequests.length}
           </div>
-          <span style={{ fontSize: '12px', color: pendingRequests.length > 0 ? '#B45309' : 'var(--text-muted)' }}>
-            {pendingRequests.length > 0 ? 'Requires your acceptance' : 'No pending requests'}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(14, 56, 44, 0.06)', paddingTop: '10px', marginTop: '6px' }}>
+            <span style={{ fontSize: '12px', color: pendingRequests.length > 0 ? '#B45309' : 'var(--text-muted)', fontWeight: '500' }}>
+              {pendingRequests.length > 0 ? 'Action required: Accept/Decline' : 'All requests processed'}
+            </span>
+            {pendingRequests.length > 0 && <span style={{ fontSize: '11.5px', color: '#B45309', fontWeight: '600' }}>Review now →</span>}
+          </div>
         </div>
 
+        {/* Card 3: Completed Visits */}
         <div
+          onClick={() => navigate('/doctor/patients')}
           style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '16px',
-            padding: '20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
+            padding: '20px 22px',
+            border: '1.5px solid var(--border-subtle)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+            cursor: 'pointer',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = '#166534';
+            e.currentTarget.style.boxShadow = '0 10px 24px rgba(22, 101, 52, 0.12)';
+            e.currentTarget.style.transform = 'translateY(-3px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-subtle)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+          title="Click to view completed patient records"
         >
-          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
-            Completed Visits
-          </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: '#1B5E20', margin: '4px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+              Completed Visits
+            </span>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: 'rgba(22, 101, 52, 0.1)', display: 'grid', placeItems: 'center', color: '#166534' }}>
+              <CheckCircle2 size={16} />
+            </div>
+          </div>
+          <div style={{ fontSize: '32px', fontWeight: '700', color: '#166534', margin: '10px 0 4px 0', letterSpacing: '-0.02em' }}>
             {completedCount}
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--badge-green-text)', fontWeight: '600' }}>
-            ✓ 100% On-time schedule
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(14, 56, 44, 0.06)', paddingTop: '10px', marginTop: '6px' }}>
+            <span style={{ fontSize: '12px', color: '#166534', fontWeight: '500' }}>
+              ✓ Clinical care finalized
+            </span>
+            <span style={{ fontSize: '11.5px', color: '#166534', fontWeight: '600' }}>Patient logs →</span>
+          </div>
         </div>
 
+        {/* Card 4: Practice Earnings */}
         <div
           onClick={() => navigate('/doctor/earnings')}
           style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '16px',
-            padding: '20px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-sm)',
+            padding: '20px 22px',
+            border: '1.5px solid var(--border-subtle)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = 'var(--forest-800)';
-            e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+            e.currentTarget.style.boxShadow = '0 10px 24px rgba(14, 56, 44, 0.14)';
+            e.currentTarget.style.transform = 'translateY(-3px)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.borderColor = 'var(--border-subtle)';
-            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+            e.currentTarget.style.transform = 'translateY(0)';
           }}
           title="Click to open full Earnings & Financial Analytics"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase' }}>
-              Practice Earnings
+            <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+              Consultation Revenue
             </span>
-            <TrendingUp size={14} color="var(--forest-800)" />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: 'rgba(14, 56, 44, 0.08)', display: 'grid', placeItems: 'center', color: 'var(--forest-800)' }}>
+              <TrendingUp size={16} />
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--forest-800)', margin: '4px 0' }}>
+          <div style={{ fontSize: '32px', fontWeight: '700', color: 'var(--forest-800)', margin: '10px 0 4px 0', letterSpacing: '-0.02em' }}>
             Rs. {totalRevenue.toLocaleString()}
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '700' }}>
-            View Analytics & Ledger →
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(14, 56, 44, 0.06)', paddingTop: '10px', marginTop: '6px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--forest-700)', fontWeight: '500' }}>
+              Direct verified payouts
+            </span>
+            <span style={{ fontSize: '11.5px', color: 'var(--forest-800)', fontWeight: '600' }}>View ledger →</span>
+          </div>
         </div>
       </div>
 
       {/* PENDING APPOINTMENT REQUESTS BANNER (CRITICAL OLADOC FLOW) */}
       {pendingRequests.length > 0 && (
         <div
+          id="pending-requests-section"
           style={{
             backgroundColor: '#FFFBEB',
             borderRadius: '20px',
@@ -531,12 +689,9 @@ export default function DoctorDashboard() {
                 <Clock size={20} />
               </div>
               <div>
-                <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, color: '#92400E' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: '400', margin: 0, color: '#92400E' }}>
                   New Appointment Booking Requests ({pendingRequests.length})
                 </h3>
-                <span style={{ fontSize: '12.5px', color: '#B45309' }}>
-                  Patients have requested slots. Please confirm or decline each booking.
-                </span>
               </div>
             </div>
           </div>
@@ -545,7 +700,7 @@ export default function DoctorDashboard() {
             {pendingRequests.map((req) => (
               <div
                 key={req.id}
-                onClick={() => setSelectedPatientForRecord(req)}
+                onClick={() => navigate(`/doctor/patient-record/${req.id}`)}
                 className="pending-request-card"
                 style={{
                   backgroundColor: '#FFFFFF',
@@ -585,7 +740,7 @@ export default function DoctorDashboard() {
                       color: 'var(--lime-accent)',
                       display: 'grid',
                       placeItems: 'center',
-                      fontWeight: '800',
+                      fontWeight: '400',
                       fontSize: '20px',
                       flexShrink: 0,
                       border: '2px solid var(--forest-900)',
@@ -606,7 +761,7 @@ export default function DoctorDashboard() {
                       <span
                         style={{
                           fontSize: '12.5px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           backgroundColor: '#FEF3C7',
                           color: '#78350F',
                           padding: '3px 10px',
@@ -620,7 +775,7 @@ export default function DoctorDashboard() {
                       <span
                         style={{
                           fontSize: '12.5px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           backgroundColor: req.type.includes('Video') ? '#D1FAE5' : '#DBEAFE',
                           color: req.type.includes('Video') ? '#065F46' : '#1E40AF',
                           padding: '3px 12px',
@@ -635,11 +790,30 @@ export default function DoctorDashboard() {
                         {req.type}
                       </span>
 
+                      {req.isFollowUp && (
+                        <span
+                          style={{
+                            fontSize: '12.5px',
+                            fontWeight: '400',
+                            backgroundColor: '#E0F2FE',
+                            color: '#0369A1',
+                            padding: '3px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid #7DD3FC',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          🔄 Follow-up Request {req.previousDiagnosis ? `· Prior: ${req.previousDiagnosis}` : ''}
+                        </span>
+                      )}
+
                       {req.rescheduled && (
                         <span
                           style={{
                             fontSize: '12px',
-                            fontWeight: '800',
+                            fontWeight: '400',
                             backgroundColor: '#EDE9FE',
                             color: '#5B21B6',
                             padding: '3px 10px',
@@ -657,7 +831,7 @@ export default function DoctorDashboard() {
                       <h3
                         style={{
                           fontSize: '20px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           color: '#111827',
                           margin: 0,
                           letterSpacing: '-0.01em',
@@ -665,7 +839,7 @@ export default function DoctorDashboard() {
                       >
                         {req.patientName}
                       </h3>
-                      <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '400', color: '#374151' }}>
                         {req.patientGender ? `${req.patientGender} · ` : ''}📞 <b>{req.patientPhone}</b>
                       </span>
                     </div>
@@ -684,17 +858,17 @@ export default function DoctorDashboard() {
                         fontSize: '14px',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#111827', fontWeight: '700' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#111827', fontWeight: '400' }}>
                         <Clock size={16} color="var(--forest-800)" />
                         <span style={{ color: 'var(--forest-900)' }}>Appointment Slot:</span>
-                        <span style={{ color: '#047857', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                        <span style={{ color: '#047857', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '6px', fontWeight: '400' }}>
                           {req.date} at {req.time}
                         </span>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ color: '#4B5563', fontWeight: '600', fontSize: '13px' }}>Consultation Fee:</span>
-                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: '#065F46', backgroundColor: '#ECFDF5', padding: '2px 10px', borderRadius: '6px', border: '1.5px solid #10B981' }}>
+                        <span style={{ color: '#4B5563', fontWeight: '400', fontSize: '13px' }}>Consultation Fee:</span>
+                        <span style={{ fontSize: '13.5px', fontWeight: '400', color: '#065F46', backgroundColor: '#ECFDF5', padding: '2px 10px', borderRadius: '6px', border: '1.5px solid #10B981' }}>
                           Rs. {req.fee ? req.fee.toLocaleString() : '2,000'}
                         </span>
                       </div>
@@ -702,24 +876,44 @@ export default function DoctorDashboard() {
                   </div>
                 </div>
 
-                {/* Right Side: ONLY TWO BUTTONS SIDE BY SIDE: Reject (left) and Confirm (right) */}
+                {/* Right Side: Action Buttons: Review Record (full page), Reject, and Confirm */}
                 <div
-                  style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0, flexWrap: 'wrap' }}
                   onClick={(e) => e.stopPropagation()}
                 >
+                  <button
+                    type="button"
+                    className="btn-white-capsule"
+                    style={{
+                      border: '1.5px solid var(--forest-800)',
+                      color: 'var(--forest-800)',
+                      padding: '7px 14px',
+                      fontSize: '12.5px',
+                      fontWeight: '600',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      backgroundColor: '#FFFFFF',
+                    }}
+                    onClick={() => navigate(`/doctor/patient-record/${req.id}`)}
+                  >
+                    <FileText size={14} />
+                    <span>Review Record →</span>
+                  </button>
+
                   <button
                     type="button"
                     style={{
                       border: '1.5px solid #DC2626',
                       color: '#DC2626',
                       backgroundColor: '#FEF2F2',
-                      padding: '8px 16px',
-                      fontSize: '13px',
-                      fontWeight: '700',
+                      padding: '7px 14px',
+                      fontSize: '12.5px',
+                      fontWeight: '500',
                       borderRadius: '9999px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
+                      gap: '5px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                       boxShadow: '0 1px 4px rgba(220, 38, 38, 0.12)',
@@ -741,7 +935,7 @@ export default function DoctorDashboard() {
                       });
                     }}
                   >
-                    <X size={15} />
+                    <X size={14} />
                     <span>Reject</span>
                   </button>
 
@@ -749,12 +943,12 @@ export default function DoctorDashboard() {
                     type="button"
                     className="btn-lime-pill"
                     style={{
-                      padding: '8px 20px',
-                      fontSize: '13px',
-                      fontWeight: '800',
+                      padding: '7px 18px',
+                      fontSize: '12.5px',
+                      fontWeight: '600',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
+                      gap: '5px',
                       cursor: 'pointer',
                       boxShadow: '0 2px 8px rgba(14, 56, 44, 0.2)',
                     }}
@@ -767,7 +961,7 @@ export default function DoctorDashboard() {
                       });
                     }}
                   >
-                    <Check size={16} />
+                    <Check size={15} />
                     <span>Confirm</span>
                   </button>
                 </div>
@@ -796,17 +990,17 @@ export default function DoctorDashboard() {
               )}
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
-                  <h2 style={{ fontSize: '22px', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: '400', margin: 0, color: 'var(--text-main)' }}>
                     {doctorForm.name}
                   </h2>
-                  <span style={{ fontSize: '11px', fontWeight: '800', backgroundColor: '#DCFCE7', color: '#166534', padding: '3px 10px', borderRadius: '9999px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '400', backgroundColor: '#DCFCE7', color: '#166534', padding: '3px 10px', borderRadius: '9999px' }}>
                     ✓ PMDC #{doctorForm.pmdcNumber}
                   </span>
                   <span className="img2-rating-pill" style={{ marginLeft: 0 }}>
                     ★ 4.9
                   </span>
                 </div>
-                <div style={{ fontSize: '13.5px', color: 'var(--forest-800)', fontWeight: '600' }}>
+                <div style={{ fontSize: '13.5px', color: 'var(--forest-800)', fontWeight: '400' }}>
                   {doctorForm.specialty} · {doctorForm.hospitalName}
                 </div>
                 <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -820,7 +1014,7 @@ export default function DoctorDashboard() {
                 type="button"
                 className="btn-lime-pill"
                 onClick={() => setIsDoctorProfileModalOpen(true)}
-                style={{ padding: '10px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800' }}
+                style={{ padding: '10px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '400' }}
               >
                 <Edit3 size={15} />
                 <span>Update Profile & Photo</span>
@@ -842,14 +1036,14 @@ export default function DoctorDashboard() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px' }}>
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--forest-800)' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: '400', margin: 0, color: 'var(--forest-800)' }}>
                     Edit Clinician Public Profile & Fees
                   </h3>
                   <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
                     Update your credentials, hospital affiliation, consultation fees, and weekly schedule.
                   </p>
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--forest-700)', backgroundColor: 'var(--canvas-bg)', padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', backgroundColor: 'var(--canvas-bg)', padding: '4px 10px', borderRadius: '6px' }}>
                   Changes Reflect Instantly Across MedConnect
                 </span>
               </div>
@@ -1050,7 +1244,7 @@ export default function DoctorDashboard() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', color: 'var(--forest-800)' }}>
                   <Award size={18} />
-                  <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Credentials & PMDC Verification</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0 }}>Credentials & PMDC Verification</h3>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
                   <div><b>Qualifications:</b> {doctorForm.qualifications}</div>
@@ -1072,7 +1266,7 @@ export default function DoctorDashboard() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', color: 'var(--forest-800)' }}>
                   <MapPin size={18} />
-                  <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Primary Practice Location</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0 }}>Primary Practice Location</h3>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
                   <div><b>Hospital / Clinic:</b> {doctorForm.hospitalName}</div>
@@ -1093,7 +1287,7 @@ export default function DoctorDashboard() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', color: 'var(--forest-800)' }}>
                   <Calendar size={18} />
-                  <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Consultation Fees & Timetable</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0 }}>Consultation Fees & Timetable</h3>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
                   <div><b>In-Clinic Consultation:</b> Rs. {Number(doctorForm.inClinicFee).toLocaleString()}</div>
@@ -1114,12 +1308,12 @@ export default function DoctorDashboard() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', color: 'var(--forest-800)' }}>
                   <FileText size={18} />
-                  <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Biography & Patient Feedback</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '400', margin: 0 }}>Biography & Patient Feedback</h3>
                 </div>
                 <p style={{ fontSize: '13px', color: 'var(--text-body)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
                   {doctorForm.bio}
                 </p>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', fontSize: '12.5px', color: 'var(--forest-800)', fontWeight: '700' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', fontSize: '12.5px', color: 'var(--forest-800)', fontWeight: '400' }}>
                   <span className="img2-rating-pill" style={{ margin: 0 }}>★ 4.9 Rating</span>
                   <span>✓ 100% Recommended</span>
                   <span>• 500+ Consultations</span>
@@ -1130,25 +1324,27 @@ export default function DoctorDashboard() {
         </div>
       ) : (
         /* Confirmed Schedule Table */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div id="confirmed-schedule-section" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', margin: 0, color: 'var(--text-main)' }}>
-                Confirmed Consultation Schedule
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--forest-700)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                  CLINICAL OPD QUEUE
+                </span>
+              </div>
+              <h2 style={{ fontSize: '22px', fontWeight: '700', margin: 0, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+                Confirmed Consultation Schedule ({confirmedAppointments.length})
               </h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
-                Initiate video consultations, review medical records, or write digital prescriptions.
-              </p>
             </div>
 
             <button
               type="button"
               className="btn-white-capsule"
-              style={{ border: '1px solid var(--border-strong)', fontSize: '12.5px' }}
-              onClick={() => showToast('Schedule updated.', 'info')}
+              style={{ border: '1.5px solid #CBD5E1', fontSize: '12.5px', padding: '7px 14px', fontWeight: '500' }}
+              onClick={() => showToast('Schedule synchronized with hospital reception.', 'info')}
             >
               <RotateCcw size={14} />
-              <span>Refresh</span>
+              <span>Refresh Queue</span>
             </button>
           </div>
 
@@ -1159,11 +1355,11 @@ export default function DoctorDashboard() {
                 borderRadius: '20px',
                 padding: '40px',
                 textAlign: 'center',
-                border: '1px solid var(--border-subtle)',
+                border: '1.5px solid var(--border-subtle)',
               }}
             >
               <Calendar size={36} color="var(--forest-700)" style={{ margin: '0 auto 12px auto' }} />
-              <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '0 0 4px 0' }}>No Confirmed Appointments Yet</h3>
+              <h3 style={{ fontSize: '17px', fontWeight: '600', margin: '0 0 4px 0' }}>No Confirmed Appointments Yet</h3>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
                 New patient requests will appear in the pending confirmation banner above.
               </p>
@@ -1171,62 +1367,64 @@ export default function DoctorDashboard() {
           ) : (
             confirmedAppointments.map((apt) => {
               const isCompleted = apt.status === 'Completed';
-              const isVideo = apt.type && apt.type.includes('Video');
 
               return (
                 <div
                   key={apt.id}
-                  onClick={() => navigate(`/doctor/patients/${apt.id}`)}
+                  onClick={() => navigate(`/doctor/patient-record/${apt.id}`)}
                   style={{
                     backgroundColor: '#FFFFFF',
                     borderRadius: '16px',
-                    border: '1.5px solid var(--border-subtle)',
+                    border: '1.5px solid #E2E8F0',
                     padding: '20px 24px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
                     gap: '16px',
-                    boxShadow: 'var(--shadow-sm)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                     cursor: 'pointer',
-                    transition: 'all 0.18s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--forest-800)';
-                    e.currentTarget.style.boxShadow = '0 6px 18px rgba(14, 56, 44, 0.08)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(14, 56, 44, 0.08)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
-                  title="Click to view full medical record & write digital prescription on dedicated page"
+                  title="Click to view full medical record, prior visits & write digital Rx"
                 >
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flex: 1, minWidth: '300px' }}>
                     <div
                       style={{
                         width: '46px',
                         height: '46px',
                         borderRadius: '12px',
-                        backgroundColor: isVideo ? 'rgba(197, 225, 165, 0.45)' : 'var(--canvas-bg)',
+                        backgroundColor: 'rgba(14, 56, 44, 0.06)',
                         color: 'var(--forest-800)',
                         display: 'grid',
                         placeItems: 'center',
                         flexShrink: 0,
                       }}
                     >
-                      {isVideo ? <Video size={22} /> : <Building2 size={22} />}
+                      <Building2 size={20} />
                     </div>
 
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
                         <span
                           style={{
                             fontSize: '11px',
-                            fontWeight: '700',
+                            fontWeight: '600',
                             padding: '2px 8px',
-                            borderRadius: 'var(--radius-pill)',
-                            backgroundColor: isCompleted ? 'var(--badge-green-bg)' : 'var(--badge-blue-bg)',
-                            color: isCompleted ? 'var(--badge-green-text)' : 'var(--badge-blue-text)',
+                            borderRadius: '6px',
+                            backgroundColor: isCompleted ? '#DCFCE7' : '#EFF6FF',
+                            color: isCompleted ? '#166534' : '#1D4ED8',
+                            border: `1px solid ${isCompleted ? '#86EFAC' : '#BFDBFE'}`,
                           }}
                         >
                           {apt.status}
@@ -1234,37 +1432,64 @@ export default function DoctorDashboard() {
                         <span
                           style={{
                             fontSize: '11px',
-                            fontWeight: '700',
+                            fontWeight: '500',
                             padding: '2px 8px',
                             borderRadius: '6px',
-                            backgroundColor: isVideo ? '#DCFCE7' : '#EFF6FF',
-                            color: isVideo ? '#166534' : '#1D4ED8',
+                            backgroundColor: '#F8FAFC',
+                            color: '#64748B',
+                            border: '1px solid #E2E8F0',
                           }}
                         >
-                          {isVideo ? 'Video' : 'In-Clinic'}
+                          In-Clinic Hospital OPD
+                        </span>
+                        <span style={{ fontSize: '11px', color: '#94A3B8' }}>
+                          ID: #{apt.id}
                         </span>
                       </div>
 
-                      <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '2px 0 3px 0', color: 'var(--forest-900)' }}>
+                      <h3 style={{ fontSize: '17px', fontWeight: '700', margin: '2px 0 3px 0', color: 'var(--text-main)' }}>
                         {apt.patientName}
                       </h3>
 
-                      <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>
-                        ⏰ <b>{apt.date} at {apt.time}</b>
+                      <div style={{ fontSize: '13px', color: '#475569', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '6px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', backgroundColor: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', fontWeight: '600', color: '#0F172A' }}>
+                          <Clock size={13} color="var(--forest-800)" />
+                          <span>{apt.date} at {apt.time}</span>
+                        </span>
+                        <span>•</span>
+                        <span style={{ color: '#047857', fontWeight: '600' }}>Fee: Rs. {apt.fee ? apt.fee.toLocaleString() : '2,000'}</span>
+                        {apt.reason && (
+                          <>
+                            <span>•</span>
+                            <span style={{ fontStyle: 'italic', color: '#64748B', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              "{apt.reason}"
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   {/* Clean Right Actions */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }} onClick={(e) => e.stopPropagation()}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       className="btn-white-capsule"
-                      style={{ border: '1px solid var(--forest-800)', color: 'var(--forest-800)', fontSize: '12.5px', padding: '8px 16px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      style={{ border: '1.5px solid var(--forest-800)', color: 'var(--forest-800)', fontSize: '12px', padding: '7px 14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#FFFFFF' }}
+                      onClick={() => navigate(`/doctor/patient-record/${apt.id}`)}
+                    >
+                      <User size={13} />
+                      <span>Record & History →</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-lime-pill"
+                      style={{ padding: '7px 16px', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}
                       onClick={() => navigate(`/doctor/patients/${apt.id}`)}
                     >
-                      <FileText size={14} />
-                      <span>Medical Record & Rx →</span>
+                      <FileText size={13} />
+                      <span>Write Digital Rx</span>
                     </button>
                   </div>
                 </div>
@@ -1330,10 +1555,10 @@ export default function DoctorDashboard() {
               }}
             >
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
                   CLINICAL CONFIRMATION
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '400', color: '#FFFFFF' }}>
                   Confirm Booking with Patient Instructions
                 </h3>
               </div>
@@ -1374,7 +1599,7 @@ export default function DoctorDashboard() {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-900)' }}>
                     {confirmRemarksModal.appointment.patientName}
                   </div>
                   <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -1383,7 +1608,7 @@ export default function DoctorDashboard() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Consultation Fee</span>
-                  <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-800)' }}>
                     Rs. {confirmRemarksModal.appointment.fee}
                   </span>
                 </div>
@@ -1391,7 +1616,7 @@ export default function DoctorDashboard() {
 
               {/* Remarks Textarea */}
               <div className="form-group" style={{ marginBottom: '18px' }}>
-                <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: 'var(--forest-900)' }}>
                   Doctor's Instructions & Clinical Remarks (Sent via SMS & App)
                 </label>
                 <textarea
@@ -1406,7 +1631,7 @@ export default function DoctorDashboard() {
 
               {/* Quick Preset Chips */}
               <div style={{ marginBottom: '26px' }}>
-                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', display: 'block', marginBottom: '8px' }}>
                   QUICK PRESET INSTRUCTIONS:
                 </span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -1433,7 +1658,7 @@ export default function DoctorDashboard() {
                         padding: '5px 11px',
                         borderRadius: '20px',
                         cursor: 'pointer',
-                        fontWeight: '600',
+                        fontWeight: '400',
                       }}
                     >
                       + {preset}
@@ -1455,7 +1680,7 @@ export default function DoctorDashboard() {
                 <button
                   type="button"
                   className="btn-lime-pill"
-                  style={{ padding: '11px 28px', fontSize: '13.5px', fontWeight: '800' }}
+                  style={{ padding: '11px 28px', fontSize: '13.5px', fontWeight: '400' }}
                   onClick={() => {
                     confirmAppointmentByDoctor(confirmRemarksModal.appointment.id, confirmRemarksModal.remarks);
                     setConfirmRemarksModal({ isOpen: false, appointment: null, remarks: '' });
@@ -1502,10 +1727,10 @@ export default function DoctorDashboard() {
               }}
             >
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
                   DECLINE APPOINTMENT
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '400', color: '#FFFFFF' }}>
                   Decline Booking Request
                 </h3>
               </div>
@@ -1546,7 +1771,7 @@ export default function DoctorDashboard() {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-900)' }}>
                     {declineRemarksModal.appointment.patientName}
                   </div>
                   <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -1555,7 +1780,7 @@ export default function DoctorDashboard() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>Fee</span>
-                  <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '400', color: 'var(--forest-800)' }}>
                     Rs. {declineRemarksModal.appointment.fee ? declineRemarksModal.appointment.fee.toLocaleString() : '1,500'}
                   </span>
                 </div>
@@ -1563,7 +1788,7 @@ export default function DoctorDashboard() {
 
               {/* Remarks Textarea */}
               <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '700', marginBottom: '8px', color: '#111827' }}>
+                <label className="form-label" style={{ fontSize: '13.5px', fontWeight: '400', marginBottom: '8px', color: '#111827' }}>
                   Reason for Declining (Sent to Patient via SMS & Notification)
                 </label>
                 <textarea
@@ -1578,7 +1803,7 @@ export default function DoctorDashboard() {
 
               {/* Quick Preset Chips in Main Brand Theme */}
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', display: 'block', marginBottom: '8px' }}>
                   QUICK PRESET REASONS:
                 </span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -1605,7 +1830,7 @@ export default function DoctorDashboard() {
                         padding: '5px 12px',
                         borderRadius: '20px',
                         cursor: 'pointer',
-                        fontWeight: '600',
+                        fontWeight: '400',
                       }}
                     >
                       + {preset}
@@ -1633,7 +1858,7 @@ export default function DoctorDashboard() {
                     borderRadius: '9999px',
                     padding: '11px 26px',
                     fontSize: '13.5px',
-                    fontWeight: '800',
+                    fontWeight: '400',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',

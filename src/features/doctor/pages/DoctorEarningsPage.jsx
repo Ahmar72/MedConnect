@@ -575,7 +575,7 @@ export default function DoctorEarningsPage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '13px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: 'var(--forest-800)',
             background: 'none',
             border: 'none',
@@ -590,12 +590,9 @@ export default function DoctorEarningsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', margin: 0, color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '26px', fontWeight: '700', margin: 0, color: 'var(--text-main)' }}>
               Practice Earnings & Analytics
             </h1>
-            <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Daily patient consultation receipts, professional analytics graphs, and bank settlement ledger
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -609,7 +606,7 @@ export default function DoctorEarningsPage() {
                 color: 'var(--forest-800)',
                 padding: '10px 18px',
                 fontSize: '13px',
-                fontWeight: '700',
+                fontWeight: '400',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
@@ -626,7 +623,7 @@ export default function DoctorEarningsPage() {
               type="button"
               className="btn-lime-pill"
               onClick={() => setIsPayoutModalOpen(true)}
-              style={{ padding: '10px 22px', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ padding: '10px 22px', fontSize: '13px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <CreditCard size={15} />
               <span>Request Instant Payout</span>
@@ -654,7 +651,7 @@ export default function DoctorEarningsPage() {
       >
         {/* Left: Timeframe Preset Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--forest-900)', marginRight: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <span style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-900)', marginRight: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
             <CalendarIcon size={16} color="var(--forest-800)" />
             Timeframe:
           </span>
@@ -679,7 +676,7 @@ export default function DoctorEarningsPage() {
                   padding: '7px 15px',
                   borderRadius: '9999px',
                   fontSize: '12.5px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   border: '1.5px solid',
                   borderColor: isActive ? 'var(--forest-800)' : '#E5E7EB',
                   backgroundColor: isActive ? 'var(--forest-800)' : '#FFFFFF',
@@ -711,7 +708,7 @@ export default function DoctorEarningsPage() {
                 backgroundColor: specificDate ? '#ECFDF5' : '#FFFFFF',
                 color: specificDate ? 'var(--forest-900)' : '#374151',
                 fontSize: '13px',
-                fontWeight: '700',
+                fontWeight: '400',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
                 boxShadow: specificDate ? '0 0 0 2px rgba(14, 56, 44, 0.1)' : 'none',
@@ -732,7 +729,7 @@ export default function DoctorEarningsPage() {
                   border: 'none',
                   color: '#DC2626',
                   fontSize: '12px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   textDecoration: 'underline',
                 }}
@@ -762,10 +759,10 @@ export default function DoctorEarningsPage() {
               {/* Calendar Header with Month & Year */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '15.5px', fontWeight: '800', color: 'var(--forest-900)' }}>
+                  <h4 style={{ margin: 0, fontSize: '15.5px', fontWeight: '400', color: 'var(--forest-900)' }}>
                     {monthNames[calendarMonth]} {calendarYear}
                   </h4>
-                  <span style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '600' }}>
+                  <span style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '400' }}>
                     Select any past day to filter
                   </span>
                 </div>
@@ -814,7 +811,7 @@ export default function DoctorEarningsPage() {
               {/* Day of Week Headers */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center', marginBottom: '8px' }}>
                 {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((dow, idx) => (
-                  <span key={idx} style={{ fontSize: '11px', fontWeight: '800', color: '#9CA3AF' }}>
+                  <span key={idx} style={{ fontSize: '11px', fontWeight: '400', color: '#9CA3AF' }}>
                     {dow}
                   </span>
                 ))}
@@ -912,14 +909,14 @@ export default function DoctorEarningsPage() {
         {/* Card 1: Total Gross Earnings */}
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '18px', padding: '22px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
               Period Earnings
             </span>
-            <span style={{ fontSize: '11px', color: '#059669', fontWeight: '800', backgroundColor: '#ECFDF5', padding: '2px 6px', borderRadius: '6px' }}>
+            <span style={{ fontSize: '11px', color: '#059669', fontWeight: '400', backgroundColor: '#ECFDF5', padding: '2px 6px', borderRadius: '6px' }}>
               +18.4% ↑
             </span>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--forest-800)', margin: '6px 0 2px 0' }}>
+          <div style={{ fontSize: '32px', fontWeight: '400', color: 'var(--forest-800)', margin: '6px 0 2px 0' }}>
             Rs. {totalNet.toLocaleString()}
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -930,13 +927,13 @@ export default function DoctorEarningsPage() {
         {/* Card 2: Consultations Volume */}
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '18px', padding: '22px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
               Total Consultations
             </span>
             <User size={16} color="var(--forest-800)" />
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--text-main)', margin: '6px 0 2px 0' }}>
-            {filteredTransactions.length} <span style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-muted)' }}>Patients</span>
+          <div style={{ fontSize: '32px', fontWeight: '400', color: 'var(--text-main)', margin: '6px 0 2px 0' }}>
+            {filteredTransactions.length} <span style={{ fontSize: '15px', fontWeight: '400', color: 'var(--text-muted)' }}>Patients</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
             {videoCount} Video · {clinicCount} In-Clinic OPD
@@ -946,12 +943,12 @@ export default function DoctorEarningsPage() {
         {/* Card 3: Average Revenue Per Visit */}
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '18px', padding: '22px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400', textTransform: 'uppercase' }}>
               Avg. Per Consultation
             </span>
             <TrendingUp size={16} color="var(--forest-800)" />
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '800', color: '#047857', margin: '6px 0 2px 0' }}>
+          <div style={{ fontSize: '32px', fontWeight: '400', color: '#047857', margin: '6px 0 2px 0' }}>
             Rs. {avgPerVisit.toLocaleString()}
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -962,15 +959,15 @@ export default function DoctorEarningsPage() {
         {/* Card 4: Available for Instant Transfer */}
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '18px', padding: '22px', border: '1.5px solid var(--lime-accent)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '11.5px', color: 'var(--forest-900)', fontWeight: '800', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '11.5px', color: 'var(--forest-900)', fontWeight: '400', textTransform: 'uppercase' }}>
               Available Balance
             </span>
             <CreditCard size={16} color="var(--forest-800)" />
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--forest-900)', margin: '6px 0 2px 0' }}>
+          <div style={{ fontSize: '32px', fontWeight: '400', color: 'var(--forest-900)', margin: '6px 0 2px 0' }}>
             Rs. 38,500
           </div>
-          <div style={{ fontSize: '12px', color: '#047857', fontWeight: '700' }}>
+          <div style={{ fontSize: '12px', color: '#047857', fontWeight: '400' }}>
             ✓ Ready for instant Meezan Bank payout
           </div>
         </div>
@@ -1009,7 +1006,7 @@ export default function DoctorEarningsPage() {
                 <BarChart3 size={20} />
               </div>
               <div>
-                <h3 style={{ fontSize: '19px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+                <h3 style={{ fontSize: '19px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
                   Daily Clinical Revenue Trend
                 </h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
@@ -1021,11 +1018,11 @@ export default function DoctorEarningsPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {highestEarningDay && (
-              <span style={{ fontSize: '12px', fontWeight: '700', color: '#065F46', backgroundColor: '#D1FAE5', padding: '5px 12px', borderRadius: '8px', border: '1px solid #A7F3D0' }}>
+              <span style={{ fontSize: '12px', fontWeight: '400', color: '#065F46', backgroundColor: '#D1FAE5', padding: '5px 12px', borderRadius: '8px', border: '1px solid #A7F3D0' }}>
                 ⭐ Peak Day: {highestEarningDay.date} (Rs. {highestEarningDay.revenue.toLocaleString()})
               </span>
             )}
-            <span style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--forest-800)', backgroundColor: 'var(--canvas-bg)', padding: '5px 12px', borderRadius: '8px' }}>
+            <span style={{ fontSize: '12.5px', fontWeight: '400', color: 'var(--forest-800)', backgroundColor: 'var(--canvas-bg)', padding: '5px 12px', borderRadius: '8px' }}>
               {dailyChartData.length} Active Days
             </span>
           </div>
@@ -1042,7 +1039,7 @@ export default function DoctorEarningsPage() {
             <div style={{ position: 'absolute', top: '30px', left: 0, right: 0, bottom: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 1 }}>
               {[maxDailyRevenue, Math.round(maxDailyRevenue * 0.75), Math.round(maxDailyRevenue * 0.5), Math.round(maxDailyRevenue * 0.25), 0].map((val, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                  <span style={{ width: '65px', fontSize: '10.5px', fontWeight: '700', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>
+                  <span style={{ width: '65px', fontSize: '10.5px', fontWeight: '400', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>
                     Rs. {(val / 1000).toFixed(1)}k
                   </span>
                   <div style={{ flex: 1, height: '1px', backgroundColor: idx === 4 ? '#D1D5DB' : '#F3F4F6' }} />
@@ -1092,7 +1089,7 @@ export default function DoctorEarningsPage() {
                     <span
                       style={{
                         fontSize: '11px',
-                        fontWeight: '800',
+                        fontWeight: '400',
                         color: isSelectedDay ? 'var(--forest-900)' : '#374151',
                         marginBottom: '8px',
                         backgroundColor: isSelectedDay ? 'var(--lime-accent)' : '#F3F4F6',
@@ -1143,7 +1140,7 @@ export default function DoctorEarningsPage() {
                       >
                         {bar.date.slice(5)}
                       </div>
-                      <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '600' }}>
+                      <div style={{ fontSize: '10.5px', color: '#6B7280', fontWeight: '400' }}>
                         {bar.dayName.slice(0, 3)}
                       </div>
                     </div>
@@ -1184,7 +1181,7 @@ export default function DoctorEarningsPage() {
           }}
         >
           <div>
-            <h3 style={{ fontSize: '19px', fontWeight: '800', margin: 0, color: 'var(--forest-900)' }}>
+            <h3 style={{ fontSize: '19px', fontWeight: '400', margin: 0, color: 'var(--forest-900)' }}>
               Patient Consultation Earnings Ledger ({filteredTransactions.length})
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '3px 0 0 0' }}>
@@ -1193,7 +1190,7 @@ export default function DoctorEarningsPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--forest-800)', backgroundColor: 'rgba(14, 56, 44, 0.08)', padding: '8px 16px', borderRadius: '10px' }}>
+            <span style={{ fontSize: '14px', fontWeight: '400', color: 'var(--forest-800)', backgroundColor: 'rgba(14, 56, 44, 0.08)', padding: '8px 16px', borderRadius: '10px' }}>
               Total Ledger Amount: Rs. {totalNet.toLocaleString()}
             </span>
           </div>
@@ -1203,7 +1200,7 @@ export default function DoctorEarningsPage() {
         {filteredTransactions.length === 0 ? (
           <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
             <CalendarIcon size={34} style={{ margin: '0 auto 12px auto', color: '#9CA3AF' }} />
-            <h4 style={{ fontSize: '16.5px', fontWeight: '800', margin: '0 0 4px 0', color: 'var(--text-main)' }}>
+            <h4 style={{ fontSize: '16.5px', fontWeight: '400', margin: '0 0 4px 0', color: 'var(--text-main)' }}>
               No transactions recorded for the selected date
             </h4>
             <p style={{ fontSize: '13px', margin: 0 }}>
@@ -1215,13 +1212,13 @@ export default function DoctorEarningsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13.5px' }}>
               <thead>
                 <tr style={{ backgroundColor: 'var(--canvas-bg)', borderBottom: '1.5px solid var(--border-subtle)', color: 'var(--forest-900)' }}>
-                  <th style={{ padding: '16px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Patient Profile</th>
-                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Consultation Mode</th>
-                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Hospital / Location</th>
-                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payment Method</th>
-                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Gross Fee</th>
-                  <th style={{ padding: '16px 20px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status</th>
-                  <th style={{ padding: '16px 22px', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>Receipt</th>
+                  <th style={{ padding: '16px 22px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Patient Profile</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Consultation Mode</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Hospital / Location</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payment Method</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Gross Fee</th>
+                  <th style={{ padding: '16px 20px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status</th>
+                  <th style={{ padding: '16px 22px', fontWeight: '400', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center' }}>Receipt</th>
                 </tr>
               </thead>
               <tbody>
@@ -1247,7 +1244,7 @@ export default function DoctorEarningsPage() {
                         style={{ cursor: 'pointer', display: 'inline-block' }}
                         title="Click to view complete patient profile & medical history"
                       >
-                        <div style={{ fontWeight: '800', color: 'var(--forest-800)', fontSize: '14.5px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                        <div style={{ fontWeight: '400', color: 'var(--forest-800)', fontSize: '14.5px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
                           {t.patientName}
                         </div>
                         <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -1276,7 +1273,7 @@ export default function DoctorEarningsPage() {
                             lineHeight: '1.45',
                           }}
                         >
-                          <div style={{ fontWeight: '800', color: 'var(--lime-accent)', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ fontWeight: '400', color: 'var(--lime-accent)', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span>📅 Consultation: {t.displayDate} ({t.dayName})</span>
                           </div>
                           <div style={{ color: 'rgba(255, 255, 255, 0.95)', fontSize: '11.5px', marginBottom: '3px' }}>
@@ -1285,7 +1282,7 @@ export default function DoctorEarningsPage() {
                           <div style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '11px' }}>
                             Clinical Reason: {t.reason}
                           </div>
-                          <div style={{ fontSize: '10.5px', color: '#93C5FD', fontWeight: '700', marginTop: '4px' }}>
+                          <div style={{ fontSize: '10.5px', color: '#93C5FD', fontWeight: '400', marginTop: '4px' }}>
                             Click to open complete patient medical profile →
                           </div>
                         </div>
@@ -1297,7 +1294,7 @@ export default function DoctorEarningsPage() {
                       <span
                         style={{
                           fontSize: '11.5px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           backgroundColor: t.isVideo ? '#D1FAE5' : '#DBEAFE',
                           color: t.isVideo ? '#065F46' : '#1E40AF',
                           padding: '4px 10px',
@@ -1323,7 +1320,7 @@ export default function DoctorEarningsPage() {
                     </td>
 
                     {/* Gross Fee */}
-                    <td style={{ padding: '16px 20px', color: 'var(--forest-900)', fontWeight: '800', fontSize: '14px' }}>
+                    <td style={{ padding: '16px 20px', color: 'var(--forest-900)', fontWeight: '400', fontSize: '14px' }}>
                       Rs. {t.grossFee.toLocaleString()}
                     </td>
 
@@ -1335,7 +1332,7 @@ export default function DoctorEarningsPage() {
                           color: '#166534',
                           padding: '4px 10px',
                           borderRadius: '9999px',
-                          fontWeight: '800',
+                          fontWeight: '400',
                           fontSize: '11.5px',
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -1364,7 +1361,7 @@ export default function DoctorEarningsPage() {
                             padding: '5px 12px',
                             borderRadius: '6px',
                             fontSize: '13px',
-                            fontWeight: '800',
+                            fontWeight: '400',
                             textDecoration: 'underline',
                           }}
                         >
@@ -1392,7 +1389,7 @@ export default function DoctorEarningsPage() {
                               lineHeight: '1.4',
                             }}
                           >
-                            <div style={{ fontWeight: '800', color: 'var(--lime-accent)', marginBottom: '3px' }}>
+                            <div style={{ fontWeight: '400', color: 'var(--lime-accent)', marginBottom: '3px' }}>
                               Receipt #{t.id} · Rs. {t.grossFee.toLocaleString()}
                             </div>
                             <div style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
@@ -1401,7 +1398,7 @@ export default function DoctorEarningsPage() {
                             <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '10.5px', marginTop: '2px' }}>
                               {t.hospital} · {t.paymentChannel}
                             </div>
-                            <div style={{ fontSize: '10.5px', color: '#86EFAC', fontWeight: '700', marginTop: '4px' }}>
+                            <div style={{ fontSize: '10.5px', color: '#86EFAC', fontWeight: '400', marginTop: '4px' }}>
                               Click to view, print & download receipt →
                             </div>
                           </div>
@@ -1456,10 +1453,10 @@ export default function DoctorEarningsPage() {
               }}
             >
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
                   MEDCONNECT CLINICAL RECEIPT
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: '400', color: '#FFFFFF' }}>
                   Consultation Payment Voucher
                 </h3>
               </div>
@@ -1488,10 +1485,10 @@ export default function DoctorEarningsPage() {
                 <span style={{ fontSize: '11px', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Total Payout Received
                 </span>
-                <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--forest-800)', margin: '4px 0' }}>
+                <div style={{ fontSize: '32px', fontWeight: '400', color: 'var(--forest-800)', margin: '4px 0' }}>
                   Rs. {selectedReceipt.netPayout.toLocaleString()}
                 </div>
-                <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '700', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: '400', backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '10px' }}>
                   ✓ Direct Clinician Settlement Completed
                 </span>
               </div>
@@ -1499,31 +1496,31 @@ export default function DoctorEarningsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6B7280' }}>Transaction Reference:</span>
-                  <span style={{ fontWeight: '700', fontFamily: 'monospace' }}>{selectedReceipt.refNumber}</span>
+                  <span style={{ fontWeight: '400', fontFamily: 'monospace' }}>{selectedReceipt.refNumber}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6B7280' }}>Date & Timestamp:</span>
-                  <span style={{ fontWeight: '600' }}>{selectedReceipt.displayDate}</span>
+                  <span style={{ fontWeight: '400' }}>{selectedReceipt.displayDate}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6B7280' }}>Patient Name:</span>
-                  <span style={{ fontWeight: '700', color: 'var(--forest-800)' }}>{selectedReceipt.patientName} ({selectedReceipt.patientMrn})</span>
+                  <span style={{ fontWeight: '400', color: 'var(--forest-800)' }}>{selectedReceipt.patientName} ({selectedReceipt.patientMrn})</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6B7280' }}>Consultation Mode:</span>
-                  <span style={{ fontWeight: '600' }}>{selectedReceipt.type}</span>
+                  <span style={{ fontWeight: '400' }}>{selectedReceipt.type}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6B7280' }}>Practice Location:</span>
-                  <span style={{ fontWeight: '600' }}>{selectedReceipt.hospital}</span>
+                  <span style={{ fontWeight: '400' }}>{selectedReceipt.hospital}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#6B7280' }}>Payment Instrument:</span>
-                  <span style={{ fontWeight: '600' }}>{selectedReceipt.paymentChannel}</span>
+                  <span style={{ fontWeight: '400' }}>{selectedReceipt.paymentChannel}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #E5E7EB', paddingTop: '10px' }}>
                   <span style={{ color: '#6B7280' }}>Platform Commission:</span>
-                  <span style={{ fontWeight: '700', color: '#059669' }}>Rs. 0 (0% Platform Fee)</span>
+                  <span style={{ fontWeight: '400', color: '#059669' }}>Rs. 0 (0% Platform Fee)</span>
                 </div>
               </div>
 
@@ -1586,10 +1583,10 @@ export default function DoctorEarningsPage() {
               }}
             >
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
                   OFFICIAL TAX & PRACTICE STATEMENT
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '400', color: '#FFFFFF' }}>
                   Clinician Earnings Invoice
                 </h3>
               </div>
@@ -1614,11 +1611,11 @@ export default function DoctorEarningsPage() {
             </div>
 
             {/* Invoice Printable Body */}
-            <div style={{ padding: '28px 30px', maxHeight: '70vh', overflowY: 'auto' }}>
+            <div id="printable-statement-modal" style={{ padding: '28px 30px', maxHeight: '70vh', overflowY: 'auto', backgroundColor: '#FFFFFF' }}>
               {/* Top Issuer & Doctor Details */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', borderBottom: '1.5px solid #F3F4F6', paddingBottom: '18px' }}>
                 <div>
-                  <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--forest-800)' }}>
+                  <div style={{ fontSize: '20px', fontWeight: '400', color: 'var(--forest-800)' }}>
                     MedConnect Pakistan
                   </div>
                   <div style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>
@@ -1630,7 +1627,7 @@ export default function DoctorEarningsPage() {
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--forest-800)', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '12px', fontWeight: '400', color: 'var(--forest-800)', textTransform: 'uppercase' }}>
                     INVOICE #INV-2026-OCT-0941
                   </div>
                   <div style={{ fontSize: '12px', color: '#4B5563', marginTop: '2px' }}>
@@ -1644,10 +1641,10 @@ export default function DoctorEarningsPage() {
 
               {/* Clinician Profile Block */}
               <div style={{ backgroundColor: 'var(--canvas-bg)', borderRadius: '14px', padding: '16px 20px', border: '1px solid var(--border-subtle)', marginBottom: '20px' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--forest-700)', textTransform: 'uppercase' }}>
                   PAYABLE TO CLINICIAN:
                 </span>
-                <div style={{ fontSize: '17px', fontWeight: '800', color: 'var(--text-main)', marginTop: '2px' }}>
+                <div style={{ fontSize: '17px', fontWeight: '400', color: 'var(--text-main)', marginTop: '2px' }}>
                   {currentUser?.name || 'Dr. Amina Shah'}
                 </div>
                 <div style={{ fontSize: '12.5px', color: '#4B5563', marginTop: '2px' }}>
@@ -1680,7 +1677,7 @@ export default function DoctorEarningsPage() {
                         <td style={{ padding: '8px 4px', color: '#4B5563' }}>{txn.type}</td>
                         <td style={{ padding: '8px 4px', textAlign: 'right' }}>Rs. {txn.grossFee.toLocaleString()}</td>
                         <td style={{ padding: '8px 4px', textAlign: 'right', color: '#059669' }}>Rs. 0 (0%)</td>
-                        <td style={{ padding: '8px 4px', textAlign: 'right', fontWeight: '700', color: 'var(--forest-800)' }}>
+                        <td style={{ padding: '8px 4px', textAlign: 'right', fontWeight: '400', color: 'var(--forest-800)' }}>
                           Rs. {txn.netPayout.toLocaleString()}
                         </td>
                       </tr>
@@ -1693,17 +1690,17 @@ export default function DoctorEarningsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '2px solid #E5E7EB', paddingTop: '14px', fontSize: '13px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#4B5563' }}>Total Consultations Completed:</span>
-                  <span style={{ fontWeight: '700' }}>{filteredTransactions.length} Visits</span>
+                  <span style={{ fontWeight: '400' }}>{filteredTransactions.length} Visits</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#4B5563' }}>Gross Patient Billings:</span>
-                  <span style={{ fontWeight: '700' }}>Rs. {totalGross.toLocaleString()}</span>
+                  <span style={{ fontWeight: '400' }}>Rs. {totalGross.toLocaleString()}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#059669' }}>
                   <span>MedConnect Platform Commission (0% Promo):</span>
-                  <span style={{ fontWeight: '800' }}>- Rs. 0</span>
+                  <span style={{ fontWeight: '400' }}>- Rs. 0</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '17px', fontWeight: '800', color: 'var(--forest-900)', borderTop: '1px solid #E5E7EB', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '17px', fontWeight: '400', color: 'var(--forest-900)', borderTop: '1px solid #E5E7EB', paddingTop: '10px' }}>
                   <span>Net Doctor Settlement:</span>
                   <span>Rs. {totalNet.toLocaleString()}</span>
                 </div>
@@ -1727,7 +1724,7 @@ export default function DoctorEarningsPage() {
               <button
                 type="button"
                 className="btn-lime-pill"
-                style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}
                 onClick={() => {
                   showToast('Official Invoice PDF downloaded successfully.', 'success');
                   setIsInvoiceModalOpen(false);
@@ -1772,10 +1769,10 @@ export default function DoctorEarningsPage() {
               }}
             >
               <div>
-                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--lime-accent)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
                   SETTLEMENT DISBURSEMENT
                 </span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '400', color: '#FFFFFF' }}>
                   Request Instant Bank Payout
                 </h3>
               </div>
@@ -1801,16 +1798,16 @@ export default function DoctorEarningsPage() {
 
             <form onSubmit={handlePayoutSubmit} style={{ padding: '26px 28px' }}>
               <div style={{ backgroundColor: 'var(--canvas-bg)', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-subtle)', marginBottom: '20px' }}>
-                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700' }}>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '400' }}>
                   VERIFIED AVAILABLE BALANCE:
                 </span>
-                <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--forest-900)', marginTop: '2px' }}>
+                <div style={{ fontSize: '26px', fontWeight: '400', color: 'var(--forest-900)', marginTop: '2px' }}>
                   Rs. 38,500
                 </div>
               </div>
 
               <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Payout Amount (PKR)
                 </label>
                 <input
@@ -1826,7 +1823,7 @@ export default function DoctorEarningsPage() {
               </div>
 
               <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   Destination Pakistani Commercial Bank / Wallet
                 </label>
                 <select
@@ -1844,7 +1841,7 @@ export default function DoctorEarningsPage() {
               </div>
 
               <div className="form-group" style={{ marginBottom: '22px' }}>
-                <label className="form-label" style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--forest-900)' }}>
+                <label className="form-label" style={{ fontSize: '13px', fontWeight: '400', marginBottom: '6px', color: 'var(--forest-900)' }}>
                   IBAN / Account Number
                 </label>
                 <input
@@ -1869,7 +1866,7 @@ export default function DoctorEarningsPage() {
                 <button
                   type="submit"
                   className="btn-lime-pill"
-                  style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '800' }}
+                  style={{ padding: '10px 24px', fontSize: '13px', fontWeight: '400' }}
                 >
                   <span>Authorize Transfer (Rs. {Number(payoutForm.amount || 0).toLocaleString()})</span>
                 </button>
