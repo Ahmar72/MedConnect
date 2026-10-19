@@ -50,12 +50,21 @@ export default function DoctorManageSchedulePage() {
   const doctorId = currentUser?.id || 'dr-amina-shah';
   const doctorName = currentUser?.name || 'Dr. Amina Shah';
 
-  // Filter appointments for this doctor that are upcoming / confirmed or completed
+  // Filter appointments for this doctor that are active & upcoming (Completed ones move to Patient Records)
   const upcomingAppointments = useMemo(() => {
     return appointments.filter((a) => {
-      const isRelevant = a.status === 'Confirmed' || a.status === 'Pending Doctor Confirmation' || a.status === 'Completed';
+      // Completed consultations are moved into the Patient Records tab!
+      if (a.status === 'Completed' || a.isCompleted) return false;
+      if (a.status === 'Cancelled') return false;
+
+      const isRelevant = a.status === 'Confirmed' || a.status === 'Pending Doctor Confirmation';
       return isRelevant;
     });
+  }, [appointments]);
+
+  // Track completed consultations that have been moved to Patient Records
+  const completedConsultations = useMemo(() => {
+    return appointments.filter((a) => a.status === 'Completed' || a.isCompleted);
   }, [appointments]);
 
   const filteredAppointments = useMemo(() => {
@@ -404,6 +413,52 @@ export default function DoctorManageSchedulePage() {
             ))}
           </div>
         </div>
+
+        {/* Completed Consultations Moved Notice */}
+        {completedConsultations.length > 0 && (
+          <div
+            style={{
+              backgroundColor: '#F0FDF4',
+              border: '1px solid #BBF7D0',
+              borderRadius: '12px',
+              padding: '12px 18px',
+              marginBottom: '16px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '10px',
+              fontSize: '13px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#166534' }}>
+              <CheckCircle2 size={16} color="#166534" />
+              <span>
+                <b>{completedConsultations.length} completed {completedConsultations.length === 1 ? 'consultation has' : 'consultations have'}</b> been moved from active schedule into <b>Patient Records</b>.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/doctor/patients')}
+              style={{
+                backgroundColor: '#166534',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '5px 14px',
+                fontSize: '12px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <span>View Patient Records</span>
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        )}
 
         {/* Patient Appointment List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

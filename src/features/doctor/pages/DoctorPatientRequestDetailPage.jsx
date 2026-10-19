@@ -204,15 +204,17 @@ export default function DoctorPatientRequestDetailPage() {
                 fontWeight: '600',
                 padding: '4px 12px',
                 borderRadius: '999px',
-                backgroundColor: isPending ? '#FFFBEB' : isConfirmed ? '#ECFDF5' : '#F1F5F9',
-                color: isPending ? '#92400E' : isConfirmed ? '#065F46' : '#475569',
-                border: `1px solid ${isPending ? '#FDE68A' : isConfirmed ? '#A7F3D0' : '#E2E8F0'}`,
+                backgroundColor: isPending ? '#FFFBEB' : isConfirmed ? '#ECFDF5' : isCompleted ? '#DCFCE7' : '#F1F5F9',
+                color: isPending ? '#92400E' : isConfirmed ? '#065F46' : isCompleted ? '#166534' : '#475569',
+                border: `1px solid ${isPending ? '#FDE68A' : isConfirmed ? '#A7F3D0' : isCompleted ? '#86EFAC' : '#E2E8F0'}`,
               }}
             >
               {isPending
                 ? '⏳ Awaiting Your Decision'
                 : isConfirmed
                 ? '✓ Confirmed Appointment'
+                : isCompleted
+                ? '✓ Consultation Completed · Patient Record'
                 : '✓ Completed Visit'}
             </span>
           </div>
@@ -667,6 +669,51 @@ export default function DoctorPatientRequestDetailPage() {
                     <span>Reject Booking Request</span>
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* COMPLETED CONSULTATION STATUS CARD */}
+            {isCompleted && (
+              <div
+                style={{
+                  backgroundColor: '#F0FDF4',
+                  borderRadius: '14px',
+                  border: '1.5px solid #86EFAC',
+                  padding: '18px 20px',
+                  boxShadow: '0 2px 8px rgba(34, 197, 94, 0.08)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <CheckCircle2 size={18} color="#166534" />
+                  <span style={{ fontSize: '14px', fontWeight: '700', color: '#166534' }}>
+                    Consultation Completed & Filed
+                  </span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#166534', lineHeight: '1.4', marginBottom: '14px' }}>
+                  This consultation has concluded. The full patient profile, encounter summary, and notes have been moved from your schedule to <b>Patient Records</b>.
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/doctor/patients')}
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#166534',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '999px',
+                    padding: '8px 16px',
+                    fontSize: '12.5px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <FileText size={14} />
+                  <span>Return to Patient Records</span>
+                </button>
               </div>
             )}
 

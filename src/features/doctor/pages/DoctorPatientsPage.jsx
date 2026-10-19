@@ -105,10 +105,27 @@ export default function DoctorPatientsPage() {
 
       const pEntry = patientMap.get(key);
       pEntry.appointments.push(apt);
-      if (apt.chiefComplaint) pEntry.latestDiagnosis = apt.chiefComplaint;
-      if (apt.date) pEntry.latestVisitDate = `${apt.date} at ${apt.time || 'OPD'}`;
-      if (apt.type) pEntry.lastConsultationMode = apt.type;
+
+      // Specifically track and highlight completed consultations
+      if (apt.status === 'Completed' || apt.isCompleted) {
+        pEntry.completedConsultations = pEntry.completedConsultations || [];
+        pEntry.completedConsultations.push(apt);
+        pEntry.hasCompletedVisit = true;
+        pEntry.latestCompletedVisit = apt;
+        pEntry.latestCompletedDate = apt.completedAt || `${apt.date} at ${apt.time || 'OPD'}`;
+        pEntry.latestCompletedDiagnosis =
+          apt.completionNotes || apt.diagnosis || apt.chiefComplaint || apt.reason || 'Consultation Completed';
+        pEntry.latestVisitDate = pEntry.latestCompletedDate;
+        pEntry.latestDiagnosis = pEntry.latestCompletedDiagnosis;
+        pEntry.lastConsultationMode = apt.type || pEntry.lastConsultationMode;
+      } else {
+        if (apt.chiefComplaint && !pEntry.hasCompletedVisit) pEntry.latestDiagnosis = apt.chiefComplaint;
+        if (apt.date && !pEntry.hasCompletedVisit) pEntry.latestVisitDate = `${apt.date} at ${apt.time || 'OPD'}`;
+        if (apt.type) pEntry.lastConsultationMode = apt.type;
+      }
+
       pEntry.totalVisits = Math.max(pEntry.totalVisits, pEntry.appointments.length);
+      pEntry.completedCount = (pEntry.completedConsultations || []).length;
     });
 
     // Merge prescriptions
@@ -149,11 +166,13 @@ export default function DoctorPatientsPage() {
       );
     });
 
-    if (activeFilterTab === 'recent') {
+    if (activeFilterTab === 'completed') {
+      result = result.filter((p) => p.hasCompletedVisit || p.completedCount > 0);
+    } else if (activeFilterTab === 'recent') {
       result = result.filter((p) => p.appointments.length > 0);
     } else if (activeFilterTab === 'allergies') {
       result = result.filter(
-        (p) => p.allergies && p.allergies.toLowerCase() !== 'none reported'
+        (p) => p.allergies && p.allergies.toLowerCase() !== 'none reported' && p.allergies.toLowerCase() !== 'none'
       );
     }
 
@@ -243,7 +262,7 @@ export default function DoctorPatientsPage() {
                   padding: '5px 14px',
                 }}
               >
-                {appointments.length} Consultations
+                {enrichedPatients.filter((p) => p.hasCompletedVisit).length} Completed Profiles
               </span>
             </div>
           </div>
@@ -307,6 +326,7 @@ export default function DoctorPatientsPage() {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             {[
               { id: 'all', label: 'All Patients' },
+              { id: 'completed', label: 'Completed Consultations' },
               { id: 'recent', label: 'Recent Encounters' },
               { id: 'allergies', label: 'Allergies Noted' },
             ].map((tab) => (
@@ -434,7 +454,7 @@ export default function DoctorPatientsPage() {
 
                     <div>
                       {/* Name, MRN, Badges */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '3px' }}>
                         <span style={{ fontSize: '15px', fontWeight: '600', color: 'var(--forest-900)' }}>
                           {patient.patientName}
                         </span>
@@ -450,6 +470,25 @@ export default function DoctorPatientsPage() {
                         >
                           MRN #{patient.mrn}
                         </span>
+                        {patient.hasCompletedVisit && (
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              backgroundColor: '#DCFCE7',
+                              color: '#166534',
+                              padding: '1px 8px',
+                              borderRadius: '4px',
+                              border: '1px solid #86EFAC',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                          >
+                            <CheckCircle2 size={11} color="#166534" />
+                            <span>Consultation Completed</span>
+                          </span>
+                        )}
                         <span
                           style={{
                             fontSize: '11px',
@@ -483,7 +522,7 @@ export default function DoctorPatientsPage() {
                       </div>
 
                       {/* Demographics & Contact Row */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#64748B', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748B', flexWrap: 'wrap', marginBottom: '4px' }}>
                         <span>{patient.age} yrs · {patient.gender}</span>
                         <span>•</span>
                         <span>Blood: <b style={{ color: '#0F172A' }}>{patient.bloodGroup}</b></span>
@@ -495,37 +534,89 @@ export default function DoctorPatientsPage() {
                         <span>•</span>
                         <span>{patient.city}</span>
                       </div>
+
+                      {/* Clear Details of Completed Consultation & Medical Record */}
+                      <div
+                        style={{
+                          marginTop: '6px',
+                          paddingTop: '6px',
+                          borderTop: '1px solid #F1F5F9',
+                          fontSize: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          flexWrap: 'wrap',
+                          color: '#334155',
+                        }}
+                      >
+                        <span style={{ color: '#64748B', fontWeight: '500' }}>
+                          {patient.hasCompletedVisit ? 'Latest Completed Visit:' : 'Last Recorded Visit:'}
+                        </span>
+                        <span style={{ fontWeight: '600', color: 'var(--forest-900)' }}>
+                          {patient.latestCompletedDate || patient.latestVisitDate || 'Recent'}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '10.5px',
+                            color: '#0369A1',
+                            backgroundColor: '#E0F2FE',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {patient.lastConsultationMode || 'In-Clinic'}
+                        </span>
+                        <span>•</span>
+                        <span style={{ color: '#475569', fontStyle: 'italic' }}>
+                          Reason / Outcome: "{patient.latestCompletedDiagnosis || patient.latestDiagnosis}"
+                        </span>
+                        {patient.prescriptions && patient.prescriptions.length > 0 && (
+                          <>
+                            <span>•</span>
+                            <span
+                              style={{
+                                fontSize: '11px',
+                                color: '#166534',
+                                backgroundColor: '#ECFDF5',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                              }}
+                            >
+                              <Pill size={11} />
+                              <span>{patient.prescriptions.length} Digital Rx</span>
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Middle / Right: Latest Visit & Action */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-                    <div style={{ textAlign: 'right', display: 'none', minWidth: '160px', '@media (minWidth: 768px)': { display: 'block' } }}>
-                      <div style={{ fontSize: '11px', color: '#94A3B8' }}>Last Encounter</div>
-                      <div style={{ fontSize: '12.5px', fontWeight: '500', color: '#334155' }}>
-                        {patient.latestVisitDate || 'Recent'}
-                      </div>
-                    </div>
-
+                  {/* Middle / Right: Action */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
                     <button
                       type="button"
                       className="btn-lime-pill"
                       style={{
-                        padding: '6px 16px',
+                        padding: '7px 18px',
                         fontSize: '12px',
                         fontWeight: '600',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '5px',
+                        gap: '6px',
                         cursor: 'pointer',
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/doctor/patient-record/${patient.id}`);
                       }}
+                      title="Inspect complete electronic medical record, consultation history, and prescriptions"
                     >
                       <FileText size={13} />
-                      <span>View Record</span>
+                      <span>Inspect Record</span>
                     </button>
                   </div>
                 </div>
