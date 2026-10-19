@@ -480,18 +480,9 @@ export default function PatientHome() {
           TOP SECTION: SEARCH BAR & DISCOVERY HEADER
          ========================================================================= */}
       <div style={{ marginBottom: '22px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '999px', background: 'rgba(14, 56, 44, 0.06)', border: '1px solid rgba(14, 56, 44, 0.12)', marginBottom: '8px' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981', display: 'inline-block' }} />
-          <span style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--forest-800)' }}>
-            PATIENT CARE DIRECTORY · PMDC VERIFIED
-          </span>
-        </div>
-        <h1 style={{ fontSize: '26px', fontWeight: '700', margin: '0 0 6px 0', color: 'var(--text-main)', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+        <h1 style={{ fontSize: '26px', fontWeight: '700', margin: '0 0 16px 0', color: 'var(--text-main)', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
           Find Qualified PMDC Doctors & Clinics
         </h1>
-        <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 16px 0', lineHeight: 1.4 }}>
-          Search licensed specialists, verify credentials, and book verified in-person hospital consultations.
-        </p>
 
         {/* Unified Search & City Bar */}
         <div

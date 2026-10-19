@@ -690,7 +690,7 @@ export default function DoctorPatientRequestDetailPage() {
                   </span>
                 </div>
                 <div style={{ fontSize: '12px', color: '#166534', lineHeight: '1.4', marginBottom: '14px' }}>
-                  This consultation has concluded. The full patient profile, encounter summary, and notes have been moved from your schedule to <b>Patient Records</b>.
+                  This consultation has concluded. Clinical encounter details and prescriptions are securely filed in the patient medical record.
                 </div>
                 <button
                   type="button"

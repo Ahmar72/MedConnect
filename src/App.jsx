@@ -29,9 +29,16 @@ import {
 import {
   AdminDashboard,
   AdminDoctorsPage,
+  AdminDoctorDetailPage,
   AdminPatientsPage,
+  AdminPatientDetailPage,
+  AdminAppointmentsPage,
+  AdminAppointmentDetailPage,
   AdminBranchesPage,
+  AdminBranchDetailPage,
   AdminQueuePage,
+  AdminFinancePage,
+  AdminDoctorFinanceSummaryPage,
   AdminReportsPage,
 } from './features/admin/pages';
 
@@ -269,6 +276,14 @@ export default function App() {
           }
         />
         <Route
+          path="/admin/doctors/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDoctorDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/patients"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
@@ -277,10 +292,26 @@ export default function App() {
           }
         />
         <Route
-          path="/admin/branches"
+          path="/admin/patients/:id"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminBranchesPage />
+              <AdminPatientDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/appointments"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminAppointmentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/appointments/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminAppointmentDetailPage />
             </ProtectedRoute>
           }
         />
@@ -293,10 +324,34 @@ export default function App() {
           }
         />
         <Route
-          path="/admin/booking"
+          path="/admin/branches"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminQueuePage />
+              <AdminBranchesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/branches/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminBranchDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/finance"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminFinancePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/finance/doctor/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDoctorFinanceSummaryPage />
             </ProtectedRoute>
           }
         />
@@ -304,7 +359,15 @@ export default function App() {
           path="/admin/reports"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminReportsPage />
+              <AdminFinancePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/booking"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminAppointmentsPage />
             </ProtectedRoute>
           }
         />

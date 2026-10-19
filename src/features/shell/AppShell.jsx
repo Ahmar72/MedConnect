@@ -344,7 +344,7 @@ export default function AppShell({ children }) {
         {/* 3. ADMIN NAVIGATION (Only visible to Admin) */}
         {isAdmin && (
           <>
-            <div className="sidebar-section-title">Operations Console</div>
+            <div className="sidebar-section-title">Admin Management</div>
             <nav className="sidebar-nav">
               <NavLink
                 to="/admin"
@@ -353,7 +353,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Activity size={17} />
-                <span>System Overview</span>
+                <span>Dashboard</span>
               </NavLink>
 
               <NavLink
@@ -362,7 +362,7 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Stethoscope size={17} />
-                <span>Manage Doctors</span>
+                <span>Doctors</span>
                 {pendingDoctorsCount > 0 && (
                   <span
                     style={{
@@ -370,7 +370,7 @@ export default function AppShell({ children }) {
                       backgroundColor: '#DC2626',
                       color: '#FFF',
                       fontSize: '11px',
-                      fontWeight: '400',
+                      fontWeight: '500',
                       padding: '2px 7px',
                       borderRadius: '10px',
                     }}
@@ -386,7 +386,25 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Users size={17} />
-                <span>Manage Patients</span>
+                <span>Patients</span>
+              </NavLink>
+
+              <NavLink
+                to="/admin/appointments"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Calendar size={17} />
+                <span>Appointments</span>
+              </NavLink>
+
+              <NavLink
+                to="/admin/queue"
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Clock size={17} />
+                <span>Queue</span>
               </NavLink>
 
               <NavLink
@@ -395,25 +413,16 @@ export default function AppShell({ children }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Building2 size={17} />
-                <span>Hospital Clinics</span>
+                <span>Branches</span>
               </NavLink>
 
               <NavLink
-                to="/admin/queue"
-                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Calendar size={17} />
-                <span>Master Queue Triage</span>
-              </NavLink>
-
-              <NavLink
-                to="/admin/reports"
+                to="/admin/finance"
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <TrendingUp size={17} />
-                <span>Financial Ledger</span>
+                <span>Finance</span>
               </NavLink>
             </nav>
           </>
@@ -443,7 +452,7 @@ export default function AppShell({ children }) {
             onClick={handleLogout}
           >
             <LogOut size={16} />
-            <span>Sign Out</span>
+            <span>{isAdmin ? 'Logout' : 'Sign Out'}</span>
           </button>
         </div>
       </aside>
@@ -681,17 +690,19 @@ export default function AppShell({ children }) {
             ) : (
               /* Clinician & Admin Topbar Right Controls */
               <>
-                {/* City Selector Pill */}
-                <button
-                  type="button"
-                  className="city-pill-btn"
-                  onClick={() => setIsCityModalOpen(true)}
-                  title="Click to change city"
-                >
-                  <MapPin size={15} />
-                  <span>{selectedCity.name}</span>
-                  <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
-                </button>
+                {/* City Selector Pill (Hidden for Admin) */}
+                {!isAdmin && (
+                  <button
+                    type="button"
+                    className="city-pill-btn"
+                    onClick={() => setIsCityModalOpen(true)}
+                    title="Click to change city"
+                  >
+                    <MapPin size={15} />
+                    <span>{selectedCity.name}</span>
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
+                  </button>
+                )}
 
                 {/* User Profile Chip */}
                 <div

@@ -152,12 +152,19 @@ export default function DoctorDashboard() {
     (a) => a.status === 'Pending Doctor Confirmation'
   );
 
-  const confirmedAppointments = myAppointments.filter(
-    (a) => a.status === 'Confirmed' || a.status === 'Completed'
+  // Completed consultations are exclusively shown in Patient Records, not on Dashboard schedule
+  const completedAppointments = myAppointments.filter(
+    (a) => a.status === 'Completed' || a.isCompleted
   );
 
-  const completedCount = confirmedAppointments.filter((a) => a.status === 'Completed').length;
-  const totalRevenue = confirmedAppointments.reduce((acc, a) => acc + (a.fee || 0), 0);
+  // Confirmed appointments awaiting consultation in active OPD
+  const confirmedAppointments = myAppointments.filter(
+    (a) => a.status === 'Confirmed' && !a.isCompleted && a.status !== 'Completed'
+  );
+
+  const completedCount = completedAppointments.length;
+  // Consultation income/revenue is updated according to patients only when a consultation is completed
+  const totalRevenue = completedAppointments.reduce((acc, a) => acc + (a.fee || 0), 0);
 
   const handleStartConsultation = (apt) => {
     navigate(`/doctor/consultation/${apt.id}`);

@@ -84,15 +84,15 @@ export default function DoctorEarningsPage() {
     const doctorId = currentUser?.id || 'dr-amina-shah';
     const doctorName = currentUser?.name || 'Dr. Amina Shah';
 
-    // 1. From context appointments (confirmed/completed visits)
+    // 1. From context appointments (only included in income record when consultation is completed)
     const contextTransactions = appointments
       .filter(
         (a) =>
           (a.doctorId === doctorId || a.doctorName === doctorName) &&
-          (a.status === 'Confirmed' || a.status === 'Completed' || a.paymentStatus === 'Paid')
+          (a.status === 'Completed' || a.isCompleted)
       )
       .map((a, idx) => ({
-        id: `TXN-88${10 + idx}`,
+        id: `TXN-${a.id}`,
         appointmentId: a.id,
         rawDate: a.rawDate || '2026-10-14',
         displayDate: `${a.date || 'Today'} · ${a.time || '4:30 PM'}`,
