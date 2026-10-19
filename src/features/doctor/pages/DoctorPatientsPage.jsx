@@ -187,7 +187,7 @@ export default function DoctorPatientsPage() {
 
   return (
     <AppShell>
-      <div style={{ maxWidth: '1040px', margin: '0 auto', paddingBottom: '70px' }}>
+      <div style={{ width: '100%', paddingBottom: '70px' }}>
         {/* Top Header & Breadcrumb */}
         <div style={{ marginBottom: '20px' }}>
           <button
@@ -411,61 +411,66 @@ export default function DoctorPatientsPage() {
                   key={patient.id}
                   onClick={() => navigate(`/doctor/patient-record/${patient.id}`)}
                   style={{
+                    width: '100%',
                     backgroundColor: '#FFFFFF',
-                    borderRadius: '12px',
-                    border: '1px solid #E2E8F0',
-                    padding: '16px 20px',
+                    borderRadius: '16px',
+                    border: '1.5px solid var(--border-subtle)',
+                    padding: '22px 26px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                     flexWrap: 'wrap',
-                    gap: '14px',
+                    gap: '18px',
                     cursor: 'pointer',
-                    transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+                    boxSizing: 'border-box',
+                    transition: 'all 0.15s ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--forest-800)';
-                    e.currentTarget.style.boxShadow = '0 3px 12px rgba(14, 56, 44, 0.06)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(14, 56, 44, 0.08)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#E2E8F0';
-                    e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)';
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                    e.currentTarget.style.transform = 'none';
                   }}
                 >
                   {/* Left: Patient Avatar & Key Info */}
-                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
+                  <div style={{ display: 'flex', gap: '18px', alignItems: 'center', flex: '1 1 500px' }}>
                     <div
                       style={{
-                        width: '44px',
-                        height: '44px',
-                        borderRadius: '12px',
+                        width: '52px',
+                        height: '52px',
+                        borderRadius: '14px',
                         backgroundColor: 'var(--forest-800)',
                         color: 'var(--lime-accent)',
                         display: 'grid',
                         placeItems: 'center',
                         fontWeight: '700',
-                        fontSize: '15px',
+                        fontSize: '18px',
                         flexShrink: 0,
                       }}
                     >
                       {initials}
                     </div>
 
-                    <div>
+                    <div style={{ flex: 1 }}>
                       {/* Name, MRN, Badges */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '3px' }}>
-                        <span style={{ fontSize: '15px', fontWeight: '600', color: 'var(--forest-900)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '18px', fontWeight: '700', color: 'var(--forest-900)' }}>
                           {patient.patientName}
                         </span>
                         <span
                           style={{
-                            fontSize: '11px',
-                            fontWeight: '600',
+                            fontSize: '12px',
+                            fontWeight: '700',
                             backgroundColor: '#F1F5F9',
                             color: '#475569',
-                            padding: '1px 6px',
-                            borderRadius: '4px',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            fontFamily: 'monospace',
                           }}
                         >
                           MRN #{patient.mrn}
@@ -473,30 +478,30 @@ export default function DoctorPatientsPage() {
                         {patient.hasCompletedVisit && (
                           <span
                             style={{
-                              fontSize: '11px',
+                              fontSize: '12px',
                               fontWeight: '600',
                               backgroundColor: '#DCFCE7',
                               color: '#166534',
-                              padding: '1px 8px',
-                              borderRadius: '4px',
+                              padding: '2px 10px',
+                              borderRadius: '9999px',
                               border: '1px solid #86EFAC',
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '4px',
+                              gap: '5px',
                             }}
                           >
-                            <CheckCircle2 size={11} color="#166534" />
+                            <CheckCircle2 size={13} color="#166534" />
                             <span>Consultation Completed</span>
                           </span>
                         )}
                         <span
                           style={{
-                            fontSize: '11px',
-                            fontWeight: '500',
+                            fontSize: '12px',
+                            fontWeight: '600',
                             backgroundColor: '#ECFDF5',
                             color: '#065F46',
-                            padding: '1px 6px',
-                            borderRadius: '4px',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
                           }}
                         >
                           {patient.totalVisits} {patient.totalVisits === 1 ? 'Visit' : 'Visits'}
@@ -504,89 +509,90 @@ export default function DoctorPatientsPage() {
                         {hasAllergies && (
                           <span
                             style={{
-                              fontSize: '11px',
+                              fontSize: '12px',
                               fontWeight: '600',
                               backgroundColor: '#FEF2F2',
                               color: '#991B1B',
-                              padding: '1px 6px',
-                              borderRadius: '4px',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '3px',
+                              gap: '4px',
                             }}
                           >
-                            <AlertTriangle size={11} color="#DC2626" />
+                            <AlertTriangle size={12} color="#DC2626" />
                             <span>{patient.allergies}</span>
                           </span>
                         )}
                       </div>
 
                       {/* Demographics & Contact Row */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748B', flexWrap: 'wrap', marginBottom: '4px' }}>
-                        <span>{patient.age} yrs · {patient.gender}</span>
-                        <span>•</span>
-                        <span>Blood: <b style={{ color: '#0F172A' }}>{patient.bloodGroup}</b></span>
-                        <span>•</span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          <Phone size={11} color="var(--forest-800)" />
-                          <span>{patient.phone}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13.5px', color: '#475569', flexWrap: 'wrap', marginBottom: '6px' }}>
+                        <span><b>{patient.age}</b> yrs · {patient.gender}</span>
+                        <span style={{ color: '#CBD5E1' }}>•</span>
+                        <span>Blood: <b style={{ color: 'var(--forest-900)' }}>{patient.bloodGroup}</b></span>
+                        <span style={{ color: '#CBD5E1' }}>•</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Phone size={13} color="var(--forest-800)" />
+                          <span style={{ fontFamily: 'monospace', fontWeight: '500' }}>{patient.phone}</span>
                         </span>
-                        <span>•</span>
+                        <span style={{ color: '#CBD5E1' }}>•</span>
                         <span>{patient.city}</span>
                       </div>
 
                       {/* Clear Details of Completed Consultation & Medical Record */}
                       <div
                         style={{
-                          marginTop: '6px',
-                          paddingTop: '6px',
+                          marginTop: '8px',
+                          paddingTop: '8px',
                           borderTop: '1px solid #F1F5F9',
-                          fontSize: '12px',
+                          fontSize: '13px',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '8px',
+                          gap: '10px',
                           flexWrap: 'wrap',
                           color: '#334155',
                         }}
                       >
-                        <span style={{ color: '#64748B', fontWeight: '500' }}>
+                        <span style={{ color: '#64748B', fontWeight: '600' }}>
                           {patient.hasCompletedVisit ? 'Latest Completed Visit:' : 'Last Recorded Visit:'}
                         </span>
-                        <span style={{ fontWeight: '600', color: 'var(--forest-900)' }}>
+                        <span style={{ fontWeight: '700', color: 'var(--forest-900)' }}>
                           {patient.latestCompletedDate || patient.latestVisitDate || 'Recent'}
                         </span>
                         <span
                           style={{
-                            fontSize: '10.5px',
+                            fontSize: '11.5px',
                             color: '#0369A1',
                             backgroundColor: '#E0F2FE',
-                            padding: '1px 6px',
+                            padding: '2px 8px',
                             borderRadius: '4px',
-                            fontWeight: '500',
+                            fontWeight: '600',
                           }}
                         >
                           {patient.lastConsultationMode || 'In-Clinic'}
                         </span>
-                        <span>•</span>
-                        <span style={{ color: '#475569', fontStyle: 'italic' }}>
-                          Reason / Outcome: "{patient.latestCompletedDiagnosis || patient.latestDiagnosis}"
+                        <span style={{ color: '#CBD5E1' }}>•</span>
+                        <span style={{ color: '#475569' }}>
+                          Reason / Outcome: <b>"{patient.latestCompletedDiagnosis || patient.latestDiagnosis}"</b>
                         </span>
                         {patient.prescriptions && patient.prescriptions.length > 0 && (
                           <>
-                            <span>•</span>
+                            <span style={{ color: '#CBD5E1' }}>•</span>
                             <span
                               style={{
-                                fontSize: '11px',
+                                fontSize: '11.5px',
                                 color: '#166534',
                                 backgroundColor: '#ECFDF5',
-                                padding: '1px 6px',
+                                padding: '2px 8px',
                                 borderRadius: '4px',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '3px',
+                                gap: '4px',
+                                fontWeight: '600',
                               }}
                             >
-                              <Pill size={11} />
+                              <Pill size={12} />
                               <span>{patient.prescriptions.length} Digital Rx</span>
                             </span>
                           </>
@@ -599,15 +605,28 @@ export default function DoctorPatientsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
                     <button
                       type="button"
-                      className="btn-lime-pill"
                       style={{
-                        padding: '7px 18px',
-                        fontSize: '12px',
+                        padding: '10px 22px',
+                        fontSize: '13px',
                         fontWeight: '600',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
                         cursor: 'pointer',
+                        backgroundColor: 'var(--forest-800)',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '9999px',
+                        boxShadow: '0 2px 6px rgba(14, 56, 44, 0.2)',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--forest-900)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--forest-800)';
+                        e.currentTarget.style.transform = 'none';
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -615,7 +634,7 @@ export default function DoctorPatientsPage() {
                       }}
                       title="Inspect complete electronic medical record, consultation history, and prescriptions"
                     >
-                      <FileText size={13} />
+                      <FileText size={15} />
                       <span>Inspect Record</span>
                     </button>
                   </div>

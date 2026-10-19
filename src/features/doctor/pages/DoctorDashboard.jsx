@@ -171,17 +171,12 @@ export default function DoctorDashboard() {
   };
 
   const handleCallNextPatient = () => {
-    // Robustly find next active confirmed appointment
-    const targetApt =
-      confirmedAppointments.find((a) => a.status === 'Confirmed' && !a.isCompleted) ||
-      confirmedAppointments[0] ||
-      myAppointments.find((a) => a.status === 'Confirmed' && !a.isCompleted) ||
-      myAppointments[0] ||
-      appointments.find((a) => a.status === 'Confirmed' && !a.isCompleted) ||
-      appointments[0];
+    // Strictly find next active confirmed appointment awaiting consultation
+    const targetApt = confirmedAppointments.find((a) => a.status === 'Confirmed' && !a.isCompleted && a.status !== 'Completed');
 
     if (!targetApt) {
-      showToast('No patients currently in your consultation schedule.', 'info');
+      setCalledPatientAlert({ empty: true });
+      showToast('No patients currently waiting in queue.', 'info');
       return;
     }
 
@@ -194,13 +189,14 @@ export default function DoctorDashboard() {
     const slotInfo = targetApt.time ? `${targetApt.date || 'Today'} at ${targetApt.time}` : 'upcoming slot';
 
     setCalledPatientAlert({
+      empty: false,
       patientName: pName,
       slotInfo,
       id: targetApt.id,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     });
 
-    showToast(`Called next patient: ${pName} has been notified for consultation (${slotInfo})!`, 'success');
+    showToast(`Next Patient Called: ${pName} has been alerted for consultation!`, 'success');
   };
 
   // IF DOCTOR IS PENDING PMDC VERIFICATION: SHOW STATUS SCREEN
@@ -397,7 +393,7 @@ export default function DoctorDashboard() {
       </div>
 
       {/* Patient Turn Notification Alert Banner */}
-      {calledPatientAlert && (
+      {calledPatientAlert && !calledPatientAlert.empty && (
         <div
           style={{
             backgroundColor: '#ECFDF5',
@@ -429,7 +425,7 @@ export default function DoctorDashboard() {
               <CheckCircle2 size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: '400', color: '#065F46' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#065F46' }}>
                 Next Patient Called: <b>{calledPatientAlert.patientName}</b> has been alerted!
               </div>
               <div style={{ fontSize: '12px', color: '#047857', marginTop: '2px' }}>
@@ -443,7 +439,7 @@ export default function DoctorDashboard() {
               type="button"
               className="btn-white-capsule"
               onClick={() => navigate(`/doctor/patients/${calledPatientAlert.id}`)}
-              style={{ border: '1px solid #10B981', color: '#065F46', fontSize: '12px', padding: '7px 14px', fontWeight: '400' }}
+              style={{ border: '1px solid #10B981', color: '#065F46', fontSize: '12px', padding: '7px 14px', fontWeight: '600' }}
             >
               View Record & Rx
             </button>
@@ -456,6 +452,58 @@ export default function DoctorDashboard() {
               <X size={16} />
             </button>
           </div>
+        </div>
+      )}
+
+      {calledPatientAlert && calledPatientAlert.empty && (
+        <div
+          style={{
+            backgroundColor: '#F8FAF9',
+            borderRadius: '16px',
+            border: '1.5px solid #CBD5E1',
+            padding: '16px 22px',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--shadow-sm)',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                backgroundColor: '#E2E8F0',
+                color: '#475569',
+                display: 'grid',
+                placeItems: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Users size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--forest-900)' }}>
+                No Patients Currently in Queue
+              </div>
+              <div style={{ fontSize: '12.5px', color: '#64748B', marginTop: '2px' }}>
+                There are no patients awaiting consultation in your OPD queue at this moment.
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setCalledPatientAlert(null)}
+            style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}
+            title="Dismiss"
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
 

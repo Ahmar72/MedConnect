@@ -358,427 +358,534 @@ export default function DoctorPatientRequestDetailPage() {
         </div>
 
         {/* =========================================================================
-            TWO-COLUMN MAIN WORKSPACE (Clean, High Readability)
+            SCREEN-FIT SEQUENTIAL MAIN WORKSPACE (Clean, High Readability List)
            ========================================================================= */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-            gap: '18px',
-            alignItems: 'start',
-          }}
-        >
-          {/* =======================================================================
-              COLUMN 1 (LEFT): CURRENT REQUEST & YOUR CONSULTATION HISTORY
-             ======================================================================= */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* 1. CURRENT APPOINTMENT REQUEST */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+
+          {/* 1. PRIMARY ACTION / STATUS CARD */}
+          {isCompleted && (
             <div
               style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '14px',
-                border: '1.5px solid var(--forest-800)',
-                padding: '20px 22px',
-                boxShadow: '0 2px 6px rgba(14, 56, 44, 0.05)',
+                width: '100%',
+                backgroundColor: '#F0FDF4',
+                borderRadius: '16px',
+                border: '1.5px solid #86EFAC',
+                padding: '24px 28px',
+                boxShadow: '0 2px 10px rgba(34, 197, 94, 0.08)',
+                boxSizing: 'border-box',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '16px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                  <Calendar size={16} color="var(--forest-800)" />
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--forest-900)' }}>
-                    Current Booking Request
-                  </span>
-                  <span style={{ fontSize: '11px', color: '#64748B' }}>
-                    (#{targetApt?.id || 'apt-102'})
-                  </span>
-                </div>
-
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    padding: '2px 8px',
-                    borderRadius: '5px',
-                    backgroundColor: '#ECFDF5',
-                    color: '#065F46',
-                    border: '1px solid #A7F3D0',
-                  }}
-                >
-                  {targetApt?.type || 'In-Clinic Hospital Visit'}
-                </span>
-              </div>
-
-              {/* 3 Key Facts */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-                  gap: '12px',
-                  padding: '12px 14px',
-                  backgroundColor: '#F8FAFC',
-                  borderRadius: '8px',
-                  border: '1px solid #E2E8F0',
-                  fontSize: '12.5px',
-                  marginBottom: '12px',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '500' }}>Slot Time</div>
-                  <div style={{ fontWeight: '600', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Clock size={13} color="var(--forest-800)" />
-                    <span>{targetApt?.date || 'Today'}, {targetApt?.time || '9:00 AM'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '500' }}>Clinic / OPD</div>
-                  <div style={{ fontWeight: '600', color: 'var(--forest-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Building2 size={13} color="var(--forest-800)" />
-                    <span>{targetApt?.clinicName || 'Central Medical Complex'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '500' }}>Consultation Fee</div>
-                  <div style={{ fontWeight: '700', color: '#065F46', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <CreditCard size={13} color="#065F46" />
-                    <span>Rs. {targetApt?.fee ? targetApt.fee.toLocaleString() : '2,000'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Patient Stated Reason */}
-              <div style={{ fontSize: '12.5px', color: '#334155' }}>
-                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase' }}>
-                  Reason for Visit:
-                </span>
-                <p style={{ margin: '3px 0 0 0', fontWeight: '500', color: '#0F172A', fontStyle: 'italic', lineHeight: '1.4' }}>
-                  "{targetApt?.reason || 'Routine Health Review & Seasonal Allergy Advice'}"
-                </p>
-              </div>
-            </div>
-
-            {/* 2. PREVIOUS VISITS WITH THIS SAME DOCTOR */}
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '14px',
-                border: '1px solid #E2E8F0',
-                padding: '18px 20px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <UserCheck size={16} color="var(--forest-800)" />
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--forest-900)' }}>
-                    Previous Consultations with You ({sameDoctorPreviousVisits.length})
-                  </span>
-                </div>
-                <span style={{ fontSize: '11.5px', color: '#64748B' }}>
-                  Dr. Amina Shah history only
-                </span>
-              </div>
-
-              {sameDoctorPreviousVisits.length === 0 ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div
                   style={{
-                    backgroundColor: '#F8FAFC',
-                    borderRadius: '8px',
-                    padding: '16px',
-                    textAlign: 'center',
-                    border: '1px dashed #CBD5E1',
-                    fontSize: '12.5px',
-                    color: '#64748B',
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    backgroundColor: '#DCFCE7',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: '#166534',
+                    flexShrink: 0,
                   }}
                 >
-                  <p style={{ margin: 0 }}>
-                    First consultation with you — no prior appointment records on file for {patientName}.
+                  <CheckCircle2 size={24} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#166534', margin: 0 }}>
+                    Consultation Completed & Filed
+                  </h2>
+                  <p style={{ fontSize: '13.5px', color: '#166534', margin: '4px 0 0 0' }}>
+                    This consultation has concluded. Clinical encounter details and prescriptions are securely filed in the patient medical record.
                   </p>
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {sameDoctorPreviousVisits.map((visit) => (
-                    <div
-                      key={visit.id}
-                      style={{
-                        padding: '10px 14px',
-                        borderRadius: '8px',
-                        border: '1px solid #E2E8F0',
-                        backgroundColor: '#FAFAFA',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '8px',
-                        fontSize: '12.5px',
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontWeight: '600', color: 'var(--forest-900)' }}>
-                            {visit.date} at {visit.time || 'OPD'}
-                          </span>
-                          <span style={{ fontSize: '11px', color: '#166534', backgroundColor: '#DCFCE7', padding: '1px 5px', borderRadius: '4px', fontWeight: '600' }}>
-                            ✓ {visit.status}
-                          </span>
-                          <span style={{ fontSize: '11px', color: '#64748B' }}>
-                            ({visit.type || 'In-Clinic'})
-                          </span>
-                        </div>
-                        <div style={{ color: '#475569', marginTop: '2px' }}>
-                          Reason: <b>{visit.reason || visit.chiefComplaint || 'Consultation & Review'}</b>
-                        </div>
-                      </div>
+              </div>
 
-                      <span style={{ fontSize: '11.5px', color: '#065F46', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <CheckCircle2 size={12} />
-                        <span>Encounter Logged</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={() => navigate('/doctor/patients')}
+                style={{
+                  backgroundColor: 'var(--forest-800)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '9999px',
+                  padding: '10px 24px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 2px 8px rgba(14, 56, 44, 0.2)',
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--forest-900)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--forest-800)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+              >
+                <FileText size={16} />
+                <span>Return to Patient Records</span>
+              </button>
             </div>
+          )}
 
-            {/* 3. PRESCRIPTIONS ISSUED BY THIS SAME DOCTOR */}
+          {isPending && (
             <div
               style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '14px',
-                border: '1px solid #E2E8F0',
-                padding: '18px 20px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+                width: '100%',
+                backgroundColor: '#FFFBEB',
+                borderRadius: '16px',
+                border: '1.5px solid #F59E0B',
+                padding: '24px 28px',
+                boxShadow: '0 4px 14px rgba(245, 158, 11, 0.1)',
+                boxSizing: 'border-box',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '16px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Pill size={16} color="var(--forest-800)" />
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--forest-900)' }}>
-                    Prescriptions Issued by You ({sameDoctorPrescriptions.length})
-                  </span>
-                </div>
-              </div>
-
-              {sameDoctorPrescriptions.length === 0 ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div
                   style={{
-                    backgroundColor: '#F8FAFC',
-                    borderRadius: '8px',
-                    padding: '14px',
-                    textAlign: 'center',
-                    border: '1px dashed #CBD5E1',
-                    fontSize: '12px',
-                    color: '#64748B',
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    backgroundColor: '#FEF3C7',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: '#B45309',
+                    flexShrink: 0,
                   }}
                 >
-                  No prior digital prescriptions issued to this patient by you.
+                  <AlertCircle size={24} />
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {sameDoctorPrescriptions.map((rx, idx) => (
-                    <div
-                      key={rx.id || idx}
-                      style={{
-                        padding: '10px 14px',
-                        borderRadius: '8px',
-                        border: '1px solid #E2E8F0',
-                        backgroundColor: '#FAFAFA',
-                        fontSize: '12.5px',
-                      }}
-                    >
-                      <div style={{ fontWeight: '600', color: 'var(--forest-900)', marginBottom: '4px' }}>
-                        Rx #{rx.id || idx + 1} — {rx.diagnosis || 'Clinical Prescription'}
-                      </div>
-                      {rx.medicines &&
-                        rx.medicines.map((m, mIdx) => (
-                          <div key={mIdx} style={{ color: '#475569' }}>
-                            • <b>{m.name}</b>: {m.dosage} ({m.duration})
-                          </div>
-                        ))}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* =======================================================================
-              COLUMN 2 (RIGHT): CLINICAL DECISION BAR & DIAGNOSTIC LABS
-             ======================================================================= */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* ACTION CARD: CLINICAL DECISION */}
-            {isPending && (
-              <div
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '14px',
-                  border: '1.5px solid #F59E0B',
-                  padding: '18px 20px',
-                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.1)',
-                }}
-              >
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#92400E', marginBottom: '2px' }}>
-                  Action Required: Clinical Decision
-                </div>
-                <div style={{ fontSize: '12px', color: '#64748B', marginBottom: '14px', lineHeight: '1.4' }}>
-                  Review request details and patient history above to accept into your OPD list or decline.
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <button
-                    type="button"
-                    className="btn-lime-pill"
-                    onClick={handleConfirm}
-                    style={{
-                      width: '100%',
-                      padding: '10px 16px',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Check size={16} />
-                    <span>Accept & Confirm Appointment</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsDeclineModalOpen(true)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#FEF2F2',
-                      color: '#DC2626',
-                      border: '1px solid #FECACA',
-                      borderRadius: '999px',
-                      padding: '8px 16px',
-                      fontSize: '12.5px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '5px',
-                    }}
-                  >
-                    <X size={14} />
-                    <span>Reject Booking Request</span>
-                  </button>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#92400E', margin: 0 }}>
+                    Action Required: Clinical Decision
+                  </h2>
+                  <p style={{ fontSize: '13.5px', color: '#78350F', margin: '4px 0 0 0' }}>
+                    Review request details and patient history below to accept into your OPD list or decline.
+                  </p>
                 </div>
               </div>
-            )}
 
-            {/* COMPLETED CONSULTATION STATUS CARD */}
-            {isCompleted && (
-              <div
-                style={{
-                  backgroundColor: '#F0FDF4',
-                  borderRadius: '14px',
-                  border: '1.5px solid #86EFAC',
-                  padding: '18px 20px',
-                  boxShadow: '0 2px 8px rgba(34, 197, 94, 0.08)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <CheckCircle2 size={18} color="#166534" />
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: '#166534' }}>
-                    Consultation Completed & Filed
-                  </span>
-                </div>
-                <div style={{ fontSize: '12px', color: '#166534', lineHeight: '1.4', marginBottom: '14px' }}>
-                  This consultation has concluded. Clinical encounter details and prescriptions are securely filed in the patient medical record.
-                </div>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <button
                   type="button"
-                  onClick={() => navigate('/doctor/patients')}
+                  className="btn-lime-pill"
+                  onClick={handleConfirm}
                   style={{
-                    width: '100%',
-                    backgroundColor: '#166534',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '999px',
-                    padding: '8px 16px',
-                    fontSize: '12.5px',
+                    padding: '10px 22px',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Check size={16} />
+                  <span>Accept & Confirm Appointment</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsDeclineModalOpen(true)}
+                  style={{
+                    backgroundColor: '#FEF2F2',
+                    color: '#DC2626',
+                    border: '1px solid #FECACA',
+                    borderRadius: '9999px',
+                    padding: '10px 20px',
+                    fontSize: '13px',
                     fontWeight: '600',
                     cursor: 'pointer',
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
                     gap: '6px',
                   }}
                 >
-                  <FileText size={14} />
-                  <span>Return to Patient Records</span>
+                  <X size={15} />
+                  <span>Reject Booking Request</span>
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* DIAGNOSTIC LAB TESTS & INVESTIGATION SUMMARY */}
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '14px',
-                border: '1px solid #E2E8F0',
-                padding: '18px 20px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <TestTube2 size={16} color="var(--forest-800)" />
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--forest-900)' }}>
-                    Diagnostic Lab Reports ({patientLabTests.length})
+          {/* 2. CURRENT APPOINTMENT REQUEST DETAILS */}
+          <div
+            style={{
+              width: '100%',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1.5px solid var(--border-subtle)',
+              padding: '24px 28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: 'var(--forest-800)',
+                  }}
+                >
+                  <Calendar size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--forest-900)', margin: 0 }}>
+                    Current Booking Request
+                  </h2>
+                  <span style={{ fontSize: '12.5px', color: '#64748B' }}>
+                    Consultation ID #{targetApt?.id || 'apt-102'}
                   </span>
                 </div>
-                <span style={{ fontSize: '11px', color: '#64748B' }}>Verified Synced</span>
               </div>
 
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  padding: '4px 12px',
+                  borderRadius: '9999px',
+                  backgroundColor: '#ECFDF5',
+                  color: '#065F46',
+                  border: '1px solid #A7F3D0',
+                }}
+              >
+                {targetApt?.type || 'In-Clinic Hospital Visit'}
+              </span>
+            </div>
+
+            {/* 3 Key Facts Cards Full Width */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '14px',
+                padding: '16px 20px',
+                backgroundColor: '#F8FAF9',
+                borderRadius: '12px',
+                border: '1px solid #E2E8F0',
+                fontSize: '13.5px',
+                marginBottom: '16px',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase' }}>Slot Time</div>
+                <div style={{ fontWeight: '700', color: 'var(--forest-900)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Clock size={15} color="var(--forest-800)" />
+                  <span>{targetApt?.date || 'Today'}, {targetApt?.time || '9:00 AM'}</span>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase' }}>Clinic / OPD</div>
+                <div style={{ fontWeight: '700', color: 'var(--forest-900)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Building2 size={15} color="var(--forest-800)" />
+                  <span>{targetApt?.clinicName || 'Central Medical Complex'}</span>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase' }}>Consultation Fee</div>
+                <div style={{ fontWeight: '800', color: '#065F46', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CreditCard size={15} color="#065F46" />
+                  <span>Rs. {targetApt?.fee ? targetApt.fee.toLocaleString() : '2,000'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Patient Stated Reason */}
+            <div style={{ fontSize: '13.5px', color: '#334155', padding: '12px 16px', backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+              <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+                Reason for Visit:
+              </span>
+              <p style={{ margin: 0, fontWeight: '500', color: '#0F172A', fontStyle: 'italic', lineHeight: '1.5' }}>
+                "{targetApt?.reason || 'Routine Health Review & Seasonal Allergy Advice'}"
+              </p>
+            </div>
+          </div>
+
+          {/* 3. PREVIOUS VISITS WITH THIS SAME DOCTOR */}
+          <div
+            style={{
+              width: '100%',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1.5px solid var(--border-subtle)',
+              padding: '24px 28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: 'var(--forest-800)',
+                  }}
+                >
+                  <UserCheck size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--forest-900)', margin: 0 }}>
+                    Previous Consultations with You ({sameDoctorPreviousVisits.length})
+                  </h2>
+                  <span style={{ fontSize: '12.5px', color: '#64748B' }}>
+                    Clinical records with {currentDoctorName} only
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {sameDoctorPreviousVisits.length === 0 ? (
+              <div
+                style={{
+                  backgroundColor: '#F8FAF9',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  textAlign: 'center',
+                  border: '1px dashed #CBD5E1',
+                  fontSize: '13.5px',
+                  color: '#64748B',
+                }}
+              >
+                <p style={{ margin: 0 }}>
+                  First consultation with you — no prior appointment records on file for {patientName}.
+                </p>
+              </div>
+            ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {patientLabTests.map((lab) => (
+                {sameDoctorPreviousVisits.map((visit) => (
                   <div
-                    key={lab.id}
+                    key={visit.id}
                     style={{
-                      padding: '10px 12px',
-                      borderRadius: '8px',
+                      padding: '14px 18px',
+                      borderRadius: '12px',
                       border: '1px solid #E2E8F0',
                       backgroundColor: '#FAFAFA',
-                      fontSize: '12px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '12px',
+                      fontSize: '13.5px',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px', flexWrap: 'wrap', gap: '4px' }}>
-                      <span style={{ fontWeight: '600', color: 'var(--forest-900)', fontSize: '12.5px' }}>
-                        {lab.testName}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: '10.5px',
-                          fontWeight: '600',
-                          padding: '1px 6px',
-                          borderRadius: '4px',
-                          backgroundColor: lab.status === 'Processing' ? '#FEF3C7' : '#DCFCE7',
-                          color: lab.status === 'Processing' ? '#92400E' : '#166534',
-                        }}
-                      >
-                        {lab.status || 'Ready'}
-                      </span>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: '700', color: 'var(--forest-900)' }}>
+                          {visit.date} at {visit.time || 'OPD'}
+                        </span>
+                        <span style={{ fontSize: '11.5px', color: '#166534', backgroundColor: '#DCFCE7', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
+                          ✓ {visit.status}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#64748B' }}>
+                          ({visit.type || 'In-Clinic'})
+                        </span>
+                      </div>
+                      <div style={{ color: '#475569', marginTop: '4px' }}>
+                        Reason / Outcome: <b>{visit.reason || visit.chiefComplaint || 'Consultation & Review'}</b>
+                      </div>
                     </div>
 
-                    <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '4px' }}>
-                      {lab.lab} · {lab.date}
-                    </div>
-
-                    <div style={{ color: '#334155', lineHeight: '1.4' }}>
-                      {lab.summary}
-                    </div>
+                    <span style={{ fontSize: '12.5px', color: '#065F46', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '600' }}>
+                      <CheckCircle2 size={14} />
+                      <span>Encounter Logged</span>
+                    </span>
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+
+          {/* 4. PRESCRIPTIONS ISSUED BY THIS SAME DOCTOR */}
+          <div
+            style={{
+              width: '100%',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1.5px solid var(--border-subtle)',
+              padding: '24px 28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  color: 'var(--forest-800)',
+                }}
+              >
+                <Pill size={20} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--forest-900)', margin: 0 }}>
+                  Prescriptions Issued by You ({sameDoctorPrescriptions.length})
+                </h2>
+                <span style={{ fontSize: '12.5px', color: '#64748B' }}>
+                  Electronic medication slips generated during prior visits
+                </span>
+              </div>
+            </div>
+
+            {sameDoctorPrescriptions.length === 0 ? (
+              <div
+                style={{
+                  backgroundColor: '#F8FAF9',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  textAlign: 'center',
+                  border: '1px dashed #CBD5E1',
+                  fontSize: '13.5px',
+                  color: '#64748B',
+                }}
+              >
+                No prior digital prescriptions issued to this patient by you.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {sameDoctorPrescriptions.map((rx, idx) => (
+                  <div
+                    key={rx.id || idx}
+                    style={{
+                      padding: '14px 18px',
+                      borderRadius: '12px',
+                      border: '1px solid #E2E8F0',
+                      backgroundColor: '#FAFAFA',
+                      fontSize: '13.5px',
+                    }}
+                  >
+                    <div style={{ fontWeight: '700', color: 'var(--forest-900)', marginBottom: '6px' }}>
+                      Rx #{rx.id || idx + 1} — {rx.diagnosis || 'Clinical Prescription'}
+                    </div>
+                    {rx.medicines &&
+                      rx.medicines.map((m, mIdx) => (
+                        <div key={mIdx} style={{ color: '#475569', marginTop: '2px' }}>
+                          • <b>{m.name}</b>: {m.dosage} ({m.duration})
+                        </div>
+                      ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 5. DIAGNOSTIC LAB TESTS & INVESTIGATION SUMMARY */}
+          <div
+            style={{
+              width: '100%',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1.5px solid var(--border-subtle)',
+              padding: '24px 28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(14, 56, 44, 0.08)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: 'var(--forest-800)',
+                  }}
+                >
+                  <TestTube2 size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--forest-900)', margin: 0 }}>
+                    Diagnostic Lab Reports ({patientLabTests.length})
+                  </h2>
+                  <span style={{ fontSize: '12.5px', color: '#64748B' }}>
+                    Synced pathology and diagnostic laboratory records
+                  </span>
+                </div>
+              </div>
+              <span style={{ fontSize: '12px', color: '#166534', backgroundColor: '#DCFCE7', padding: '3px 10px', borderRadius: '9999px', fontWeight: '600' }}>
+                Verified Synced
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {patientLabTests.map((lab) => (
+                <div
+                  key={lab.id}
+                  style={{
+                    padding: '14px 18px',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                    backgroundColor: '#FAFAFA',
+                    fontSize: '13px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap', gap: '6px' }}>
+                    <span style={{ fontWeight: '700', color: 'var(--forest-900)', fontSize: '14px' }}>
+                      {lab.testName}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '11.5px',
+                        fontWeight: '600',
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                        backgroundColor: lab.status === 'Processing' ? '#FEF3C7' : '#DCFCE7',
+                        color: lab.status === 'Processing' ? '#92400E' : '#166534',
+                      }}
+                    >
+                      {lab.status || 'Ready'}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: '12px', color: '#64748B', marginBottom: '4px' }}>
+                    {lab.lab} · {lab.date}
+                  </div>
+
+                  <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                    {lab.summary}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+
         </div>
 
         {/* MODAL: DECLINE REASON PROMPT */}
